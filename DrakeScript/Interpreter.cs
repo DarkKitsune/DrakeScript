@@ -21,7 +21,7 @@ namespace DrakeScript
 			ScopeStack.Push(Scope.Create());
 
 			int ia, ib;
-
+			Value va, vb;
 			for (var pos = 0; pos < code.Length; pos++)
 			{
 				var instruction = code[pos];
@@ -50,6 +50,41 @@ namespace DrakeScript
 						break;
 					case (Instruction.InstructionType.Call):
 						Stack.Pop().Function.Invoke(this);
+						break;
+					case (Instruction.InstructionType.Add):
+						vb = Stack.Pop();
+						va = Stack.Pop();
+						va.Number += vb.Number;
+
+						Stack.Push(va);
+						break;
+					case (Instruction.InstructionType.Sub):
+						vb = Stack.Pop();
+						va = Stack.Pop();
+						va.Number -= vb.Number;
+
+						Stack.Push(va);
+						break;
+					case (Instruction.InstructionType.Div):
+						vb = Stack.Pop();
+						va = Stack.Pop();
+						va.Number /= vb.Number;
+
+						Stack.Push(va);
+						break;
+					case (Instruction.InstructionType.Mul):
+						vb = Stack.Pop();
+						va = Stack.Pop();
+						va.Number *= vb.Number;
+
+						Stack.Push(va);
+						break;
+
+					case (Instruction.InstructionType.Neg):
+						va = Stack.Pop();
+						va.Number = -va.Number;
+
+						Stack.Push(va);
 						break;
 				}
 			}

@@ -30,7 +30,9 @@ namespace DrakeScript
 
 				Parser newParser;
 				int advanceAmount;
-				ASTNode top = Stack.Peek(0);
+				ASTNode top = ASTNode.Invalid;
+				if (Stack.Count > 0)
+					top = Stack.Peek(0);
 				switch (current.Type)
 				{
 					case (Token.TokenType.Str):

@@ -5,6 +5,8 @@ namespace DrakeScript
 {
 	public struct ASTNode
 	{
+		public static ASTNode Invalid = new ASTNode {Type = NodeType.Invalid, Branches = null, Value = null, Location = SourceRef.Invalid};
+
 		public enum NodeType
 		{
 			Invalid,
