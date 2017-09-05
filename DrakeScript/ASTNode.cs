@@ -33,6 +33,7 @@ namespace DrakeScript
 			Negative,
 			Eq,
 			Set,
+			Return,
 		}
 
 		public static Dictionary<NodeType, NodeInfo> NodeInfo = new Dictionary<NodeType, NodeInfo>()
@@ -60,6 +61,7 @@ namespace DrakeScript
 			{NodeType.Negative, new NodeInfo(true)},
 			{NodeType.Eq, new NodeInfo(true)},
 			{NodeType.Set, new NodeInfo(false)},
+			{NodeType.Return, new NodeInfo(false)},
 		};
 
 		public NodeType Type;
@@ -102,8 +104,10 @@ namespace DrakeScript
 			{
 				if (Value is List<ASTNode> || Value == null)
 					return String.Format("{0}{1}", Type, childrenStrBuilder.ToString());
+				else if (Value is ASTNode)
+					return String.Format("{0}:{1}{2}", Type, ((ASTNode)Value).ToString(1), childrenStrBuilder.ToString());
 				else
-					return String.Format("{0}({1})]{2}", Type, Value, childrenStrBuilder.ToString());
+					return String.Format("{0}:{1}{2}", Type, Value, childrenStrBuilder.ToString());
 	
 			}
 			return String.Format("{0}", childrenStrBuilder.ToString());

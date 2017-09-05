@@ -31,6 +31,7 @@ namespace DrakeScript
 				Parser newParser;
 				int advanceAmount;
 				ASTNode top = ASTNode.Invalid;
+				List<ASTNode> parsed;
 				if (Stack.Count > 0)
 					top = Stack.Peek(0);
 				switch (current.Type)
@@ -48,14 +49,25 @@ namespace DrakeScript
 						Advance(1);
 						break;
 					case (Token.TokenType.Ident):
-						if (top.Type == ASTNode.NodeType.Ident && (string)top.Value == "local")
+						switch ((string)current.Value)
 						{
-							Stack.Pop();
-							Stack.Push(new ASTNode(ASTNode.NodeType.NewLocal, current.Location, current.Value));
+							case ("return"):
+								newParser = new Parser();
+								parsed = newParser._Parse(GetUntil(Token.TokenType.Semicolon, 0, out advanceAmount));
+								Stack.Push(new ASTNode(ASTNode.NodeType.Return, current.Location, parsed[0]));
+								Advance(advanceAmount);
+								break;
+							default:
+								if (top.Type == ASTNode.NodeType.Ident && (string)top.Value == "local")
+								{
+									Stack.Pop();
+									Stack.Push(new ASTNode(ASTNode.NodeType.NewLocal, current.Location, current.Value));
+								}
+								else
+									Stack.Push(new ASTNode(ASTNode.NodeType.Ident, current.Location, current.Value));
+								Advance(1);
+								break;
 						}
-						else
-							Stack.Push(new ASTNode(ASTNode.NodeType.Ident, current.Location, current.Value));
-						Advance(1);
 						break;
 					case (Token.TokenType.Plus):
 						Stack.Push(new ASTNode(ASTNode.NodeType.PlusOperator, current.Location));
@@ -83,7 +95,7 @@ namespace DrakeScript
 						break;
 					case (Token.TokenType.ParOpen):
 						newParser = new Parser();
-						var parsed = newParser._Parse(GetBetween(Token.TokenType.ParClose, 0, out advanceAmount), true);
+						parsed = newParser._Parse(GetBetween(Token.TokenType.ParClose, 0, out advanceAmount), true);
 						if (top.Type == ASTNode.NodeType.Ident || top.Type == ASTNode.NodeType.Call)
 						{
 							var newNode = new ASTNode(ASTNode.NodeType.Call, top.Location);
@@ -309,6 +321,29 @@ namespace DrakeScript
 						advanceAmount = aoffset + 1;
 						return ret;
 					}
+				}
+
+				t = At(++aoffset);
+			}
+		}
+
+
+		List<Token> GetUntil(Token.TokenType closing, int offset, out int advanceAmount)
+		{
+			var aoffset = offset;
+
+			var t = At(++aoffset);
+			while (true)
+			{
+				if (EndOf() || t.Type == closing)
+				{
+					var ret = new List<Token>();
+					for (var i = offset + 1; i < aoffset; i++)
+					{
+						ret.Add(At(i));
+					}
+					advanceAmount = aoffset + 1;
+					return ret;
 				}
 
 				t = At(++aoffset);

@@ -29,6 +29,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="PowerDS">
+      <HintPath>..\..\PowerDS\PowerDS\bin\Release\PowerDS.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />

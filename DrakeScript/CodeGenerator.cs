@@ -104,6 +104,10 @@ namespace DrakeScript
 					instructions.AddRange(Generate(node.Branches["function"]));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Call));
 					break;
+				case (ASTNode.NodeType.Return):
+					instructions.AddRange(Generate((ASTNode)node.Value));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Return));
+					break;
 				default:
 					throw new NoCodeGenerationForNodeException(node.Type, node.Location);
 			}

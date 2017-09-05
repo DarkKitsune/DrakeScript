@@ -17,7 +17,8 @@ namespace DrakeScript
 			Sub,
 			Div,
 			Mul,
-			Neg
+			Neg,
+			Return
 		}
 
 		public InstructionType Type;
