@@ -1,0 +1,20 @@
+﻿<Properties StartupItem="DrakeScriptTester/DrakeScriptTester.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="DrakeScript/Parser.cs">
+    <Files>
+      <File FileName="DrakeScriptTester/Program.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/Scanner.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/Token.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/CompileException.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/Parser.cs" Line="95" Column="18" />
+      <File FileName="DrakeScript/ASTNode.cs" Line="63" Column="9" />
+      <File FileName="DrakeScript/Extensions.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/NodeInfo.cs" Line="59" Column="44" />
+      <File FileName="DrakeScript/SourceRef.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

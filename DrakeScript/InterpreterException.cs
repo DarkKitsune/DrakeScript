@@ -1,0 +1,25 @@
+﻿using System;
+
+namespace DrakeScript
+{
+	public class InterpreterException : Exception
+	{
+		public SourceRef Location;
+
+		public InterpreterException(string message, SourceRef location) : base(message)
+		{
+			Location = location;
+		}
+	}
+
+	public class UnexpectedLeftOperandException : InterpreterException
+	{
+		public UnexpectedLeftOperandException(
+			ValueType got, ValueType expected, SourceRef location
+		) : base("Illegal operation", location)
+		{
+			
+		}
+	}
+}
+

@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrakeScript", "DrakeScript\DrakeScript.csproj", "{6B763C45-FF83-465C-8C47-E07A9CA1A09D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrakeScriptTester", "DrakeScriptTester\DrakeScriptTester.csproj", "{817E37F1-3F3D-4DD7-AAEF-9730DB954001}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6B763C45-FF83-465C-8C47-E07A9CA1A09D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B763C45-FF83-465C-8C47-E07A9CA1A09D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B763C45-FF83-465C-8C47-E07A9CA1A09D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B763C45-FF83-465C-8C47-E07A9CA1A09D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{817E37F1-3F3D-4DD7-AAEF-9730DB954001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{817E37F1-3F3D-4DD7-AAEF-9730DB954001}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{817E37F1-3F3D-4DD7-AAEF-9730DB954001}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{817E37F1-3F3D-4DD7-AAEF-9730DB954001}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
