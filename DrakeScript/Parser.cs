@@ -335,7 +335,7 @@ namespace DrakeScript
 			var t = At(++aoffset);
 			while (true)
 			{
-				if (EndOf() || t.Type == closing)
+				if (Position + aoffset >= Tokens.Count || t.Type == closing)
 				{
 					var ret = new List<Token>();
 					for (var i = offset + 1; i < aoffset; i++)
