@@ -32,7 +32,10 @@ namespace DrakeScriptTester
 			Console.WriteLine(code.ToStringFormatted() + "\n");
 			var interpreter = new Interpreter(context);
 			interpreter.Interpret(code);
-			Console.WriteLine("result: " + interpreter.Stack.Peek(0).DynamicValue);
+			if (interpreter.Stack.Count > 0)
+				Console.WriteLine("result: " + interpreter.Stack.Peek(0).DynamicValue);
+			else
+				Console.WriteLine("no result");
 		}
 	}
 }
