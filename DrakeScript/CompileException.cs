@@ -118,5 +118,14 @@ namespace DrakeScript
 
 		}
 	}
+
+	public class InvalidConditionException : CompileException
+	{
+		public InvalidConditionException(string statement, SourceRef location) :
+			base("Invalid condition(s) for \"" + statement + "\" statement", location)
+		{
+
+		}
+	}
 }
 

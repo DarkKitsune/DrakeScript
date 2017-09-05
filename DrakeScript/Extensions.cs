@@ -73,6 +73,13 @@ namespace DrakeScript
 			}
 			return sb.ToString();
 		}
+
+		public static ASTNode GetSafe(this List<ASTNode> list, int n)
+		{
+			if (n < 0 || n >= list.Count)
+				return ASTNode.Invalid;
+			return list[n];
+		}
 	}
 }
 

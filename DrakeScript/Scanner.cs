@@ -36,6 +36,14 @@ namespace DrakeScript
 						token = new Token(Location(), Token.TokenType.ParClose);
 						Advance(1);
 						break;
+					case ('{'):
+						token = new Token(Location(), Token.TokenType.BraOpen);
+						Advance(1);
+						break;
+					case ('}'):
+						token = new Token(Location(), Token.TokenType.BraClose);
+						Advance(1);
+						break;
 					case (';'):
 						token = new Token(Location(), Token.TokenType.Semicolon);
 						Advance(1);
@@ -64,12 +72,25 @@ namespace DrakeScript
 						if (At(1) == '=')
 						{
 							token = new Token(Location(), Token.TokenType.Eq);
+							Advance(2);
 						}
 						else
 						{
 							token = new Token(Location(), Token.TokenType.Set);
+							Advance(1);
 						}
-						Advance(2);
+						break;
+					case ('!'):
+						if (At(1) == '=')
+						{
+							token = new Token(Location(), Token.TokenType.NEq);
+							Advance(2);
+						}
+						/*else
+						{
+							token = new Token(Location(), Token.TokenType.Not);
+							Advance(1);
+						}*/
 						break;
 					default:
 						if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'A') || c == '_')

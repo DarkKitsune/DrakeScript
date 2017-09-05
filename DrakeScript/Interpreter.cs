@@ -86,6 +86,35 @@ namespace DrakeScript
 
 						Stack.Push(va);
 						break;
+
+					case (Instruction.InstructionType.Eq):
+						vb = Stack.Pop();
+						va = Stack.Pop();
+						Console.WriteLine(va.DynamicValue + " == " + vb.DynamicValue);
+						va.Number = (va.Number == vb.Number ? 1.0 : 0.0);
+
+						Stack.Push(va);
+						break;
+
+					case (Instruction.InstructionType.NEq):
+						vb = Stack.Pop();
+						va = Stack.Pop();
+						va.Number = (va.Number != vb.Number ? 1.0 : 0.0);
+
+						Stack.Push(va);
+						break;
+
+					case (Instruction.InstructionType.JumpEZ):
+						va = Stack.Pop();
+						if (!va.Bool)
+						{
+							pos += (int)instruction.Arg.Number;
+						}
+						break;
+
+					case (Instruction.InstructionType.Jump):
+						pos += (int)instruction.Arg.Number;
+						break;
 				}
 			}
 

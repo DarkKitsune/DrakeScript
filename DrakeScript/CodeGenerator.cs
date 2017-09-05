@@ -80,6 +80,16 @@ namespace DrakeScript
 				case (ASTNode.NodeType.Positive):
 					instructions.AddRange(Generate(node.Branches["right"]));
 					break;
+				case (ASTNode.NodeType.Eq):
+					instructions.AddRange(Generate(node.Branches["left"]));
+					instructions.AddRange(Generate(node.Branches["right"]));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Eq));
+					break;
+				case (ASTNode.NodeType.NEq):
+					instructions.AddRange(Generate(node.Branches["left"]));
+					instructions.AddRange(Generate(node.Branches["right"]));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.NEq));
+					break;
 				case (ASTNode.NodeType.Set):
 					if (node.Branches["left"].Type == ASTNode.NodeType.NewLocal)
 					{
@@ -107,6 +117,34 @@ namespace DrakeScript
 				case (ASTNode.NodeType.Return):
 					instructions.AddRange(Generate((ASTNode)node.Value));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Return));
+					break;
+				case (ASTNode.NodeType.If):
+					var ifCond = (List<ASTNode>)node.Branches["condition"].Value;
+					if (ifCond.Count != 1)
+						throw new InvalidConditionException("if", node.Location);
+					instructions.AddRange(Generate(ifCond[0]));
+					var ifJumpInstPos = instructions.Count;
+					foreach (var child in (List<ASTNode>)node.Value)
+					{
+						instructions.AddRange(Generate(child));
+					}
+					var ifJumpDestPos = instructions.Count + 2;
+					instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(ifJumpDestPos - ifJumpInstPos)));
+					break;
+				case (ASTNode.NodeType.While):
+					var whileCond = (List<ASTNode>)node.Branches["condition"].Value;
+					if (whileCond.Count != 1)
+						throw new InvalidConditionException("while", node.Location);
+					var whileStart = instructions.Count;
+					instructions.AddRange(Generate(whileCond[0]));
+					var whileJumpInstPos = instructions.Count;
+					foreach (var child in (List<ASTNode>)node.Value)
+					{
+						instructions.AddRange(Generate(child));
+					}
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.Create(whileStart - instructions.Count - 2)));
+					var whileJumpDestPos = instructions.Count + 3;
+					instructions.Insert(whileJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(instructions.Count - whileJumpInstPos)));
 					break;
 				default:
 					throw new NoCodeGenerationForNodeException(node.Type, node.Location);

@@ -31,6 +31,7 @@ namespace DrakeScript
 				Parser newParser;
 				int advanceAmount;
 				ASTNode top = ASTNode.Invalid;
+				ASTNode node;
 				List<ASTNode> parsed;
 				if (Stack.Count > 0)
 					top = Stack.Peek(0);
@@ -54,7 +55,35 @@ namespace DrakeScript
 							case ("return"):
 								newParser = new Parser();
 								parsed = newParser._Parse(GetUntil(Token.TokenType.Semicolon, 0, out advanceAmount));
-								Stack.Push(new ASTNode(ASTNode.NodeType.Return, current.Location, parsed[0]));
+								Stack.Push(new ASTNode(ASTNode.NodeType.Return, current.Location, parsed.GetSafe(0)));
+								Advance(advanceAmount);
+								break;
+							case ("if"):
+								newParser = new Parser();
+								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
+								var ifPar = parsed.GetSafe(0);
+								if (ifPar.Type != ASTNode.NodeType.Par)
+								{
+									throw new ExpectedNodeException(ASTNode.NodeType.Par, ifPar.Type, current.Location);
+								}
+								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
+								node = new ASTNode(ASTNode.NodeType.If, current.Location, parsed);
+								node.Branches["condition"] = new ASTNode(ASTNode.NodeType.Condition, ifPar.Location, ifPar.Value);
+								root.Add(node);
+								Advance(advanceAmount);
+								break;
+							case ("while"):
+								newParser = new Parser();
+								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
+								var whilePar = parsed.GetSafe(0);
+								if (whilePar.Type != ASTNode.NodeType.Par)
+								{
+									throw new ExpectedNodeException(ASTNode.NodeType.Par, whilePar.Type, current.Location);
+								}
+								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
+								node = new ASTNode(ASTNode.NodeType.While, current.Location, parsed);
+								node.Branches["condition"] = new ASTNode(ASTNode.NodeType.Condition, whilePar.Location, whilePar.Value);
+								root.Add(node);
 								Advance(advanceAmount);
 								break;
 							default:
@@ -87,6 +116,10 @@ namespace DrakeScript
 						break;
 					case (Token.TokenType.Eq):
 						Stack.Push(new ASTNode(ASTNode.NodeType.EqualsOperator, current.Location));
+						Advance(1);
+						break;
+					case (Token.TokenType.NEq):
+						Stack.Push(new ASTNode(ASTNode.NodeType.NotEqualsOperator, current.Location));
 						Advance(1);
 						break;
 					case (Token.TokenType.Set):

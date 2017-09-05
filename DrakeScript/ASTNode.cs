@@ -18,12 +18,14 @@ namespace DrakeScript
 			Par,
 			Call,
 			Args,
+			Condition,
 			NewLocal,
 			PlusOperator,
 			MinusOperator,
 			DivideOperator,
 			MultiplyOperator,
 			EqualsOperator,
+			NotEqualsOperator,
 			SetOperator,
 			Add,
 			Subtract,
@@ -32,8 +34,11 @@ namespace DrakeScript
 			Positive,
 			Negative,
 			Eq,
+			NEq,
 			Set,
 			Return,
+			If,
+			While,
 		}
 
 		public static Dictionary<NodeType, NodeInfo> NodeInfo = new Dictionary<NodeType, NodeInfo>()
@@ -46,12 +51,14 @@ namespace DrakeScript
 			{NodeType.Par, new NodeInfo(true)},
 			{NodeType.Call, new NodeInfo(true)},
 			{NodeType.Args, new NodeInfo(false)},
+			{NodeType.Condition, new NodeInfo(false)},
 			{NodeType.NewLocal, new NodeInfo(true)},
 			{NodeType.PlusOperator, new NodeInfo(false, true, true, NodeType.Add, 4, NodeType.Positive, 2)},
 			{NodeType.MinusOperator, new NodeInfo(false, true, true, NodeType.Subtract, 4, NodeType.Negative, 2)},
 			{NodeType.DivideOperator, new NodeInfo(false, true, false, NodeType.Divide, 3)},
 			{NodeType.MultiplyOperator, new NodeInfo(false, true, false, NodeType.Multiply, 3)},
 			{NodeType.EqualsOperator, new NodeInfo(false, true, false, NodeType.Eq, 7)},
+			{NodeType.NotEqualsOperator, new NodeInfo(false, true, false, NodeType.NEq, 7)},
 			{NodeType.SetOperator, new NodeInfo(false, true, false, NodeType.Set, 14)},
 			{NodeType.Add, new NodeInfo(true)},
 			{NodeType.Subtract, new NodeInfo(true)},
@@ -60,8 +67,11 @@ namespace DrakeScript
 			{NodeType.Positive, new NodeInfo(true)},
 			{NodeType.Negative, new NodeInfo(true)},
 			{NodeType.Eq, new NodeInfo(true)},
+			{NodeType.NEq, new NodeInfo(true)},
 			{NodeType.Set, new NodeInfo(false)},
 			{NodeType.Return, new NodeInfo(false)},
+			{NodeType.If, new NodeInfo(false)},
+			{NodeType.While, new NodeInfo(false)},
 		};
 
 		public NodeType Type;

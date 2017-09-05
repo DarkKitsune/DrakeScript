@@ -18,7 +18,11 @@ namespace DrakeScript
 			Div,
 			Mul,
 			Neg,
-			Return
+			Eq,
+			NEq,
+			Return,
+			JumpEZ,
+			Jump,
 		}
 
 		public InstructionType Type;
