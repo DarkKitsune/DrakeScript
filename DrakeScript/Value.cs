@@ -53,15 +53,22 @@ namespace DrakeScript
 					default:
 						return Reference;
 				}
-				return null;
 			}
 		}
 
-		public bool IsUndefined
+		public bool IsNil
 		{
 			get
 			{
 				return Type == ValueType.Nil;
+			}
+		}
+
+		public bool IsValid
+		{
+			get
+			{
+				return String != null;
 			}
 		}
 

@@ -29,21 +29,24 @@ namespace DrakeScriptTester
 			Console.WriteLine(tree + "\n");
 			var generator = new CodeGenerator();
 			var code = generator.Generate(tree);
+			var optimizer = new Optimizer();
+			optimizer.Optimize(code);
 			Console.WriteLine(code.ToStringFormatted() + "\n");
+			var optimized = code.ToArray();
 			var interpreter = new Interpreter(context);
 			var sw = new System.Diagnostics.Stopwatch();
 			for (var i = 0; i < 10; i++)
 			{
 				sw.Reset();
 				sw.Start();
-				interpreter.Interpret(code);
+				interpreter.Interpret(optimized);
 				sw.Stop();
 			}
 			if (interpreter.Stack.Count > 0)
 				Console.WriteLine("result: " + interpreter.Stack.Peek(0).DynamicValue);
 			else
 				Console.WriteLine("no result");
-			Console.WriteLine("time taken: " + sw.ElapsedTicks + " ticks (" + ((double)sw.ElapsedTicks / (double)TimeSpan.TicksPerMillisecond) + "ms)");
+			Console.WriteLine("time taken: " + sw.ElapsedTicks + " ticks (" + ((double)sw.ElapsedTicks / (double)TimeSpan.TicksPerSecond) + "s)");
 		}
 	}
 }

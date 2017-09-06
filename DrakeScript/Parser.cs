@@ -86,6 +86,20 @@ namespace DrakeScript
 								root.Add(node);
 								Advance(advanceAmount);
 								break;
+							case ("loop"):
+								newParser = new Parser();
+								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
+								var loopPar = parsed.GetSafe(0);
+								if (loopPar.Type != ASTNode.NodeType.Par)
+								{
+									throw new ExpectedNodeException(ASTNode.NodeType.Par, loopPar.Type, current.Location);
+								}
+								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
+								node = new ASTNode(ASTNode.NodeType.Loop, current.Location, parsed);
+								node.Branches["condition"] = new ASTNode(ASTNode.NodeType.Condition, loopPar.Location, loopPar.Value);
+								root.Add(node);
+								Advance(advanceAmount);
+								break;
 							default:
 								if (top.Type == ASTNode.NodeType.Ident && (string)top.Value == "local")
 								{
@@ -124,6 +138,14 @@ namespace DrakeScript
 						break;
 					case (Token.TokenType.Set):
 						Stack.Push(new ASTNode(ASTNode.NodeType.SetOperator, current.Location));
+						Advance(1);
+						break;
+					case (Token.TokenType.PlusEq):
+						Stack.Push(new ASTNode(ASTNode.NodeType.PlusEqOperator, current.Location));
+						Advance(1);
+						break;
+					case (Token.TokenType.MinusEq):
+						Stack.Push(new ASTNode(ASTNode.NodeType.MinusEqOperator, current.Location));
 						Advance(1);
 						break;
 					case (Token.TokenType.ParOpen):

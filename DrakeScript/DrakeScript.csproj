@@ -54,6 +54,7 @@
     <Compile Include="Scope.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="InterpreterException.cs" />
+    <Compile Include="Optimizer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -53,12 +53,28 @@ namespace DrakeScript
 						Advance(1);
 						break;
 					case ('+'):
-						token = new Token(Location(), Token.TokenType.Plus);
-						Advance(1);
+						if (At(1) == '=')
+						{
+							token = new Token(Location(), Token.TokenType.PlusEq);
+							Advance(2);
+						}
+						else
+						{
+							token = new Token(Location(), Token.TokenType.Plus);
+							Advance(1);
+						}
 						break;
 					case ('-'):
-						token = new Token(Location(), Token.TokenType.Minus);
-						Advance(1);
+						if (At(1) == '=')
+						{
+							token = new Token(Location(), Token.TokenType.MinusEq);
+							Advance(2);
+						}
+						else
+						{
+							token = new Token(Location(), Token.TokenType.Minus);
+							Advance(1);
+						}
 						break;
 					case ('/'):
 						token = new Token(Location(), Token.TokenType.Divide);

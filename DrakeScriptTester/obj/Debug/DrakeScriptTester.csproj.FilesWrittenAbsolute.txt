@@ -3,6 +3,6 @@
 /home/dark/Projects/CSharp/DrakeScript/DrakeScriptTester/bin/Debug/DrakeScriptTester.exe
 /home/dark/Projects/CSharp/DrakeScript/DrakeScriptTester/obj/Debug/DrakeScriptTester.exe
 /home/dark/Projects/CSharp/DrakeScript/DrakeScriptTester/obj/Debug/DrakeScriptTester.exe.mdb
+/home/dark/Projects/CSharp/DrakeScript/DrakeScriptTester/bin/Debug/PowerDS.dll
 /home/dark/Projects/CSharp/DrakeScript/DrakeScriptTester/bin/Debug/DrakeScript.dll
 /home/dark/Projects/CSharp/DrakeScript/DrakeScriptTester/bin/Debug/DrakeScript.dll.mdb
-/home/dark/Projects/CSharp/DrakeScript/DrakeScriptTester/bin/Debug/PowerDS.dll

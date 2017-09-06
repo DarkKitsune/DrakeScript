@@ -17,6 +17,11 @@ namespace DrakeScript
 			scope.Locals = new Dictionary<string, Value>();
 			return scope;
 		}
+
+		public void Reset()
+		{
+			Locals.Clear();
+		}
 	}
 }
 

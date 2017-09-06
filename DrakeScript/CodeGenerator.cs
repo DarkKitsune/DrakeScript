@@ -5,7 +5,7 @@ namespace DrakeScript
 {
 	public class CodeGenerator
 	{
-		public Instruction[] Generate(ASTNode node)
+		public List<Instruction> Generate(ASTNode node)
 		{
 			var instructions = new List<Instruction>();
 
@@ -98,6 +98,14 @@ namespace DrakeScript
 					instructions.AddRange(Generate(node.Branches["right"]));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopVar, Value.Create((string)node.Branches["left"].Value)));
 					break;
+				case (ASTNode.NodeType.PlusEq):
+					instructions.AddRange(Generate(node.Branches["right"]));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.IncVarBy, Value.Create((string)node.Branches["left"].Value)));
+					break;
+				case (ASTNode.NodeType.MinusEq):
+					instructions.AddRange(Generate(node.Branches["right"]));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.DecVarBy, Value.Create((string)node.Branches["left"].Value)));
+					break;
 				case (ASTNode.NodeType.Call):
 					var cargs = (List<ASTNode>)(node.Branches["args"].Value);
 					foreach (var child in cargs)
@@ -124,10 +132,12 @@ namespace DrakeScript
 						throw new InvalidConditionException("if", node.Location);
 					instructions.AddRange(Generate(ifCond[0]));
 					var ifJumpInstPos = instructions.Count;
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.EnterScope));
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
 						instructions.AddRange(Generate(child));
 					}
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
 					var ifJumpDestPos = instructions.Count + 2;
 					instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(ifJumpDestPos - ifJumpInstPos)));
 					break;
@@ -135,6 +145,7 @@ namespace DrakeScript
 					var whileCond = (List<ASTNode>)node.Branches["condition"].Value;
 					if (whileCond.Count != 1)
 						throw new InvalidConditionException("while", node.Location);
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.EnterScope));
 					var whileStart = instructions.Count;
 					instructions.AddRange(Generate(whileCond[0]));
 					var whileJumpInstPos = instructions.Count;
@@ -143,14 +154,32 @@ namespace DrakeScript
 						instructions.AddRange(Generate(child));
 					}
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.Create(whileStart - instructions.Count - 2)));
-					var whileJumpDestPos = instructions.Count + 3;
 					instructions.Insert(whileJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(instructions.Count - whileJumpInstPos)));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
+					break;
+				case (ASTNode.NodeType.Loop):
+					var loopCond = (List<ASTNode>)node.Branches["condition"].Value;
+					if (loopCond.Count != 1)
+						throw new InvalidConditionException("loop", node.Location);
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.EnterScope));
+					var loopStart = instructions.Count;
+					instructions.AddRange(Generate(loopCond[0]));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dup));
+					var loopJumpInstPos = instructions.Count;
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dec));
+					foreach (var child in (List<ASTNode>)node.Value)
+					{
+						instructions.AddRange(Generate(child));
+					}
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.Create(loopStart - instructions.Count - 1)));
+					instructions.Insert(loopJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(instructions.Count - loopJumpInstPos)));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
 					break;
 				default:
 					throw new NoCodeGenerationForNodeException(node.Type, node.Location);
 			}
 			
-			return instructions.ToArray();
+			return instructions;
 		}
 	}
 }

@@ -176,6 +176,24 @@ namespace DrakeScript
 					else
 						throw new ExpectedNodeException(ASTNode.NodeType.Ident, left.Type, left.Location);
 					break;
+				case (ASTNode.NodeType.PlusEq):
+					left = node.Branches["left"];
+					if (left.Type == ASTNode.NodeType.Ident)
+					{
+						node.Branches["left"] = new ASTNode(ASTNode.NodeType.Str, left.Location, left.Value);
+					}
+					else
+						throw new ExpectedNodeException(ASTNode.NodeType.Ident, left.Type, left.Location);
+					break;
+				case (ASTNode.NodeType.MinusEq):
+					left = node.Branches["left"];
+					if (left.Type == ASTNode.NodeType.Ident)
+					{
+						node.Branches["left"] = new ASTNode(ASTNode.NodeType.Str, left.Location, left.Value);
+					}
+					else
+						throw new ExpectedNodeException(ASTNode.NodeType.Ident, left.Type, left.Location);
+					break;
 			}
 
 			return node;

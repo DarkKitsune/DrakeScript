@@ -10,6 +10,11 @@ namespace DrakeScript
 		{
 			Location = location;
 		}
+
+		public override string ToString()
+		{
+			return string.Format("{0}: {1}\n{2}", Location, Message, StackTrace);
+		}
 	}
 
 	public class UnexpectedLeftOperandException : InterpreterException
