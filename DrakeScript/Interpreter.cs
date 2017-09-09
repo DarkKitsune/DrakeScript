@@ -200,7 +200,7 @@ namespace DrakeScript
 				}
 				catch (Exception e)
 				{
-					throw new InterpreterException(e.Message, instruction.Location);
+					throw new InterpreterException(e.ToString(), instruction.Location);
 				}
 			}
 

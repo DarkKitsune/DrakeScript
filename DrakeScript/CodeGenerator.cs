@@ -11,7 +11,7 @@ namespace DrakeScript
 			return Generate(node, false, out before);
 		}
 
-		public List<Instruction> Generate(ASTNode node, bool allowPush, out List<Instruction> insert)
+		public List<Instruction> Generate(ASTNode node, bool allowPush, out List<Instruction> insert, bool allowConditions = false)
 		{
 			insert = new List<Instruction>();
 			var instructions = new List<Instruction>();
@@ -23,7 +23,7 @@ namespace DrakeScript
 				case (ASTNode.NodeType.Root):
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
-						range = Generate(child, false, out before);
+						range = Generate(child, false, out before, true);
 						if (before.Count > 0)
 							instructions.InsertRange(instructions.Count - 1, before);
 						instructions.AddRange(range);
@@ -34,7 +34,7 @@ namespace DrakeScript
 						throw new UnexpectedTokenException("(...)", node.Location);
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
-						range = Generate(child, true, out before);
+						range = Generate(child, true, out before, true);
 						if (before.Count > 0)
 							instructions.InsertRange(instructions.Count - 1, before);
 						instructions.AddRange(range);
@@ -201,6 +201,8 @@ namespace DrakeScript
 					instructions.AddRange(range);
 					break;
 				case (ASTNode.NodeType.If):
+					if (!allowConditions)
+						throw new UnexpectedTokenException("if", node.Location);
 					var ifCond = (List<ASTNode>)node.Branches["condition"].Value;
 					if (ifCond.Count != 1)
 						throw new InvalidConditionException("if", node.Location);
@@ -209,7 +211,7 @@ namespace DrakeScript
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.EnterScope));
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
-						range = Generate(child, false, out before);
+						range = Generate(child, false, out before, true);
 						if (before.Count > 0)
 							instructions.InsertRange(instructions.Count - 1, before);
 						instructions.AddRange(range);
@@ -223,12 +225,12 @@ namespace DrakeScript
 					insert.Add(new Instruction(node.Location, Instruction.InstructionType.EnterScope));
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
-						range = Generate(child, false, out before);
+						range = Generate(child, false, out before, true);
 						if (before.Count > 0)
 							instructions.InsertRange(instructions.Count - 1, before);
-						instructions.AddRange(range);
+						insert.AddRange(range);
 					}
-					insert.Insert(0, new Instruction(node.Location, Instruction.InstructionType.Jump, Value.Create(instructions.Count - elseJumpInstPos + 2)));
+					insert.Insert(0, new Instruction(node.Location, Instruction.InstructionType.Jump, Value.Create(insert.Count)));
 
 					break;
 				case (ASTNode.NodeType.While):
@@ -241,7 +243,7 @@ namespace DrakeScript
 					var whileJumpInstPos = instructions.Count;
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
-						range = Generate(child, false, out before);
+						range = Generate(child, false, out before, true);
 						if (before.Count > 0)
 							instructions.InsertRange(instructions.Count - 1, before);
 						instructions.AddRange(range);
@@ -262,7 +264,7 @@ namespace DrakeScript
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dec));
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
-						range = Generate(child, false, out before);
+						range = Generate(child, false, out before, true);
 						if (before.Count > 0)
 							instructions.InsertRange(instructions.Count - 1, before);
 						instructions.AddRange(range);
