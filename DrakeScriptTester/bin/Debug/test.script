@@ -1,7 +1,11 @@
-local a = 0;
-loop (100000)
+local a = 5;
+local b = 0;
+if (a == 4  )
 {
-    a += 1;
+    b = 1;
 }
-
-return a;
+else
+{
+    b = 10;
+}
+return b;

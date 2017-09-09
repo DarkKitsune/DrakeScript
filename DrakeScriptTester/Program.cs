@@ -35,7 +35,7 @@ namespace DrakeScriptTester
 			var optimized = code.ToArray();
 			var interpreter = new Interpreter(context);
 			var sw = new System.Diagnostics.Stopwatch();
-			for (var i = 0; i < 10; i++)
+			for (var i = 0; i < 1; i++)
 			{
 				sw.Reset();
 				sw.Start();

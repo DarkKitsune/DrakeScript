@@ -42,6 +42,7 @@ namespace DrakeScript
 			MinusEq,
 			Return,
 			If,
+			Else,
 			While,
 			Loop,
 		}
@@ -80,6 +81,7 @@ namespace DrakeScript
 			{NodeType.MinusEq, new NodeInfo(false)},
 			{NodeType.Return, new NodeInfo(false)},
 			{NodeType.If, new NodeInfo(false)},
+			{NodeType.Else, new NodeInfo(false)},
 			{NodeType.While, new NodeInfo(false)},
 			{NodeType.Loop, new NodeInfo(false)},
 		};

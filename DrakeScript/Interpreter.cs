@@ -39,6 +39,9 @@ namespace DrakeScript
 						case (Instruction.InstructionType.PushStr):
 							Stack.Push(instruction.Arg);
 							break;
+						case (Instruction.InstructionType.Pop):
+							Stack.Pop();
+							break;
 						case (Instruction.InstructionType.PopVar):
 							SetVar(instruction.Arg.String, Stack.Pop());
 							break;

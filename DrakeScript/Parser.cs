@@ -30,6 +30,7 @@ namespace DrakeScript
 
 				Parser newParser;
 				int advanceAmount;
+				int tempAdvanceAmount;
 				ASTNode top = ASTNode.Invalid;
 				ASTNode node;
 				List<ASTNode> parsed;
@@ -69,6 +70,22 @@ namespace DrakeScript
 								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
 								node = new ASTNode(ASTNode.NodeType.If, current.Location, parsed);
 								node.Branches["condition"] = new ASTNode(ASTNode.NodeType.Condition, ifPar.Location, ifPar.Value);
+								root.Add(node);
+								Advance(advanceAmount);
+								break;
+							case ("else"):
+								if (root.Count == 0)
+								{
+									throw new ExpectedNodeException(ASTNode.NodeType.If, ASTNode.NodeType.Invalid, current.Location);
+								}
+								if (root[root.Count - 1].Type != ASTNode.NodeType.If)
+								{
+									throw new ExpectedNodeException(ASTNode.NodeType.If, root[root.Count - 1].Type, root[root.Count - 1].Location);
+								}
+								newParser = new Parser();
+								GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount);
+								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
+								node = new ASTNode(ASTNode.NodeType.Else, current.Location, parsed);
 								root.Add(node);
 								Advance(advanceAmount);
 								break;
