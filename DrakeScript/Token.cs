@@ -10,7 +10,7 @@ namespace DrakeScript
 		public enum TokenType
 		{
 			Invalid, Str, Int, Dec, Ident, ParOpen, ParClose, BraOpen, BraClose, Semicolon, Comma, Plus,
-			Minus, Divide, Multiply, Eq, NEq, Set, PlusEq, MinusEq,
+			Minus, Divide, Multiply, Not, Eq, NEq, Gt, GtEq, Lt, LtEq, Set, PlusEq, MinusEq,
 		}
 
 		public bool Valid {get; private set;}

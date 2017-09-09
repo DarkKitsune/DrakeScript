@@ -50,11 +50,18 @@ namespace DrakeScript
 							ia = (int)instruction.Arg.Number;
 							for (var i = 0; i < ia; i++)
 							{
-								ArgList.Add(Stack.Pop());
+								ArgList.Add(Value.Nil);
+							}
+							for (var i = ia - 1; i >= 0; i--)
+							{
+								ArgList[i] = Stack.Pop();
 							}
 							break;
 						case (Instruction.InstructionType.Call):
-							Stack.Pop().Function.Invoke(this);
+							var callFunc = Stack.Pop();
+							if (callFunc.Type != Value.ValueType.Function)
+								throw new CannotCallNilException(instruction.Location);
+							Stack.Push(callFunc.Function.Invoke(this));
 							break;
 						case (Instruction.InstructionType.Add):
 							vb = Stack.Pop();
@@ -85,6 +92,13 @@ namespace DrakeScript
 							Stack.Push(va);
 							break;
 
+						case (Instruction.InstructionType.Not):
+							va = Stack.Pop();
+							va.Bool = !va.Bool;
+
+							Stack.Push(va);
+							break;
+
 						case (Instruction.InstructionType.Neg):
 							va = Stack.Pop();
 							va.Number = -va.Number;
@@ -92,18 +106,9 @@ namespace DrakeScript
 							Stack.Push(va);
 							break;
 
-						case (Instruction.InstructionType.IncVarBy):
-							IncVar(instruction.Arg.String, Stack.Pop().Number);
-							break;
-
-						case (Instruction.InstructionType.DecVarBy):
-							IncVar(instruction.Arg.String, -Stack.Pop().Number);
-							break;
-
 						case (Instruction.InstructionType.Eq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							Console.WriteLine(va.DynamicValue + " == " + vb.DynamicValue);
 							va.Number = (va.Number == vb.Number ? 1.0 : 0.0);
 
 							Stack.Push(va);
@@ -116,6 +121,47 @@ namespace DrakeScript
 
 							Stack.Push(va);
 							break;
+
+						case (Instruction.InstructionType.Gt):
+							vb = Stack.Pop();
+							va = Stack.Pop();
+							va.Number = (va.Number > vb.Number ? 1.0 : 0.0);
+
+							Stack.Push(va);
+							break;
+
+						case (Instruction.InstructionType.GtEq):
+							vb = Stack.Pop();
+							va = Stack.Pop();
+							va.Number = (va.Number >= vb.Number ? 1.0 : 0.0);
+
+							Stack.Push(va);
+							break;
+
+						case (Instruction.InstructionType.Lt):
+							vb = Stack.Pop();
+							va = Stack.Pop();
+							va.Number = (va.Number < vb.Number ? 1.0 : 0.0);
+
+							Stack.Push(va);
+							break;
+
+						case (Instruction.InstructionType.LtEq):
+							vb = Stack.Pop();
+							va = Stack.Pop();
+							va.Number = (va.Number <= vb.Number ? 1.0 : 0.0);
+
+							Stack.Push(va);
+							break;
+
+						case (Instruction.InstructionType.IncVarBy):
+							IncVar(instruction.Arg.String, Stack.Pop().Number);
+							break;
+
+						case (Instruction.InstructionType.DecVarBy):
+							IncVar(instruction.Arg.String, -Stack.Pop().Number);
+							break;
+
 
 						case (Instruction.InstructionType.Dec):
 							va = Stack.Peek(0);

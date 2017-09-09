@@ -59,6 +59,12 @@ namespace DrakeScript
 								Stack.Push(new ASTNode(ASTNode.NodeType.Return, current.Location, parsed.GetSafe(0)));
 								Advance(advanceAmount);
 								break;
+							case ("preturn"):
+								newParser = new Parser();
+								parsed = newParser._Parse(GetUntil(Token.TokenType.Semicolon, 0, out advanceAmount));
+								Stack.Push(new ASTNode(ASTNode.NodeType.PReturn, current.Location, parsed.GetSafe(0)));
+								Advance(advanceAmount);
+								break;
 							case ("if"):
 								newParser = new Parser();
 								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
@@ -145,12 +151,32 @@ namespace DrakeScript
 						Stack.Push(new ASTNode(ASTNode.NodeType.MultiplyOperator, current.Location));
 						Advance(1);
 						break;
+					case (Token.TokenType.Not):
+						Stack.Push(new ASTNode(ASTNode.NodeType.NotOperator, current.Location));
+						Advance(1);
+						break;
 					case (Token.TokenType.Eq):
 						Stack.Push(new ASTNode(ASTNode.NodeType.EqualsOperator, current.Location));
 						Advance(1);
 						break;
 					case (Token.TokenType.NEq):
 						Stack.Push(new ASTNode(ASTNode.NodeType.NotEqualsOperator, current.Location));
+						Advance(1);
+						break;
+					case (Token.TokenType.Gt):
+						Stack.Push(new ASTNode(ASTNode.NodeType.GtOperator, current.Location));
+						Advance(1);
+						break;
+					case (Token.TokenType.GtEq):
+						Stack.Push(new ASTNode(ASTNode.NodeType.GtEqOperator, current.Location));
+						Advance(1);
+						break;
+					case (Token.TokenType.Lt):
+						Stack.Push(new ASTNode(ASTNode.NodeType.LtOperator, current.Location));
+						Advance(1);
+						break;
+					case (Token.TokenType.LtEq):
+						Stack.Push(new ASTNode(ASTNode.NodeType.LtEqOperator, current.Location));
 						Advance(1);
 						break;
 					case (Token.TokenType.Set):
@@ -353,7 +379,11 @@ namespace DrakeScript
 			{
 				if (node.Type != ASTNode.NodeType.Invalid)
 				{
-					var info = ASTNode.NodeInfo[node.Type];
+					NodeInfo info;
+					if (!ASTNode.NodeInfo.TryGetValue(node.Type, out info))
+					{
+						throw new NoInfoForNodeException(node.Type, node.Location);
+					}
 					if (info.InfixOperator || info.PrefixOperator)
 						throw new InvalidOperandsException(node.Type, node.Location);
 					Stack.Push(node);

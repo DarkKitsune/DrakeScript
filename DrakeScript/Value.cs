@@ -24,7 +24,11 @@ namespace DrakeScript
 		{
 			get
 			{
-				return Number > Double.Epsilon;
+				return Number != 0.0;
+			}
+			set
+			{
+				Number = (value ? 1.0 : 0.0);
 			}
 		}
 

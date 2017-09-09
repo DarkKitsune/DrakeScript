@@ -26,5 +26,15 @@ namespace DrakeScript
 			
 		}
 	}
+
+	public class CannotCallNilException : InterpreterException
+	{
+		public CannotCallNilException(
+			SourceRef location
+		) : base("Function does not exist", location)
+		{
+
+		}
+	}
 }
 

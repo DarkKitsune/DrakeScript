@@ -101,6 +101,15 @@ namespace DrakeScript
 		}
 	}
 
+	public class NoInfoForNodeException : CompileException
+	{
+		public NoInfoForNodeException(ASTNode.NodeType type, SourceRef location) :
+		base("No information available for node \"" + type + "\"", location)
+		{
+
+		}
+	}
+
 	public class NoCodeGenerationForNodeException : CompileException
 	{
 		public NoCodeGenerationForNodeException(ASTNode.NodeType type, SourceRef location) :

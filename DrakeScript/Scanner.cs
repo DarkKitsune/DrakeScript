@@ -102,11 +102,35 @@ namespace DrakeScript
 							token = new Token(Location(), Token.TokenType.NEq);
 							Advance(2);
 						}
-						/*else
+						else
 						{
 							token = new Token(Location(), Token.TokenType.Not);
 							Advance(1);
-						}*/
+						}
+						break;
+					case ('>'):
+						if (At(1) == '=')
+						{
+							token = new Token(Location(), Token.TokenType.GtEq);
+							Advance(2);
+						}
+						else
+						{
+							token = new Token(Location(), Token.TokenType.Gt);
+							Advance(1);
+						}
+						break;
+					case ('<'):
+						if (At(1) == '=')
+						{
+							token = new Token(Location(), Token.TokenType.LtEq);
+							Advance(2);
+						}
+						else
+						{
+							token = new Token(Location(), Token.TokenType.Lt);
+							Advance(1);
+						}
 						break;
 					default:
 						if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'A') || c == '_')

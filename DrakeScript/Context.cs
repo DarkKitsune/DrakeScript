@@ -9,7 +9,7 @@ namespace DrakeScript
 
 		public Context()
 		{
-			
+			CoreLibs.Core.Register(this);
 		}
 	}
 }

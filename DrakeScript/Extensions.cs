@@ -80,6 +80,13 @@ namespace DrakeScript
 				return ASTNode.Invalid;
 			return list[n];
 		}
+
+		public static Value GetArg(this List<Value> args, int n)
+		{
+			if (n < 0 || n >= args.Count)
+				return Value.Nil;
+			return args[args.Count - n - 1];
+		}
 	}
 }
 
