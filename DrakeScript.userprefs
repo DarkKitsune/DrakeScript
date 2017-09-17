@@ -1,16 +1,22 @@
 ﻿<Properties StartupItem="DrakeScriptTester/DrakeScriptTester.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="DrakeScript/CodeGenerator.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="DrakeScript/Function.cs">
     <Files>
-      <File FileName="DrakeScriptTester/Program.cs" Line="38" Column="26" />
-      <File FileName="DrakeScript/Interpreter.cs" Line="27" Column="33" />
+      <File FileName="DrakeScriptTester/Program.cs" Line="34" Column="60" />
+      <File FileName="DrakeScript/Interpreter.cs" Line="18" Column="4" />
       <File FileName="DrakeScript/Context.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Instruction.cs" Line="26" Column="12" />
-      <File FileName="DrakeScript/Parser.cs" Line="99" Column="100" />
-      <File FileName="DrakeScript/Analyzer.cs" Line="188" Column="35" />
-      <File FileName="DrakeScript/ASTNode.cs" Line="84" Column="18" />
-      <File FileName="DrakeScript/CodeGenerator.cs" Line="174" Column="135" />
-      <File FileName="DrakeScript/InterpreterException.cs" Line="13" Column="3" />
+      <File FileName="DrakeScript/Instruction.cs" Line="17" Column="12" />
+      <File FileName="DrakeScript/Parser.cs" Line="206" Column="123" />
+      <File FileName="DrakeScript/Analyzer.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/ASTNode.cs" Line="109" Column="44" />
+      <File FileName="DrakeScript/CodeGenerator.cs" Line="25" Column="73" />
+      <File FileName="DrakeScript/Function.cs" Line="10" Column="6" />
+      <File FileName="DrakeScript/Optimizer.cs" Line="30" Column="31" />
+      <File FileName="DrakeScript/Extensions.cs" Line="14" Column="47" />
+      <File FileName="DrakeScript/Scanner.cs" Line="131" Column="55" />
+      <File FileName="DrakeScript/CompileException.cs" Line="107" Column="42" />
+      <File FileName="DrakeScript/InterpreterException.cs" Line="45" Column="30" />
+      <File FileName="DrakeScript/CoreLibs.cs" Line="12" Column="64" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

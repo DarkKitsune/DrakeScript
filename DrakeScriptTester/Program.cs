@@ -31,15 +31,14 @@ namespace DrakeScriptTester
 			var code = generator.Generate(tree);
 			var optimizer = new Optimizer();
 			optimizer.Optimize(code);
-			Console.WriteLine(code.ToStringFormatted() + "\n");
-			var optimized = code.ToArray();
+			Console.WriteLine(code.Code.ToStringFormatted() + "\n");
 			var interpreter = new Interpreter(context);
 			var sw = new System.Diagnostics.Stopwatch();
-			for (var i = 0; i < 1; i++)
+			for (var i = 0; i < 10; i++)
 			{
 				sw.Reset();
 				sw.Start();
-				interpreter.Interpret(optimized);
+				code.Invoke(interpreter);
 				sw.Stop();
 			}
 			if (interpreter.Stack.Count > 0)

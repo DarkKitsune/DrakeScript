@@ -36,5 +36,16 @@ namespace DrakeScript
 
 		}
 	}
+
+	public class NotEnoughArgumentsException : InterpreterException
+	{
+		public NotEnoughArgumentsException(
+			int expected, int got,
+			SourceRef location
+		) : base("Function expected " + expected + " arguments but got " + got, location)
+		{
+
+		}
+	}
 }
 

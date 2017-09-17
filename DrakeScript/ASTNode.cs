@@ -56,6 +56,7 @@ namespace DrakeScript
 			Else,
 			While,
 			Loop,
+			Function,
 		}
 
 		public static Dictionary<NodeType, NodeInfo> NodeInfo = new Dictionary<NodeType, NodeInfo>()
@@ -100,12 +101,12 @@ namespace DrakeScript
 			{NodeType.Set, new NodeInfo(false)},
 			{NodeType.PlusEq, new NodeInfo(false)},
 			{NodeType.MinusEq, new NodeInfo(false)},
-			{NodeType.PReturn, new NodeInfo(true)},
 			{NodeType.Return, new NodeInfo(false)},
 			{NodeType.If, new NodeInfo(true)},
 			{NodeType.Else, new NodeInfo(true)},
 			{NodeType.While, new NodeInfo(false)},
 			{NodeType.Loop, new NodeInfo(false)},
+			{NodeType.Function, new NodeInfo(true)},
 		};
 
 		public NodeType Type;

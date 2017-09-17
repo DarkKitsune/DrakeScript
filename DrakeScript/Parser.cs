@@ -59,12 +59,6 @@ namespace DrakeScript
 								Stack.Push(new ASTNode(ASTNode.NodeType.Return, current.Location, parsed.GetSafe(0)));
 								Advance(advanceAmount);
 								break;
-							case ("preturn"):
-								newParser = new Parser();
-								parsed = newParser._Parse(GetUntil(Token.TokenType.Semicolon, 0, out advanceAmount));
-								Stack.Push(new ASTNode(ASTNode.NodeType.PReturn, current.Location, parsed.GetSafe(0)));
-								Advance(advanceAmount);
-								break;
 							case ("if"):
 								newParser = new Parser();
 								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
@@ -121,6 +115,21 @@ namespace DrakeScript
 								node = new ASTNode(ASTNode.NodeType.Loop, current.Location, parsed);
 								node.Branches["condition"] = new ASTNode(ASTNode.NodeType.Condition, loopPar.Location, loopPar.Value);
 								root.Add(node);
+								Advance(advanceAmount);
+								break;
+							case ("function"):
+								newParser = new Parser();
+								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
+								var functionPar = parsed.GetSafe(0);
+								if (functionPar.Type != ASTNode.NodeType.Par)
+								{
+									throw new ExpectedNodeException(ASTNode.NodeType.Par, functionPar.Type, current.Location);
+								}
+								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
+								var newRoot = new ASTNode(ASTNode.NodeType.Root, SourceRef.Invalid, parsed);
+								node = new ASTNode(ASTNode.NodeType.Function, current.Location, newRoot);
+								node.Branches["args"] = new ASTNode(ASTNode.NodeType.Args, functionPar.Location, functionPar.Value);
+								Stack.Push(node);
 								Advance(advanceAmount);
 								break;
 							default:
@@ -194,7 +203,7 @@ namespace DrakeScript
 					case (Token.TokenType.ParOpen):
 						newParser = new Parser();
 						parsed = newParser._Parse(GetBetween(Token.TokenType.ParClose, 0, out advanceAmount), true);
-						if (top.Type == ASTNode.NodeType.Ident || top.Type == ASTNode.NodeType.Call)
+						if (top.Type == ASTNode.NodeType.Ident || top.Type == ASTNode.NodeType.Call || top.Type == ASTNode.NodeType.Function)
 						{
 							var newNode = new ASTNode(ASTNode.NodeType.Call, top.Location);
 							newNode.Branches.Add("function", Stack.Pop());

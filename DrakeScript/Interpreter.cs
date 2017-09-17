@@ -9,16 +9,23 @@ namespace DrakeScript
 		public Context Context;
 		public FastStackGrowable<Scope> ScopeStack = new FastStackGrowable<Scope>(4096);
 		public FastStackGrowable<Value> Stack = new FastStackGrowable<Value>(1024);
-		public List<Value> ArgList = new List<Value>(128);
+		public SourceRef CallLocation = SourceRef.Invalid;
+		public List<Value> ArgList = new List<Value>(16);
 
 		public Interpreter(Context context)
 		{
 			Context = context;
 		}
 
-		public void Interpret(Instruction[] code)
+		public void Interpret(Function func)
 		{
 			ScopeStack.Push(Scope.Create());
+
+			var callLocation = CallLocation;
+			var code = func.Code;
+			if (func.Args.Length > ArgList.Count)
+				throw new NotEnoughArgumentsException(func.Args.Length, ArgList.Count, callLocation);
+			var args = ArgList.ToArray();
 
 			int ia, ib;
 			Value va, vb;
@@ -35,8 +42,12 @@ namespace DrakeScript
 						case (Instruction.InstructionType.PushVar):
 							Stack.Push(GetVar(instruction.Arg.String));
 							break;
+						case (Instruction.InstructionType.PushArg):
+							Stack.Push(args[(int)instruction.Arg.Number]);
+							break;
 						case (Instruction.InstructionType.PushNum):
 						case (Instruction.InstructionType.PushStr):
+						case (Instruction.InstructionType.PushFunc):
 							Stack.Push(instruction.Arg);
 							break;
 						case (Instruction.InstructionType.Pop):
@@ -61,6 +72,7 @@ namespace DrakeScript
 							var callFunc = Stack.Pop();
 							if (callFunc.Type != Value.ValueType.Function)
 								throw new CannotCallNilException(instruction.Location);
+							CallLocation = instruction.Location;
 							Stack.Push(callFunc.Function.Invoke(this));
 							break;
 						case (Instruction.InstructionType.Add):

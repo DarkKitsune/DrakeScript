@@ -13,6 +13,8 @@ namespace DrakeScript
 			PushVar,
 			PushNum,
 			PushStr,
+			PushFunc,
+			PushArg,
 			Pop,
 			PopVar,
 			PopArgs,

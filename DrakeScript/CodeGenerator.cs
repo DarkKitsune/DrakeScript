@@ -5,10 +5,24 @@ namespace DrakeScript
 {
 	public class CodeGenerator
 	{
-		public List<Instruction> Generate(ASTNode node)
+		string[] Args;
+		Dictionary<string, int> ArgLookup = new Dictionary<string, int>();
+
+		public Function Generate(ASTNode node, string[] args = null)
 		{
+			if (args == null)
+				Args = new string[] {};
+			else
+			{
+				Args = args;
+				var n = 0;
+				foreach (var arg in Args)
+				{
+					ArgLookup[arg] = n++;
+				}
+			}
 			List<Instruction> before;
-			return Generate(node, false, out before);
+			return new Function(Generate(node, false, out before).ToArray(), Args);
 		}
 
 		public List<Instruction> Generate(ASTNode node, bool allowPush, out List<Instruction> insert, bool allowConditions = false)
@@ -34,7 +48,7 @@ namespace DrakeScript
 						throw new UnexpectedTokenException("(...)", node.Location);
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
-						range = Generate(child, true, out before, true);
+						range = Generate(child, true, out before, false);
 						if (before.Count > 0)
 							instructions.InsertRange(instructions.Count - 1, before);
 						instructions.AddRange(range);
@@ -76,13 +90,27 @@ namespace DrakeScript
 				case (ASTNode.NodeType.Ident):
 					if (!allowPush)
 						throw new UnexpectedTokenException((string)node.Value, node.Location);
-					instructions.Add(
-						new Instruction(
-							node.Location,
-							Instruction.InstructionType.PushVar,
-							Value.Create((string)(node.Value))
-						)
-					);
+					int argNum;
+					if (ArgLookup.TryGetValue((string)node.Value, out argNum))
+					{
+						instructions.Add(
+							new Instruction(
+								node.Location,
+								Instruction.InstructionType.PushArg,
+								Value.Create(argNum)
+							)
+						);
+					}
+					else
+					{
+						instructions.Add(
+							new Instruction(
+								node.Location,
+								Instruction.InstructionType.PushVar,
+								Value.Create((string)(node.Value))
+							)
+						);
+					}
 					break;
 				case (ASTNode.NodeType.Add):
 					instructions.AddRange(Generate(node.Branches["left"], true, out before));
@@ -194,12 +222,6 @@ namespace DrakeScript
 					instructions.AddRange(range);
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Return));
 					break;
-				case (ASTNode.NodeType.PReturn):
-					range = Generate((ASTNode)node.Value, true, out before);
-					if (before.Count > 0)
-						instructions.InsertRange(instructions.Count - 1, before);
-					instructions.AddRange(range);
-					break;
 				case (ASTNode.NodeType.If):
 					if (!allowConditions)
 						throw new UnexpectedTokenException("if", node.Location);
@@ -221,7 +243,6 @@ namespace DrakeScript
 					instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(ifJumpDestPos - ifJumpInstPos - 2)));
 					break;
 				case (ASTNode.NodeType.Else):
-					var elseJumpInstPos = instructions.Count - 1;
 					insert.Add(new Instruction(node.Location, Instruction.InstructionType.EnterScope));
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
@@ -273,6 +294,30 @@ namespace DrakeScript
 					instructions.Insert(loopJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(instructions.Count - loopJumpInstPos)));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
+					break;
+				case (ASTNode.NodeType.Function):
+					if (!allowPush)
+						throw new UnexpectedTokenException(node.Value.ToString(), node.Location);
+					var funcArgs = (List<ASTNode>)(node.Branches["args"].Value);
+					var argsStrings = new string[funcArgs.Count];
+					var argN = 0;
+					foreach (var child in funcArgs)
+					{
+						if (child.Type != ASTNode.NodeType.Ident)
+						{
+							throw new ExpectedNodeException(ASTNode.NodeType.Ident, child.Type, child.Location);
+						}
+						argsStrings[argN++] = (string)child.Value;
+					}
+					var generator = new CodeGenerator();
+					var newFunc = generator.Generate((ASTNode)node.Value, argsStrings);
+					instructions.Add(
+						new Instruction(
+							node.Location,
+							Instruction.InstructionType.PushFunc,
+							Value.Create(newFunc)
+						)
+					);
 					break;
 				default:
 					throw new NoCodeGenerationForNodeException(node.Type, node.Location);

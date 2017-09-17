@@ -5,8 +5,9 @@ namespace DrakeScript
 {
 	public class Optimizer
 	{
-		public void Optimize(List<Instruction> code)
+		public void Optimize(Function func)
 		{
+			var code = new List<Instruction>(func.Code);
 			for (var i = 0; i < code.Count; i++)
 			{
 				var inst = code[i];
@@ -26,6 +27,7 @@ namespace DrakeScript
 						break;
 				}
 			}
+			func.Code = code.ToArray();
 		}
 
 		void FixJumps(List<Instruction> code, int insertpos, int number)
