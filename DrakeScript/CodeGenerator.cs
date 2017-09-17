@@ -56,7 +56,7 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Int):
 					if (!allowPush)
-						throw new UnexpectedTokenException(node.Value.ToString(), node.Location);
+						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
 					instructions.Add(
 						new Instruction(
 							node.Location,
@@ -67,7 +67,7 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Dec):
 					if (!allowPush)
-						throw new UnexpectedTokenException(node.Value.ToString(), node.Location);
+						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
 					instructions.Add(
 						new Instruction(
 							node.Location,
@@ -78,7 +78,7 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Str):
 					if (!allowPush)
-						throw new UnexpectedTokenException((string)node.Value, node.Location);
+						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
 					instructions.Add(
 						new Instruction(
 							node.Location,
@@ -89,7 +89,7 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Ident):
 					if (!allowPush)
-						throw new UnexpectedTokenException((string)node.Value, node.Location);
+						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
 					int argNum;
 					if (ArgLookup.TryGetValue((string)node.Value, out argNum))
 					{
@@ -296,8 +296,13 @@ namespace DrakeScript
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
 					break;
 				case (ASTNode.NodeType.Function):
-					if (!allowPush)
-						throw new UnexpectedTokenException(node.Value.ToString(), node.Location);
+					var funcName = (string)node.Branches["functionName"].Value;
+					if (funcName.Length == 0)
+					{
+						if (!allowPush)
+							throw new UnexpectedTokenException("function", node.Location);
+
+					}
 					var funcArgs = (List<ASTNode>)(node.Branches["args"].Value);
 					var argsStrings = new string[funcArgs.Count];
 					var argN = 0;
@@ -318,6 +323,16 @@ namespace DrakeScript
 							Value.Create(newFunc)
 						)
 					);
+					if (funcName.Length > 0)
+					{
+						instructions.Add(
+							new Instruction(
+								node.Location,
+								Instruction.InstructionType.PopVar,
+								Value.Create(funcName)
+							)
+						);
+					}
 					break;
 				default:
 					throw new NoCodeGenerationForNodeException(node.Type, node.Location);

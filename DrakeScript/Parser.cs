@@ -121,15 +121,36 @@ namespace DrakeScript
 								newParser = new Parser();
 								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
 								var functionPar = parsed.GetSafe(0);
-								if (functionPar.Type != ASTNode.NodeType.Par)
+								var functionName = "";
+								if (functionPar.Type == ASTNode.NodeType.Call)
 								{
-									throw new ExpectedNodeException(ASTNode.NodeType.Par, functionPar.Type, current.Location);
+									if (functionPar.Branches["function"].Type != ASTNode.NodeType.Ident)
+									{
+										throw new ExpectedNodeException(ASTNode.NodeType.Ident, functionPar.Branches["function"].Type, functionPar.Branches["function"].Location);
+									}
+									functionName = (string)functionPar.Branches["function"].Value;
+									functionPar = functionPar.Branches["args"];
+								}
+								else
+								{
+									if (functionPar.Type != ASTNode.NodeType.Par)
+									{
+										throw new ExpectedNodeException(ASTNode.NodeType.Par, functionPar.Type, current.Location);
+									}
 								}
 								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
 								var newRoot = new ASTNode(ASTNode.NodeType.Root, SourceRef.Invalid, parsed);
 								node = new ASTNode(ASTNode.NodeType.Function, current.Location, newRoot);
 								node.Branches["args"] = new ASTNode(ASTNode.NodeType.Args, functionPar.Location, functionPar.Value);
-								Stack.Push(node);
+								node.Branches["functionName"] = new ASTNode(ASTNode.NodeType.Ident, current.Location, functionName);
+								if (functionName.Length > 0)
+								{
+									root.Add(node);
+								}
+								else
+								{
+									Stack.Push(node);
+								}
 								Advance(advanceAmount);
 								break;
 							default:

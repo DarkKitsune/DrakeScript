@@ -1,11 +1,11 @@
 local a = 0;
 
-local inc = function(num) {
+function inc(num) {
     a += num;
-};
+}
 
 loop (10000)
 {
-    inc(2);
+    inc(1);
 }
 println(a);
