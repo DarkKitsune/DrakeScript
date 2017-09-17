@@ -1,27 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using PowerDS;
+
 namespace DrakeScript
 {
 	public struct Scope
 	{
-		public static Scope Invalid = new Scope {Valid = false, Locals = null};
+		/*public static Scope Invalid = new Scope {Valid = false};
 
 		public bool Valid;
-		public Dictionary<string, Value> Locals;
+		public FastStackGrowable<Value> Stack;
 
 		public static Scope Create()
 		{
 			var scope = new Scope();
 			scope.Valid = true;
-			scope.Locals = new Dictionary<string, Value>();
+			scope.Stack = new FastStackGrowable<Value>(32);
 			return scope;
 		}
 
 		public void Reset()
 		{
-			Locals.Clear();
-		}
+			Stack.Clear();
+		}*/
 	}
 }
 

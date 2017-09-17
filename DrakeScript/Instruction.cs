@@ -9,14 +9,16 @@ namespace DrakeScript
 		public enum InstructionType : byte
 		{
 			Nop,
-			NewLoc,
-			PushVar,
+			PushVarGlobal,
+			PushVarLocal,
 			PushNum,
 			PushStr,
 			PushFunc,
+			PushNil,
 			PushArg,
 			Pop,
-			PopVar,
+			PopVarGlobal,
+			PopVarLocal,
 			PopArgs,
 			Call,
 			Add,
@@ -31,16 +33,15 @@ namespace DrakeScript
 			GtEq,
 			Lt,
 			LtEq,
-			IncVarBy,
-			DecVarBy,
+			IncVarByGlobal,
+			IncVarByLocal,
+			DecVarByGlobal,
+			DecVarByLocal,
 			Dec,
 			Dup,
 			Return,
 			JumpEZ,
-			Jump,
-			EnterScope,
-			LeaveScope,
-			ResetScope,
+			Jump
 		}
 
 		public InstructionType Type;

@@ -1,11 +1,8 @@
 local a = 0;
 
-function inc(num) {
-    a += num;
-}
-
 loop (10000)
 {
-    inc(1);
+    a += 1;
 }
+
 println(a);

@@ -47,5 +47,16 @@ namespace DrakeScript
 
 		}
 	}
+
+	public class NoCaseForInstructionException : InterpreterException
+	{
+		public NoCaseForInstructionException(
+			Instruction.InstructionType type,
+			SourceRef location
+		) : base("Interpreter does not have a case for instruction " + type, location)
+		{
+
+		}
+	}
 }
 

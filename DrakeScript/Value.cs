@@ -126,6 +126,14 @@ namespace DrakeScript
 			val.Reference = null;
 			return val;
 		}
+
+
+		public override string ToString()
+		{
+			if (DynamicValue == null)
+				return "nil";
+			return DynamicValue.ToString();
+		}
 	}
 }
 

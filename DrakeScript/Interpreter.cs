@@ -7,10 +7,11 @@ namespace DrakeScript
 	public class Interpreter
 	{
 		public Context Context;
-		public FastStackGrowable<Scope> ScopeStack = new FastStackGrowable<Scope>(4096);
-		public FastStackGrowable<Value> Stack = new FastStackGrowable<Value>(1024);
+		//public FastStackGrowable<Scope> ScopeStack = new FastStackGrowable<Scope>(64);
 		public SourceRef CallLocation = SourceRef.Invalid;
 		public List<Value> ArgList = new List<Value>(16);
+		//public Scope CurrentScope = Scope.Create();
+		public FastStackGrowable<Value> Stack = new FastStackGrowable<Value>(32);
 
 		public Interpreter(Context context)
 		{
@@ -19,28 +20,31 @@ namespace DrakeScript
 
 		public void Interpret(Function func)
 		{
-			ScopeStack.Push(Scope.Create());
+			//CurrentScope = Scope.Create();
+			//ScopeStack.Push(CurrentScope);
 
 			var callLocation = CallLocation;
 			var code = func.Code;
 			if (func.Args.Length > ArgList.Count)
 				throw new NotEnoughArgumentsException(func.Args.Length, ArgList.Count, callLocation);
 			var args = ArgList.ToArray();
+			var locals = new Value[func.Locals.Length];
 
-			int ia, ib;
+			int ia;
 			Value va, vb;
-			for (var pos = 0; pos < code.Length; pos++)
+			bool exited = false;
+			for (var pos = 0; pos < code.Length && !exited; pos++)
 			{
 				var instruction = code[pos];
 				try
 				{
 					switch (instruction.Type)
 					{
-						case (Instruction.InstructionType.NewLoc):
-							ScopeStack.Peek(0).Locals[instruction.Arg.String] = Value.Nil;
+						case (Instruction.InstructionType.PushVarGlobal):
+							Stack.Push(GetGlobalVar(instruction.Arg.String));
 							break;
-						case (Instruction.InstructionType.PushVar):
-							Stack.Push(GetVar(instruction.Arg.String));
+						case (Instruction.InstructionType.PushVarLocal):
+							Stack.Push(locals[(int)instruction.Arg.Number]);
 							break;
 						case (Instruction.InstructionType.PushArg):
 							Stack.Push(args[(int)instruction.Arg.Number]);
@@ -50,11 +54,17 @@ namespace DrakeScript
 						case (Instruction.InstructionType.PushFunc):
 							Stack.Push(instruction.Arg);
 							break;
+						case (Instruction.InstructionType.PushNil):
+							Stack.Push(Value.Nil);
+							break;
 						case (Instruction.InstructionType.Pop):
 							Stack.Pop();
 							break;
-						case (Instruction.InstructionType.PopVar):
-							SetVar(instruction.Arg.String, Stack.Pop());
+						case (Instruction.InstructionType.PopVarGlobal):
+							SetGlobalVar(instruction.Arg.String, Stack.Pop());
+							break;
+						case (Instruction.InstructionType.PopVarLocal):
+							locals[(int)instruction.Arg.Number] = Stack.Pop();
 							break;
 						case (Instruction.InstructionType.PopArgs):
 							ArgList.Clear();
@@ -73,7 +83,8 @@ namespace DrakeScript
 							if (callFunc.Type != Value.ValueType.Function)
 								throw new CannotCallNilException(instruction.Location);
 							CallLocation = instruction.Location;
-							Stack.Push(callFunc.Function.Invoke(this));
+							var ret = callFunc.Function.Invoke(this);
+							Stack.Push(ret);
 							break;
 						case (Instruction.InstructionType.Add):
 							vb = Stack.Pop();
@@ -166,14 +177,27 @@ namespace DrakeScript
 							Stack.Push(va);
 							break;
 
-						case (Instruction.InstructionType.IncVarBy):
-							IncVar(instruction.Arg.String, Stack.Pop().Number);
+						case (Instruction.InstructionType.IncVarByGlobal):
+							IncGlobalVar(instruction.Arg.String, Stack.Pop().Number);
 							break;
 
-						case (Instruction.InstructionType.DecVarBy):
-							IncVar(instruction.Arg.String, -Stack.Pop().Number);
+						case (Instruction.InstructionType.IncVarByLocal):
+							ia = (int)instruction.Arg.Number;
+							va = locals[ia];
+							va.Number += Stack.Pop().Number;
+							locals[ia] = va;
 							break;
 
+						case (Instruction.InstructionType.DecVarByGlobal):
+							IncGlobalVar(instruction.Arg.String, -Stack.Pop().Number);
+							break;
+
+						case (Instruction.InstructionType.DecVarByLocal):
+							ia = (int)instruction.Arg.Number;
+							va = locals[ia];
+							va.Number -= Stack.Pop().Number;
+							locals[ia] = va;
+							break;
 
 						case (Instruction.InstructionType.Dec):
 							va = Stack.Peek(0);
@@ -197,17 +221,13 @@ namespace DrakeScript
 							pos += (int)instruction.Arg.Number;
 							break;
 
-						case (Instruction.InstructionType.EnterScope):
-							ScopeStack.Push(Scope.Create());
+						case (Instruction.InstructionType.Return):
+							//ScopeStack.Peek(1).Stack.Push(Stack.Pop());
+							exited = true;
 							break;
 
-						case (Instruction.InstructionType.ResetScope):
-							ScopeStack.Peek(0).Reset();
-							break;
-
-						case (Instruction.InstructionType.LeaveScope):
-							ScopeStack.Pop();
-							break;
+						default:
+							throw new NoCaseForInstructionException(instruction.Type, instruction.Location);
 					}
 				}
 				catch (Exception e)
@@ -216,20 +236,16 @@ namespace DrakeScript
 				}
 			}
 
-			ScopeStack.Pop();
+			/*ScopeStack.Pop();
+			if (ScopeStack.Count > 0)
+				CurrentScope = ScopeStack.Peek(0);
+			else
+				CurrentScope.Reset();*/
 		}
 
-		public Value GetVar(string name)
+		public Value GetGlobalVar(string name)
 		{
 			Value v;
-			for (var i = ScopeStack.Count - 1; i >= 0; i--)
-			{
-				var scope = ScopeStack.GetRaw(i);
-				if (scope.Locals.TryGetValue(name, out v))
-				{
-					return v;
-				}
-			}
 			if (Context.Globals.TryGetValue(name, out v))
 			{
 				return v;
@@ -237,33 +253,14 @@ namespace DrakeScript
 			return Value.Nil;
 		}
 
-		public void SetVar(string name, Value v)
+		public void SetGlobalVar(string name, Value v)
 		{
-			for (var i = ScopeStack.Count - 1; i >= 0; i--)
-			{
-				var scope = ScopeStack.GetRaw(i);
-				if (scope.Locals.ContainsKey(name))
-				{
-					scope.Locals[name] = v;
-					return;
-				}
-			}
 			Context.Globals[name] = v;
 		}
 
-		public void IncVar(string name, double v)
+		public void IncGlobalVar(string name, double v)
 		{
 			Value val;
-			for (var i = ScopeStack.Count - 1; i >= 0; i--)
-			{
-				var scope = ScopeStack.GetRaw(i);
-				if (scope.Locals.TryGetValue(name, out val))
-				{
-					val.Number += v;
-					scope.Locals[name] = val;
-					return;
-				}
-			}
 			if (!Context.Globals.TryGetValue(name, out val))
 			{
 				Context.Globals[name] = Value.Create(v);

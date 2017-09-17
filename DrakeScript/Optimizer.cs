@@ -17,6 +17,7 @@ namespace DrakeScript
 				
 				switch (inst.Type)
 				{
+					/*
 					case (Instruction.InstructionType.LeaveScope):
 						if (next.Type == Instruction.InstructionType.EnterScope)
 						{
@@ -24,7 +25,7 @@ namespace DrakeScript
 							code.RemoveAt(i + 1);
 							FixJumps(code, i + 1, -1);
 						}
-						break;
+						break;*/
 				}
 			}
 			func.Code = code.ToArray();

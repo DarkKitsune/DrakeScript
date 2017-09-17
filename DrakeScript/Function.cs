@@ -9,13 +9,15 @@ namespace DrakeScript
 		public bool ScriptFunction {get; private set;}
 		public Instruction[] Code {get; internal set;}
 		public String[] Args {get; private set;}
+		public String[] Locals {get; private set;}
 		public Func<List<Value>, Value> Method;
 
-		public Function(Instruction[] code, String[] args)
+		public Function(Instruction[] code, String[] args, String[] locals)
 		{
 			ScriptFunction = true;
 			Code = code;
 			Args = args;
+			Locals = locals;
 		}
 
 		public Function(Func<List<Value>, Value> method)
@@ -28,6 +30,7 @@ namespace DrakeScript
 			{
 				Args[n++] = p.Name;
 			}
+			Locals = new string[] {};
 		}
 
 		public Value Invoke(Interpreter interpreter)
@@ -35,9 +38,7 @@ namespace DrakeScript
 			if (ScriptFunction)
 			{
 				interpreter.Interpret(this);
-				if (interpreter.Stack.Count > 0)
-					return interpreter.Stack.Peek(0);
-				return Value.Nil;
+				return interpreter.Stack.Pop();
 			}
 			else
 			{
