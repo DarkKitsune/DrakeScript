@@ -154,6 +154,11 @@ namespace DrakeScript
 		{
 			return DynamicValue.Equals(obj);
 		}
+
+		public override int GetHashCode()
+		{
+			return DynamicValue.GetHashCode();
+		}
 	}
 }
 

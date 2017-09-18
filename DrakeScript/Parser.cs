@@ -30,7 +30,6 @@ namespace DrakeScript
 
 				Parser newParser;
 				int advanceAmount;
-				int tempAdvanceAmount;
 				ASTNode top = ASTNode.Invalid;
 				ASTNode node;
 				List<ASTNode> parsed;

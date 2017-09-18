@@ -19,31 +19,31 @@ namespace DrakeScript
 
 	public class UnrecognizedTokenException : CompileException
 	{
-		string TokenString;
+		//string TokenString;
 		public UnrecognizedTokenException(string tokenString, SourceRef location) :
 			base("Unrecognized token \"" + tokenString + "\"", location)
 		{
-			TokenString = tokenString;
+			//TokenString = tokenString;
 		}
 	}
 
 	public class UnexpectedTokenException : CompileException
 	{
-		string TokenString;
+		//string TokenString;
 		public UnexpectedTokenException(string tokenString, SourceRef location) :
 			base("Unexpected token \"" + tokenString + "\"", location)
 		{
-			TokenString = tokenString;
+			//TokenString = tokenString;
 		}
 	}
 
 	public class UnrecognizedTokenTypeException : CompileException
 	{
-		Token.TokenType Type;
+		//Token.TokenType Type;
 		public UnrecognizedTokenTypeException(Token.TokenType type, SourceRef location) :
 			base("Unrecognized token \"" + type + "\"", location)
 		{
-			Type = type;
+			//Type = type;
 		}
 	}
 

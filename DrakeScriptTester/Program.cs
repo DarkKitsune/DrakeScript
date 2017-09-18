@@ -169,13 +169,17 @@ namespace DrakeScriptTester
 
 		public static void RunTests()
 		{
+			var count = 0;
 			foreach (var test in Tests)
 			{
 				if (!test.Run())
 				{
-					return;
+					break;
 				}
+				count++;
 			}
+
+			Console.WriteLine("Tests " + count + "/" + Tests.Length + " completed successfully");
 		}
 	}
 }
