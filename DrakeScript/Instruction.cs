@@ -25,6 +25,7 @@ namespace DrakeScript
 			Sub,
 			Div,
 			Mul,
+			Cat,
 			Not,
 			Neg,
 			Eq,

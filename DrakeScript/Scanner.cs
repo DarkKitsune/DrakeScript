@@ -132,6 +132,10 @@ namespace DrakeScript
 							Advance(1);
 						}
 						break;
+					case ('~'):
+						token = new Token(Location(), Token.TokenType.Tilde);
+						Advance(1);
+						break;
 					default:
 						if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_')
 						{

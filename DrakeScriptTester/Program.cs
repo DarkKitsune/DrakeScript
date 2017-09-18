@@ -61,6 +61,16 @@ namespace DrakeScriptTester
 				"local a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c;"
 			),
 			new Test(
+				"concat 1",
+				Value.Create("hello, world!"),
+				"return \"hello, \" ~ \"world!\";"
+			),
+			new Test(
+				"concat 2",
+				Value.Create("hello, world!"),
+				"local a = \"hello, \"; local b = \"world!\"; return a ~ b;"
+			),
+			new Test(
 				"local noarg function 1",
 				Value.Create("Hello, world!"),
 				"local function a() {return \"Hello, world!\";} return a();"
@@ -143,12 +153,12 @@ namespace DrakeScriptTester
 			new Test(
 				"if-else statement 1",
 				Value.Create(2),
-				"local b = 5; if (b == 4) {return 1;}else {return 2}"
+				"local b = 5; if (b == 4) {return 1;}else {return 2;}"
 			),
 			new Test(
 				"if-else statement 2",
 				Value.Create(1),
-				"local b = 5; if (b == 5) {return 1;}else {return 2}"
+				"local b = 5; if (b == 5) {return 1;}else {return 2;}"
 			),
 			new Test(
 				"nested if-else 1",
@@ -164,6 +174,11 @@ namespace DrakeScriptTester
 				"nested if-else 3",
 				Value.Create(3),
 				"local b = 3; if (b == 5) {return 1;}else {if (b == 4) {return 2;}else {return 3;}}"
+			),
+			new Test(
+				"while loop 1",
+				Value.Create(1.0 + 20.0 * 2.5),
+				"local a = 1; local i = 0; while (i < 20) {a += 2.5; i += 1;} return a;"
 			),
 		};
 

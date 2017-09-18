@@ -117,6 +117,14 @@ namespace DrakeScript
 							Stack.Push(va);
 							break;
 
+						case (Instruction.InstructionType.Cat):
+							vb = Stack.Pop();
+							va = Stack.Pop();
+							va.String += vb.String;
+
+							Stack.Push(va);
+							break;
+
 						case (Instruction.InstructionType.Not):
 							va = Stack.Pop();
 							va.Bool = !va.Bool;

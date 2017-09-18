@@ -152,6 +152,11 @@ namespace DrakeScript
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Mul));
 					break;
+				case (ASTNode.NodeType.Concat):
+					instructions.AddRange(Generate(node.Branches["left"], true));
+					instructions.AddRange(Generate(node.Branches["right"], true));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Cat));
+					break;
 				case (ASTNode.NodeType.Not):
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Not));

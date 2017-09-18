@@ -192,6 +192,10 @@ namespace DrakeScript
 						Stack.Push(new ASTNode(ASTNode.NodeType.MultiplyOperator, current.Location));
 						Advance(1);
 						break;
+					case (Token.TokenType.Tilde):
+						Stack.Push(new ASTNode(ASTNode.NodeType.ConcatOperator, current.Location));
+						Advance(1);
+						break;
 					case (Token.TokenType.Not):
 						Stack.Push(new ASTNode(ASTNode.NodeType.NotOperator, current.Location));
 						Advance(1);
