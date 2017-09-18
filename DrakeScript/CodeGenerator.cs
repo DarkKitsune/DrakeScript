@@ -8,6 +8,7 @@ namespace DrakeScript
 		string[] Args;
 		Dictionary<string, int> ArgLookup = new Dictionary<string, int>();
 		List<string> Locals = new List<string>();
+		public int MaxUnrollBytes = 30000;
 
 		public Function Generate(ASTNode node, string[] args = null)
 		{
@@ -324,23 +325,47 @@ namespace DrakeScript
 					var loopCond = (List<ASTNode>)node.Branches["condition"].Value;
 					if (loopCond.Count != 1)
 						throw new InvalidConditionException("loop", node.Location);
-					//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.EnterScope));
-					var loopStart = instructions.Count;
-					instructions.AddRange(Generate(loopCond[0], true, out before));
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dup));
-					var loopJumpInstPos = instructions.Count;
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dec));
-					foreach (var child in (List<ASTNode>)node.Value)
+					var unrolled = false;
+					if (loopCond[0].Type == ASTNode.NodeType.Int)
 					{
-						range = Generate(child, false, out before, true);
-						if (before.Count > 0)
-							instructions.InsertRange(instructions.Count - 1, before);
-						instructions.AddRange(range);
+						var loopNum = (long)loopCond[0].Value;
+						var tempInst = new List<Instruction>();
+						foreach (var child in (List<ASTNode>)node.Value)
+						{
+							range = Generate(child, false, out before, true);
+							if (before.Count > 0)
+								tempInst.InsertRange(Math.Max(0, tempInst.Count - 1), before);
+							tempInst.AddRange(range);
+						}
+						if (loopNum * tempInst.Count <= MaxUnrollBytes / Value.MinSize)
+						{
+							for (var urn = 0; urn < loopNum; urn++)
+							{
+								instructions.AddRange(tempInst);
+							}
+							unrolled = true;
+						}
 					}
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.Create(loopStart - instructions.Count - 1)));
-					instructions.Insert(loopJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(instructions.Count - loopJumpInstPos)));
-					//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
+					if (!unrolled)
+					{
+						//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.EnterScope));
+						var loopStart = instructions.Count;
+						instructions.AddRange(Generate(loopCond[0], true, out before));
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dup));
+						var loopJumpInstPos = instructions.Count;
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dec));
+						foreach (var child in (List<ASTNode>)node.Value)
+						{
+							range = Generate(child, false, out before, true);
+							if (before.Count > 0)
+								instructions.InsertRange(instructions.Count - 1, before);
+							instructions.AddRange(range);
+						}
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.Create(loopStart - instructions.Count - 1)));
+						instructions.Insert(loopJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(instructions.Count - loopJumpInstPos)));
+						//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
+					}
 					break;
 				case (ASTNode.NodeType.Function):
 					var funcName = (string)node.Branches["functionName"].Value;

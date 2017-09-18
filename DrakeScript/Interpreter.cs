@@ -9,9 +9,10 @@ namespace DrakeScript
 		public Context Context;
 		//public FastStackGrowable<Scope> ScopeStack = new FastStackGrowable<Scope>(64);
 		public SourceRef CallLocation = SourceRef.Invalid;
-		public List<Value> ArgList = new List<Value>(16);
+		public Value[] ArgList = new Value[0];
+		public int ArgListCount = 0;
 		//public Scope CurrentScope = Scope.Create();
-		public FastStackGrowable<Value> Stack = new FastStackGrowable<Value>(32);
+		public FastStackGrowable<Value> Stack = new FastStackGrowable<Value>(1);
 
 		public Interpreter(Context context)
 		{
@@ -25,10 +26,14 @@ namespace DrakeScript
 
 			var callLocation = CallLocation;
 			var code = func.Code;
-			if (func.Args.Length > ArgList.Count)
-				throw new NotEnoughArgumentsException(func.Args.Length, ArgList.Count, callLocation);
-			var args = ArgList.ToArray();
-			var locals = new Value[func.Locals.Length];
+			if (func.Args.Length > ArgListCount)
+				throw new NotEnoughArgumentsException(func.Args.Length, ArgListCount, callLocation);
+			var args = new Value[ArgListCount];
+			for (var i = 0; i < ArgListCount; i++)
+				args[i] = ArgList[i];
+			Value[] locals = null;
+			if (func.Locals.Length > 0)
+				locals = new Value[func.Locals.Length];
 
 			int ia;
 			Value va, vb;
@@ -67,24 +72,21 @@ namespace DrakeScript
 							locals[(int)instruction.Arg.Number] = Stack.Pop();
 							break;
 						case (Instruction.InstructionType.PopArgs):
-							ArgList.Clear();
 							ia = (int)instruction.Arg.Number;
-							for (var i = 0; i < ia; i++)
-							{
-								ArgList.Add(Value.Nil);
-							}
+							if (ArgList.Length < ia)
+								Array.Resize(ref ArgList, ia);
 							for (var i = ia - 1; i >= 0; i--)
 							{
 								ArgList[i] = Stack.Pop();
 							}
+							ArgListCount = ia;
 							break;
 						case (Instruction.InstructionType.Call):
 							var callFunc = Stack.Pop();
 							if (callFunc.Type != Value.ValueType.Function)
 								throw new CannotCallNilException(instruction.Location);
 							CallLocation = instruction.Location;
-							var ret = callFunc.Function.Invoke(this);
-							Stack.Push(ret);
+							callFunc.Function.InvokePushInsteadOfReturn(this);
 							break;
 						case (Instruction.InstructionType.Add):
 							vb = Stack.Pop();
@@ -177,6 +179,28 @@ namespace DrakeScript
 							Stack.Push(va);
 							break;
 
+						case (Instruction.InstructionType.IncVarGlobal):
+							IncGlobalVar(instruction.Arg.String, 1);
+							break;
+
+						case (Instruction.InstructionType.IncVarLocal):
+							ia = (int)instruction.Arg.Number;
+							va = locals[ia];
+							va.Number++;
+							locals[ia] = va;
+							break;
+
+						case (Instruction.InstructionType.DecVarGlobal):
+							IncGlobalVar(instruction.Arg.String, -1);
+							break;
+
+						case (Instruction.InstructionType.DecVarLocal):
+							ia = (int)instruction.Arg.Number;
+							va = locals[ia];
+							va.Number--;
+							locals[ia] = va;
+							break;
+
 						case (Instruction.InstructionType.IncVarByGlobal):
 							IncGlobalVar(instruction.Arg.String, Stack.Pop().Number);
 							break;
@@ -211,7 +235,7 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.JumpEZ):
 							va = Stack.Pop();
-							if (!va.Bool)
+							if (va.Number == 0.0)
 							{
 								pos += (int)instruction.Arg.Number;
 							}

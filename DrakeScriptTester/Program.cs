@@ -34,18 +34,19 @@ namespace DrakeScriptTester
 			Console.WriteLine(code.Code.ToStringFormatted() + "\n");
 			var interpreter = new Interpreter(context);
 			var sw = new System.Diagnostics.Stopwatch();
-			for (var i = 0; i < 1; i++)
+			var count = 0;
+			sw.Start();
+			while (sw.ElapsedMilliseconds < 5000)
 			{
-				sw.Reset();
-				sw.Start();
 				code.Invoke(interpreter);
-				sw.Stop();
+				count++;
 			}
+			sw.Stop();
 			if (interpreter.Stack.Count > 0)
-				Console.WriteLine("result: " + interpreter.Stack.Peek(0).DynamicValue);
+				Console.WriteLine("result: " + interpreter.Stack.Peek(0).ToString());
 			else
 				Console.WriteLine("no result");
-			Console.WriteLine("time taken: " + sw.ElapsedTicks + " ticks (" + ((double)sw.ElapsedTicks / (double)TimeSpan.TicksPerSecond) + "s)");
+			Console.WriteLine("average time per run: " + (5000.0 / (double)count) + " ms over " + count + " runs");
 		}
 	}
 }

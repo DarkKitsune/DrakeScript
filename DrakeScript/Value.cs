@@ -4,6 +4,8 @@ namespace DrakeScript
 {
 	public struct Value
 	{
+		public const int MinSize = sizeof(ValueType) + sizeof(double) + 4;
+
 		static string DefaultString = "";
 		public static Value Nil = new Value {Type = ValueType.Nil, Number = 0.0, String = DefaultString, Reference = null};
 
@@ -17,7 +19,6 @@ namespace DrakeScript
 
 		public ValueType Type;
 		public double Number;
-		public string String;
 		object Reference;
 
 		public bool Bool
@@ -29,6 +30,20 @@ namespace DrakeScript
 			set
 			{
 				Number = (value ? 1.0 : 0.0);
+			}
+		}
+
+		public string String
+		{
+			get
+			{
+				if (Type == ValueType.String)
+					return (string)Reference;
+				return DefaultString;
+			}
+			set
+			{
+				Reference = value;
 			}
 		}
 
@@ -82,7 +97,6 @@ namespace DrakeScript
 			var val = new Value();
 			val.Type = ValueType.Number;
 			val.Number = v;
-			val.String = DefaultString;
 			val.Reference = null;
 			return val;
 		}
@@ -92,8 +106,7 @@ namespace DrakeScript
 			var val = new Value();
 			val.Type = ValueType.String;
 			val.Number = 0.0;
-			val.String = v;
-			val.Reference = null;
+			val.Reference = v;
 			return val;
 		}
 
@@ -102,7 +115,6 @@ namespace DrakeScript
 			var val = new Value();
 			val.Type = ValueType.Number;
 			val.Number = (v ? 1.0 : 0.0);
-			val.String = DefaultString;
 			val.Reference = null;
 			return val;
 		}
@@ -112,7 +124,6 @@ namespace DrakeScript
 			var val = new Value();
 			val.Type = ValueType.Function;
 			val.Number = 0.0;
-			val.String = DefaultString;
 			val.Reference = v;
 			return val;
 		}
@@ -122,7 +133,6 @@ namespace DrakeScript
 			var val = new Value();
 			val.Type = ValueType.Number;
 			val.Number = 0.0;
-			val.String = DefaultString;
 			val.Reference = null;
 			return val;
 		}

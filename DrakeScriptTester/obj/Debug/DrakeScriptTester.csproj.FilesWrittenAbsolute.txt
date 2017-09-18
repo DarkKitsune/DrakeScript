@@ -6,3 +6,4 @@
 /home/dark/Projects/CSharp/DrakeScript/DrakeScriptTester/bin/Debug/PowerDS.dll
 /home/dark/Projects/CSharp/DrakeScript/DrakeScriptTester/bin/Debug/DrakeScript.dll
 /home/dark/Projects/CSharp/DrakeScript/DrakeScriptTester/bin/Debug/DrakeScript.dll.mdb
+/home/dark/Projects/CSharp/DrakeScript/DrakeScriptTester/obj/Debug/.NETFramework,Version=v4.6.1.AssemblyAttribute.cs

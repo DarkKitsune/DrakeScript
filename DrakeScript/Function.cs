@@ -10,7 +10,7 @@ namespace DrakeScript
 		public Instruction[] Code {get; internal set;}
 		public String[] Args {get; private set;}
 		public String[] Locals {get; private set;}
-		public Func<List<Value>, Value> Method;
+		public Func<Value[], int, Value> Method;
 
 		public Function(Instruction[] code, String[] args, String[] locals)
 		{
@@ -20,7 +20,7 @@ namespace DrakeScript
 			Locals = locals;
 		}
 
-		public Function(Func<List<Value>, Value> method)
+		public Function(Func<Value[], int, Value> method)
 		{
 			Method = method;
 			var param = method.GetMethodInfo().GetParameters();
@@ -42,10 +42,21 @@ namespace DrakeScript
 			}
 			else
 			{
-				return Method(interpreter.ArgList);
+				return Method(interpreter.ArgList, interpreter.ArgListCount);
 			}
 		}
-		public Value Invoke(List<Value> args)
+		internal void InvokePushInsteadOfReturn(Interpreter interpreter)
+		{
+			if (ScriptFunction)
+			{
+				interpreter.Interpret(this);
+			}
+			else
+			{
+				interpreter.Stack.Push(Method(interpreter.ArgList, interpreter.ArgListCount));
+			}
+		}
+		public Value Invoke(params Value[] args)
 		{
 			if (ScriptFunction)
 			{
@@ -53,7 +64,7 @@ namespace DrakeScript
 			}
 			else
 			{
-				return Method(args);
+				return Method(args, args.Length);
 			}
 		}
 	}

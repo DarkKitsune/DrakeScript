@@ -33,6 +33,10 @@ namespace DrakeScript
 			GtEq,
 			Lt,
 			LtEq,
+			IncVarGlobal,
+			IncVarLocal,
+			DecVarGlobal,
+			DecVarLocal,
 			IncVarByGlobal,
 			IncVarByLocal,
 			DecVarByGlobal,
@@ -60,7 +64,7 @@ namespace DrakeScript
 
 		public override string ToString()
 		{
-			return string.Format("[{0}({1})]", Type, Arg.DynamicValue);
+			return string.Format("[{0}({1})]", Type, Arg);
 		}
 	}
 }

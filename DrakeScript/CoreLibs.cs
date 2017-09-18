@@ -14,24 +14,24 @@ namespace DrakeScript
 				context.Globals["nothing"] = Value.Create(new Function(Nothing));
 			}
 
-			public static Value Print(List<Value> args)
+			public static Value Print(Value[] args, int argCount)
 			{
-				foreach (var arg in args)
+				for (var i = 0; i < argCount; i++)
 				{
-					Console.Write(arg.DynamicValue.ToString());
+					Console.Write(args[i].ToString());
 				}
 				return Value.Nil;
 			}
-			public static Value PrintLn(List<Value> args)
+			public static Value PrintLn(Value[] args, int argCount)
 			{
-				foreach (var arg in args)
+				for (var i = 0; i < argCount; i++)
 				{
-					Console.Write(arg.DynamicValue.ToString());
+					Console.Write(args[i].ToString());
 				}
 				Console.WriteLine();
 				return Value.Nil;
 			}
-			public static Value Nothing(List<Value> args)
+			public static Value Nothing(Value[] args, int argCount)
 			{
 				
 				return Value.Nil;

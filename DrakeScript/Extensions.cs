@@ -81,11 +81,11 @@ namespace DrakeScript
 			return list[n];
 		}
 
-		public static Value GetArg(this List<Value> args, int n)
+		public static Value GetArg(this Value[] args, int n)
 		{
-			if (n < 0 || n >= args.Count)
+			if (n < 0 || n >= args.Length)
 				return Value.Nil;
-			return args[args.Count - n - 1];
+			return args[args.Length - n - 1];
 		}
 	}
 }
