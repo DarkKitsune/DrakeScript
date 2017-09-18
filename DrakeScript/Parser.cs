@@ -145,6 +145,11 @@ namespace DrakeScript
 								node.Branches["functionName"] = new ASTNode(ASTNode.NodeType.Ident, current.Location, functionName);
 								if (functionName.Length > 0)
 								{
+									if (top.Type == ASTNode.NodeType.Ident && (string)top.Value == "local")
+									{
+										Stack.Pop();
+										root.Add(new ASTNode(ASTNode.NodeType.NewLocal, top.Location, functionName));
+									}
 									root.Add(node);
 								}
 								else

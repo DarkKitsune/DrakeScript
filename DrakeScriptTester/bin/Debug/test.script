@@ -1,8 +1,13 @@
-local a = 0;
-
-loop (10000)
+local function a(word1, word2, word3)
 {
-    a += 1;
+    println(word1, word2, word3);
 }
 
-println(a);
+local function b()
+{
+    println("Hello");
+}
+
+
+a("A A A", "B B B", "C C C");
+b();

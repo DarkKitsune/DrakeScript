@@ -379,7 +379,7 @@ namespace DrakeScript
 								new Instruction(
 									node.Location,
 									Instruction.InstructionType.PopVarLocal,
-									Value.Create(funcName)
+									Value.Create(locNum)
 								)
 							);
 						}
