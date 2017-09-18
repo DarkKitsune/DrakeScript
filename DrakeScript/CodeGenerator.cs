@@ -294,20 +294,26 @@ namespace DrakeScript
 						instructions.AddRange(range);
 					}
 					//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
-					var ifJumpDestPos = instructions.Count + 2;
-					instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(ifJumpDestPos - ifJumpInstPos - 2)));
-					break;
-				case (ASTNode.NodeType.Else):
-					//insert.Add(new Instruction(node.Location, Instruction.InstructionType.EnterScope));
-					foreach (var child in (List<ASTNode>)node.Value)
+					if (node.Branches.ContainsKey("else"))
 					{
-						range = Generate(child, false, out before, true);
-						if (before.Count > 0)
-							instructions.InsertRange(instructions.Count - 1, before);
-						insert.AddRange(range);
+						var tempInst = new List<Instruction>();
+						foreach (var child in (List<ASTNode>)node.Branches["else"].Value)
+						{
+							range = Generate(child, false, out before, true);
+							if (before.Count > 0)
+								tempInst.InsertRange(tempInst.Count - 1, before);
+							tempInst.AddRange(range);
+						}
+						instructions.Add(new Instruction(node.Branches["else"].Location, Instruction.InstructionType.Jump, Value.Create(tempInst.Count)));
+						var ifJumpDestPos = instructions.Count + 2;
+						instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(ifJumpDestPos - ifJumpInstPos - 2)));
+						instructions.AddRange(tempInst);
 					}
-					insert.Insert(0, new Instruction(node.Location, Instruction.InstructionType.Jump, Value.Create(insert.Count)));
-
+					else
+					{
+						var ifJumpDestPos = instructions.Count + 2;
+						instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(ifJumpDestPos - ifJumpInstPos - 2)));
+					}
 					break;
 				case (ASTNode.NodeType.While):
 					var whileCond = (List<ASTNode>)node.Branches["condition"].Value;

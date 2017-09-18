@@ -18,10 +18,23 @@ namespace DrakeScriptTester
 
 		public bool Run()
 		{
+			Context context;
+			Function func;
 			try
 			{
-				var context = new Context();
-				var func = context.LoadString(Code);
+				context = new Context();
+				func = context.LoadString(Code);
+			}
+			catch (Exception e)
+			{
+				var oldColor = Console.ForegroundColor;
+				Console.ForegroundColor = ConsoleColor.Red;
+				Console.WriteLine("Test \"" + Name + "\" failed because of exception:\n " + e.ToString());
+				Console.ForegroundColor = oldColor;
+				return false;
+			}
+			try
+			{
 				var ret = func.Invoke();
 				var success = ret.Equals(SuccessReturn);
 				if (!success)
@@ -47,6 +60,8 @@ namespace DrakeScriptTester
 				var oldColor = Console.ForegroundColor;
 				Console.ForegroundColor = ConsoleColor.Red;
 				Console.WriteLine("Test \"" + Name + "\" failed because of exception:\n " + e.ToString());
+				Console.WriteLine("Code = " + func.Code.ToStringFormatted());
+				Console.WriteLine("Globals = " + String.Join(", ", context.Globals));
 				Console.ForegroundColor = oldColor;
 				return false;
 			}

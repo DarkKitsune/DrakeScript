@@ -85,8 +85,7 @@ namespace DrakeScript
 								newParser = new Parser();
 								GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount);
 								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
-								node = new ASTNode(ASTNode.NodeType.Else, current.Location, parsed);
-								root.Add(node);
+								root[root.Count - 1].Branches["else"] = new ASTNode(ASTNode.NodeType.Else, current.Location, parsed);
 								Advance(advanceAmount);
 								break;
 							case ("while"):

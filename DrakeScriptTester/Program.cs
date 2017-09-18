@@ -125,6 +125,46 @@ namespace DrakeScriptTester
 				Value.Create(99.2),
 				"function testrun(otherFunc) {return otherFunc(99.2);} return testrun(function (num) {return num});"
 			),
+			new Test(
+				"two functions as arguments",
+				Value.Create(4.0 + (12.2 + 2.0)),
+				"function testrun(otherFunc, otherFunc2, arg1, arg2) {return otherFunc(arg1) + otherFunc2(arg2);} return testrun(function (num) {return num}, function (num) {return num + 2}, 4, 12.2);"
+			),
+			new Test(
+				"if statement 1",
+				Value.Create(2),
+				"local b = 5; if (b == 4) {return 1;} return 2;"
+			),
+			new Test(
+				"if statement 2",
+				Value.Create(1),
+				"local b = 5; if (b == 5) {return 1;} return 2;"
+			),
+			new Test(
+				"if-else statement 1",
+				Value.Create(2),
+				"local b = 5; if (b == 4) {return 1;}else {return 2}"
+			),
+			new Test(
+				"if-else statement 2",
+				Value.Create(1),
+				"local b = 5; if (b == 5) {return 1;}else {return 2}"
+			),
+			new Test(
+				"nested if-else 1",
+				Value.Create(1),
+				"local b = 5; if (b == 5) {return 1;}else {if (b == 4) {return 2;}}"
+			),
+			new Test(
+				"nested if-else 2",
+				Value.Create(2),
+				"local b = 4; if (b == 5) {return 1;}else {if (b == 4) {return 2;}else {return 3;}}"
+			),
+			new Test(
+				"nested if-else 3",
+				Value.Create(3),
+				"local b = 3; if (b == 5) {return 1;}else {if (b == 4) {return 2;}else {return 3;}}"
+			),
 		};
 
 		public static void RunTests()
