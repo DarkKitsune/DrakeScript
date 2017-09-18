@@ -66,6 +66,10 @@ namespace DrakeScript
 								{
 									throw new ExpectedNodeException(ASTNode.NodeType.Par, ifPar.Type, current.Location);
 								}
+								if (parsed.Count > 1)
+								{
+									throw new ExpectedTokenException("{", parsed[1].Location);
+								}
 								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
 								node = new ASTNode(ASTNode.NodeType.If, current.Location, parsed);
 								node.Branches["condition"] = new ASTNode(ASTNode.NodeType.Condition, ifPar.Location, ifPar.Value);
@@ -82,7 +86,11 @@ namespace DrakeScript
 									throw new ExpectedNodeException(ASTNode.NodeType.If, root[root.Count - 1].Type, root[root.Count - 1].Location);
 								}
 								newParser = new Parser();
-								GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount);
+								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
+								if (parsed.Count > 0)
+								{
+									throw new ExpectedTokenException("{", parsed[0].Location);
+								}
 								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
 								root[root.Count - 1].Branches["else"] = new ASTNode(ASTNode.NodeType.Else, current.Location, parsed);
 								Advance(advanceAmount);

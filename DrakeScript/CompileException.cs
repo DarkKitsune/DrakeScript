@@ -37,6 +37,15 @@ namespace DrakeScript
 		}
 	}
 
+	public class ExpectedTokenException : CompileException
+	{
+		public ExpectedTokenException(string tokenString, SourceRef location) :
+		base("Expected token \"" + tokenString + "\"", location)
+		{
+
+		}
+	}
+
 	public class UnrecognizedTokenTypeException : CompileException
 	{
 		//Token.TokenType Type;
