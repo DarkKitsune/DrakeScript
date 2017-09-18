@@ -144,6 +144,16 @@ namespace DrakeScript
 				return "nil";
 			return DynamicValue.ToString();
 		}
+
+		public bool Equals(Value value)
+		{
+			return DynamicValue.Equals(value.DynamicValue);
+		}
+
+		public override bool Equals(object obj)
+		{
+			return DynamicValue.Equals(obj);
+		}
 	}
 }
 

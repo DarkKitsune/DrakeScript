@@ -1,9 +1,9 @@
 local a = 0;
 
-loop (10)
+loop (1000)
 {
-    loop (1000)
-    {
-        a += 1;
-    }
+    a += 1;
 }
+
+
+local b = 10;

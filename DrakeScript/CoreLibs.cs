@@ -9,9 +9,9 @@ namespace DrakeScript
 		{
 			public static void Register(Context context)
 			{
-				context.Globals["print"] = Value.Create(new Function(Print));
-				context.Globals["println"] = Value.Create(new Function(PrintLn));
-				context.Globals["nothing"] = Value.Create(new Function(Nothing));
+				context.SetGlobal("print", Print);
+				context.SetGlobal("println", PrintLn);
+				context.SetGlobal("nothing", Nothing);
 			}
 
 			public static Value Print(Value[] args, int argCount)

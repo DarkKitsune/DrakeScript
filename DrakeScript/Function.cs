@@ -11,17 +11,20 @@ namespace DrakeScript
 		public String[] Args {get; private set;}
 		public String[] Locals {get; private set;}
 		public Func<Value[], int, Value> Method;
+		public Context Context;
 
-		public Function(Instruction[] code, String[] args, String[] locals)
+		public Function(Context context, Instruction[] code, String[] args, String[] locals)
 		{
+			Context = context;
 			ScriptFunction = true;
 			Code = code;
 			Args = args;
 			Locals = locals;
 		}
 
-		public Function(Func<Value[], int, Value> method)
+		public Function(Context context, Func<Value[], int, Value> method)
 		{
+			Context = context;
 			Method = method;
 			var param = method.GetMethodInfo().GetParameters();
 			Args = new string[param.Length];
@@ -60,7 +63,12 @@ namespace DrakeScript
 		{
 			if (ScriptFunction)
 			{
-				throw new NotSupportedException("Script function cannot be invoked with this method");
+				var interpreter = new Interpreter(Context);
+				interpreter.ArgList = args;
+				interpreter.ArgListCount = args.Length;
+				interpreter.CallLocation = SourceRef.Invalid;
+				interpreter.Interpret(this);
+				return interpreter.Stack.Pop();
 			}
 			else
 			{

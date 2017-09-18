@@ -133,7 +133,7 @@ namespace DrakeScript
 						}
 						break;
 					default:
-						if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'A') || c == '_')
+						if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_')
 						{
 							token = ScanIdentifier();
 						}
@@ -250,7 +250,7 @@ namespace DrakeScript
 				c != '\0' &&
 				(
 					(c >= 'a' && c <= 'z') ||
-					(c >= 'A' && c <= 'A') ||
+					(c >= 'A' && c <= 'Z') ||
 					c == '_' ||
 					(c >= '0' && c <= '9')
 				)

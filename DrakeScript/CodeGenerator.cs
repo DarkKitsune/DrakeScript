@@ -8,7 +8,14 @@ namespace DrakeScript
 		string[] Args;
 		Dictionary<string, int> ArgLookup = new Dictionary<string, int>();
 		List<string> Locals = new List<string>();
+		public bool UnrollLoops = true;
 		public int MaxUnrollBytes = 30000;
+		public Context Context;
+
+		public CodeGenerator(Context context)
+		{
+			Context = context;
+		}
 
 		public Function Generate(ASTNode node, string[] args = null)
 		{
@@ -27,7 +34,7 @@ namespace DrakeScript
 			var code = Generate(node, false, out before);
 			code.Add(new Instruction(node.Location, Instruction.InstructionType.PushNil));
 			code.Add(new Instruction(node.Location, Instruction.InstructionType.Return));
-			return new Function(code.ToArray(), Args, Locals.ToArray());
+			return new Function(Context, code.ToArray(), Args, Locals.ToArray());
 		}
 
 		public List<Instruction> Generate(ASTNode node, bool allowPush, out List<Instruction> insert, bool allowConditions = false)
@@ -326,7 +333,7 @@ namespace DrakeScript
 					if (loopCond.Count != 1)
 						throw new InvalidConditionException("loop", node.Location);
 					var unrolled = false;
-					if (loopCond[0].Type == ASTNode.NodeType.Int)
+					if (UnrollLoops && loopCond[0].Type == ASTNode.NodeType.Int)
 					{
 						var loopNum = (long)loopCond[0].Value;
 						var tempInst = new List<Instruction>();
@@ -386,7 +393,7 @@ namespace DrakeScript
 						}
 						argsStrings[argN++] = (string)child.Value;
 					}
-					var generator = new CodeGenerator();
+					var generator = new CodeGenerator(Context);
 					var newFunc = generator.Generate((ASTNode)node.Value, argsStrings);
 					instructions.Add(
 						new Instruction(
