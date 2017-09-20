@@ -36,12 +36,32 @@ namespace DrakeScriptTester
 			try
 			{
 				var ret = func.Invoke();
-				var success = ret.Equals(SuccessReturn);
+				var success = false;
+				if (ret.Type == SuccessReturn.Type)
+				{
+					if (ret.Type == Value.ValueType.Array)
+					{
+						success = true;
+						if (ret.Array.Count != SuccessReturn.Array.Count)
+							success = false;
+						else
+							for (var i = 0; i < ret.Array.Count; i++)
+							{
+								if (!ret.Array[i].Equals(SuccessReturn.Array[i]))
+								{
+									success = false;
+									break;
+								}
+							}
+					}
+					else
+						success = ret.Equals(SuccessReturn);
+				}
 				if (!success)
 				{
 					var oldColor = Console.ForegroundColor;
 					Console.ForegroundColor = ConsoleColor.Red;
-					Console.WriteLine("Test \"" + Name + "\" failed; expected " + SuccessReturn + " but got " + ret);
+					Console.WriteLine("Test \"" + Name + "\" failed; expected " + SuccessReturn.ToString() + " but got " + ret.ToString());
 					Console.WriteLine("Code = " + func.Code.ToStringFormatted());
 					Console.WriteLine("Globals = " + String.Join(", ", context.Globals));
 					Console.ForegroundColor = oldColor;

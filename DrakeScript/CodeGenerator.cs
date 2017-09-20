@@ -93,6 +93,22 @@ namespace DrakeScript
 						)
 					);
 					break;
+				case (ASTNode.NodeType.Array):
+					if (!allowPush)
+						throw new UnexpectedTokenException("[...]", node.Location);
+					foreach (var child in (List<ASTNode>)node.Value)
+					{
+						range = Generate(child, true, false);
+						instructions.AddRange(range);
+					}
+					instructions.Add(
+						new Instruction(
+							node.Location,
+							Instruction.InstructionType.PushArray,
+							Value.Create(((List<ASTNode>)node.Value).Count)
+						)
+					);
+					break;
 				case (ASTNode.NodeType.Ident):
 					if (!allowPush)
 						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
@@ -209,15 +225,29 @@ namespace DrakeScript
 
 					instructions.AddRange(Generate(node.Branches["right"], true));
 
-					locNum = Locals.IndexOf((string)node.Branches["left"].Value);
-					if (locNum >= 0)
+					if (node.Branches["left"].Type == ASTNode.NodeType.Index)
 					{
-						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopVarLocal, Value.Create(locNum)));
+						instructions.AddRange(Generate(node.Branches["left"].Branches["arrayOrTable"], true));
+						instructions.AddRange(Generate(node.Branches["left"].Branches["index"], true));
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopIndex));
 					}
 					else
 					{
-						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopVarGlobal, Value.Create((string)node.Branches["left"].Value)));
+						locNum = Locals.IndexOf((string)node.Branches["left"].Value);
+						if (locNum >= 0)
+						{
+							instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopVarLocal, Value.Create(locNum)));
+						}
+						else
+						{
+							instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopVarGlobal, Value.Create((string)node.Branches["left"].Value)));
+						}
 					}
+					break;
+				case (ASTNode.NodeType.Index):
+					instructions.AddRange(Generate(node.Branches["arrayOrTable"], true));
+					instructions.AddRange(Generate(node.Branches["index"], true));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushIndex));
 					break;
 				case (ASTNode.NodeType.PlusEq):
 					instructions.AddRange(Generate(node.Branches["right"], true));

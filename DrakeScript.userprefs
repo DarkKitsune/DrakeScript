@@ -1,24 +1,17 @@
 ﻿<Properties StartupItem="DrakeScriptTester/DrakeScriptTester.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="DrakeScriptTester/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="DrakeScript/Function.cs">
     <Files>
-      <File FileName="DrakeScriptTester/Program.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Interpreter.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Context.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Instruction.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Parser.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Analyzer.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/Scanner.cs" Line="12" Column="17" />
+      <File FileName="DrakeScript/Token.cs" Line="13" Column="90" />
       <File FileName="DrakeScript/ASTNode.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Function.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Optimizer.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Extensions.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Scanner.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/CoreLibs.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/InterpreterException.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Scope.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Value.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Token.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/CodeGenerator.cs" Line="330" Column="25" />
+      <File FileName="DrakeScript/Parser.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/CodeGenerator.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/Instruction.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/Interpreter.cs" Line="1" Column="1" />
+      <File FileName="DrakeScriptTester/Program.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/Context.cs" Line="12" Column="4" />
+      <File FileName="DrakeScript/Function.cs" Line="19" Column="57" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

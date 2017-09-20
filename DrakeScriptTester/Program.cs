@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DrakeScript;
 
 namespace DrakeScriptTester
@@ -179,6 +180,37 @@ namespace DrakeScriptTester
 				"while loop 1",
 				Value.Create(1.0 + 20.0 * 2.5),
 				"local a = 1; local i = 0; while (i < 20) {a += 2.5; i += 1;} return a;"
+			),
+			new Test(
+				"empty array",
+				Value.Create(new List<Value> {}),
+				"return [];"
+			),
+			new Test(
+				"simple array",
+				Value.Create(new List<Value> {1, 2, 3, 4}),
+				"return [1, 2, 3, 4];"
+			),
+			new Test(
+				"array with expressions",
+				Value.Create(new List<Value> {3.2, 235.4, 238.6, 4}),
+				"local a = 3.2; local b = 235.4; return [a, b, a + b, 4];"
+			),
+			new Test(
+				"array nils",
+				Value.Create(new List<Value> {Value.Nil, 235.4, 238.6, 4}),
+				"local a = 3.2; local b = 235.4; return [c, b, a + b, 4];"
+			),
+			new Test(
+				"array set",
+				Value.Create(new List<Value> {1, 2, 3}),
+				"local arr = [1]; arr[2] = 3; arr[1] = 2; return arr;"
+			),
+
+			new Test(
+				"array get",
+				Value.Create(new List<Value> {12, 4, 7}),
+				"local arr = [3 * 4, 7, 4]; return [arr[0], arr[2], arr[1]];"
 			),
 		};
 

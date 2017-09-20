@@ -36,7 +36,9 @@ namespace DrakeScript
 				locals = new Value[func.Locals.Length];
 
 			int ia;
-			Value va, vb;
+			Value va, vb, vc;
+			Value[] aa;
+			List<Value> la;
 			bool exited = false;
 			for (var pos = 0; pos < code.Length && !exited; pos++)
 			{
@@ -58,6 +60,15 @@ namespace DrakeScript
 						case (Instruction.InstructionType.PushStr):
 						case (Instruction.InstructionType.PushFunc):
 							Stack.Push(instruction.Arg);
+							break;
+						case (Instruction.InstructionType.PushArray):
+							ia = (int)instruction.Arg.Number;
+							aa = new Value[ia];
+							for (var i = ia - 1; i >= 0; i--)
+							{
+								aa[i] = Stack.Pop();
+							}
+							Stack.Push(Value.Create(new List<Value>(aa)));
 							break;
 						case (Instruction.InstructionType.PushNil):
 							Stack.Push(Value.Nil);
@@ -87,6 +98,45 @@ namespace DrakeScript
 								throw new CannotCallNilException(instruction.Location);
 							CallLocation = instruction.Location;
 							callFunc.Function.InvokePushInsteadOfReturn(this);
+							break;
+						case (Instruction.InstructionType.PushIndex):
+							vb = Stack.Pop();
+							va = Stack.Pop();
+							switch (va.Type)
+							{
+								case (Value.ValueType.Array):
+									if (vb.Type != Value.ValueType.Number)
+										throw new InvalidIndexTypeException("Array", vb.Type, instruction.Location);
+									ia = (int)vb.Number;
+									if (ia < 0 || ia >= va.Array.Count)
+										throw new InvalidIndexValueException("Array", ia, instruction.Location);
+									Stack.Push(va.Array[ia]);
+									break;
+							}
+							break;
+						case (Instruction.InstructionType.PopIndex):
+							vb = Stack.Pop();
+							va = Stack.Pop();
+							vc = Stack.Pop();
+							switch (va.Type)
+							{
+								case (Value.ValueType.Array):
+									if (vb.Type != Value.ValueType.Number)
+										throw new InvalidIndexTypeException("Array", vb.Type, instruction.Location);
+									ia = (int)vb.Number;
+									if (ia < 0)
+										throw new BelowZeroIndexValueException("Array", ia, instruction.Location);
+									var tempArray = va.Array;
+									if (tempArray.Count <= ia)
+									{
+										for (var i = tempArray.Count; i < ia; i++)
+											tempArray.Add(Value.Nil);
+										tempArray.Add(vc);
+									}
+									else
+										tempArray[ia] = vc;
+									break;
+							}
 							break;
 						case (Instruction.InstructionType.Add):
 							vb = Stack.Pop();

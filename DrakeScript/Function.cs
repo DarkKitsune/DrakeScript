@@ -12,9 +12,11 @@ namespace DrakeScript
 		public String[] Locals {get; private set;}
 		public Func<Value[], int, Value> Method;
 		public Context Context;
+		public Version Version;
 
 		public Function(Context context, Instruction[] code, String[] args, String[] locals)
 		{
+			Version = typeof(Context).Assembly.GetName().Version;
 			Context = context;
 			ScriptFunction = true;
 			Code = code;

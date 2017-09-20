@@ -239,7 +239,7 @@ namespace DrakeScript
 					case (Token.TokenType.ParOpen):
 						newParser = new Parser();
 						parsed = newParser._Parse(GetBetween(Token.TokenType.ParClose, 0, out advanceAmount), true);
-						if (top.Type == ASTNode.NodeType.Ident || top.Type == ASTNode.NodeType.Call || top.Type == ASTNode.NodeType.Function)
+						if (ASTNode.NodeInfo[top.Type].HasValue)
 						{
 							var newNode = new ASTNode(ASTNode.NodeType.Call, top.Location);
 							newNode.Branches.Add("function", Stack.Pop());
@@ -250,6 +250,27 @@ namespace DrakeScript
 						else
 						{
 							Stack.Push(new ASTNode(ASTNode.NodeType.Par, current.Location, parsed));
+							Advance(advanceAmount);
+						}
+						break;
+					case (Token.TokenType.SqBraOpen):
+						newParser = new Parser();
+						parsed = newParser._Parse(GetBetween(Token.TokenType.SqBraClose, 0, out advanceAmount), true);
+						if (ASTNode.NodeInfo[top.Type].HasValue)
+						{
+							if (parsed.Count > 1)
+							{
+								throw new ExpectedTokenException("]", parsed[1].Location);
+							}
+							var newNode = new ASTNode(ASTNode.NodeType.Index, top.Location);
+							newNode.Branches.Add("arrayOrTable", Stack.Pop());
+							newNode.Branches.Add("index", parsed[0]);
+							Stack.Push(newNode);
+							Advance(advanceAmount);
+						}
+						else
+						{
+							Stack.Push(new ASTNode(ASTNode.NodeType.Array, current.Location, parsed));
 							Advance(advanceAmount);
 						}
 						break;

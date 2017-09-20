@@ -58,5 +58,41 @@ namespace DrakeScript
 
 		}
 	}
+
+	public class InvalidIndexTypeException : InterpreterException
+	{
+		public InvalidIndexTypeException(
+			string arrayOrTableType,
+			Value.ValueType type,
+			SourceRef location
+		) : base(arrayOrTableType + " cannot be indexed with type " + type, location)
+		{
+			
+		}
+	}
+
+	public class InvalidIndexValueException : InterpreterException
+	{
+		public InvalidIndexValueException(
+			string arrayOrTableType,
+			object index,
+			SourceRef location
+		) : base("index \"" + index + "\" does not exist in " + arrayOrTableType, location)
+		{
+
+		}
+	}
+
+	public class BelowZeroIndexValueException : InterpreterException
+	{
+		public BelowZeroIndexValueException(
+			string arrayOrTableType,
+			int index,
+			SourceRef location
+		) : base("index \"" + index + "\" is below 0 in " + arrayOrTableType, location)
+		{
+
+		}
+	}
 }
 

@@ -169,6 +169,10 @@ namespace DrakeScript
 					{
 						node.Branches["left"] = new ASTNode(ASTNode.NodeType.Str, left.Location, left.Value);
 					}
+					else if (left.Type == ASTNode.NodeType.Index)
+					{
+						//leave alone
+					}
 					else if (left.Type == ASTNode.NodeType.NewLocal)
 					{
 						//leave alone

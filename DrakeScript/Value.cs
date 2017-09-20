@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DrakeScript
 {
@@ -14,7 +15,9 @@ namespace DrakeScript
 			Nil,
 			Number,
 			String,
-			Function
+			Function,
+			Array,
+			Object
 		}
 
 		public ValueType Type;
@@ -53,6 +56,16 @@ namespace DrakeScript
 			{
 				if (Reference is Function)
 					return (Function)Reference;
+				return null;
+			}
+		}
+
+		public List<Value> Array
+		{
+			get
+			{
+				if (Reference is List<Value>)
+					return (List<Value>)Reference;
 				return null;
 			}
 		}
@@ -100,6 +113,14 @@ namespace DrakeScript
 			val.Reference = null;
 			return val;
 		}
+		public static implicit operator double(Value v)
+		{
+			return v.Number;
+		}
+		public static implicit operator Value(double v)
+		{
+			return Value.Create(v);
+		}
 
 		public static Value Create(string v)
 		{
@@ -108,6 +129,16 @@ namespace DrakeScript
 			val.Number = 0.0;
 			val.Reference = v;
 			return val;
+		}
+		public static implicit operator string(Value v)
+		{
+			if (v.Type == ValueType.String)
+				return v.String;
+			return v.ToString();
+		}
+		public static implicit operator Value(string v)
+		{
+			return Value.Create(v);
 		}
 
 		public static Value Create(bool v)
@@ -118,6 +149,14 @@ namespace DrakeScript
 			val.Reference = null;
 			return val;
 		}
+		public static implicit operator bool(Value v)
+		{
+			return v.Bool;
+		}
+		public static implicit operator Value(bool v)
+		{
+			return Value.Create(v);
+		}
 
 		public static Value Create(Function v)
 		{
@@ -127,6 +166,42 @@ namespace DrakeScript
 			val.Reference = v;
 			return val;
 		}
+		public static implicit operator Function(Value v)
+		{
+			return v.Function;
+		}
+		public static implicit operator Value(Function v)
+		{
+			return Value.Create(v);
+		}
+
+		public static Value Create(List<Value> v)
+		{
+			var val = new Value();
+			val.Type = ValueType.Array;
+			val.Number = 0.0;
+			val.Reference = v;
+			return val;
+		}
+		public static implicit operator List<Value>(Value v)
+		{
+			return v.Array;
+		}
+		public static implicit operator Value(List<Value> v)
+		{
+			return Value.Create(v);
+		}
+
+		/*public static Value Create(object v)
+		{
+			if (v == null)
+				return Value.Nil;
+			var val = new Value();
+			val.Type = ValueType.Object;
+			val.Number = 0.0;
+			val.Reference = v;
+			return val;
+		}*/
 
 		public static Value Create()
 		{
@@ -142,12 +217,21 @@ namespace DrakeScript
 		{
 			if (DynamicValue == null)
 				return "nil";
+			if (DynamicValue is List<Value>)
+				return String.Format("[{0}]", String.Join(", ", (List<Value>)DynamicValue));
 			return DynamicValue.ToString();
 		}
 
 		public bool Equals(Value value)
 		{
-			return DynamicValue.Equals(value.DynamicValue);
+			var dyn = DynamicValue;
+			if (dyn == null)
+			{
+				if (value.DynamicValue == null)
+					return true;
+				return false;
+			}
+			return dyn.Equals(value.DynamicValue);
 		}
 
 		public override bool Equals(object obj)

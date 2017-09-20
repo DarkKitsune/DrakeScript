@@ -44,6 +44,14 @@ namespace DrakeScript
 						token = new Token(Location(), Token.TokenType.BraClose);
 						Advance(1);
 						break;
+					case ('['):
+						token = new Token(Location(), Token.TokenType.SqBraOpen);
+						Advance(1);
+						break;
+					case (']'):
+						token = new Token(Location(), Token.TokenType.SqBraClose);
+						Advance(1);
+						break;
 					case (';'):
 						token = new Token(Location(), Token.TokenType.Semicolon);
 						Advance(1);
