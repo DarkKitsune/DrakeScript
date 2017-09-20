@@ -18,11 +18,27 @@ namespace DrakeScript
 			String,
 			Function,
 			Array,
-			Object
+			Int
 		}
 
 		public ValueType Type;
-		public double Number;
+		public double FloatNumber;
+		public double Number
+		{
+			get
+			{
+				if (Type == ValueType.Number)
+					return FloatNumber;
+				return (double)IntNumber;
+			}
+			set
+			{
+				if (Type == ValueType.Number)
+					FloatNumber = value;
+				IntNumber = (int)value;
+			}
+		}
+		public int IntNumber;
 		object Reference;
 
 		public bool Bool
@@ -105,6 +121,15 @@ namespace DrakeScript
 			}
 		}
 
+		public static Value CreateInt(int v)
+		{
+			var val = new Value();
+			val.Type = ValueType.Int;
+			val.Number = 0.0;
+			val.IntNumber = v;
+			val.Reference = null;
+			return val;
+		}
 
 		public static Value Create(double v)
 		{
@@ -119,6 +144,23 @@ namespace DrakeScript
 			return v.Number;
 		}
 		public static implicit operator Value(double v)
+		{
+			return Value.Create(v);
+		}
+
+		public static Value Create(int v)
+		{
+			var val = new Value();
+			val.Type = ValueType.Number;
+			val.Number = v;
+			val.Reference = null;
+			return val;
+		}
+		public static implicit operator int(Value v)
+		{
+			return (int)v.Number;
+		}
+		public static implicit operator Value(int v)
 		{
 			return Value.Create(v);
 		}
@@ -193,17 +235,6 @@ namespace DrakeScript
 			return Value.Create(v);
 		}
 
-		/*public static Value Create(object v)
-		{
-			if (v == null)
-				return Value.Nil;
-			var val = new Value();
-			val.Type = ValueType.Object;
-			val.Number = 0.0;
-			val.Reference = v;
-			return val;
-		}*/
-
 		public static Value Create()
 		{
 			var val = new Value();
@@ -265,6 +296,9 @@ namespace DrakeScript
 						case (ValueType.Number):
 							writer.Write((float)Number);
 							break;
+						case (ValueType.Int):
+							writer.Write(IntNumber);
+							break;
 					}
 				}
 				return memoryStream.ToArray();
@@ -284,6 +318,8 @@ namespace DrakeScript
 					return Value.Create(Function.FromReader(context, reader));
 				case (ValueType.Number):
 					return Value.Create((double)reader.ReadSingle());
+				case (ValueType.Int):
+					return Value.Create((double)reader.ReadInt32());
 				default:
 					return Value.Nil;
 			}

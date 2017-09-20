@@ -51,10 +51,10 @@ namespace DrakeScript
 							Stack.Push(GetGlobalVar(instruction.Arg.String));
 							break;
 						case (Instruction.InstructionType.PushVarLocal):
-							Stack.Push(locals[(int)instruction.Arg.Number]);
+							Stack.Push(locals[instruction.Arg.IntNumber]);
 							break;
 						case (Instruction.InstructionType.PushArg):
-							Stack.Push(args[(int)instruction.Arg.Number]);
+							Stack.Push(args[instruction.Arg.IntNumber]);
 							break;
 						case (Instruction.InstructionType.PushNum):
 						case (Instruction.InstructionType.PushStr):
@@ -80,10 +80,10 @@ namespace DrakeScript
 							SetGlobalVar(instruction.Arg.String, Stack.Pop());
 							break;
 						case (Instruction.InstructionType.PopVarLocal):
-							locals[(int)instruction.Arg.Number] = Stack.Pop();
+							locals[instruction.Arg.IntNumber] = Stack.Pop();
 							break;
 						case (Instruction.InstructionType.PopArgs):
-							ia = (int)instruction.Arg.Number;
+							ia = instruction.Arg.IntNumber;
 							if (ArgList.Length < ia)
 								Array.Resize(ref ArgList, ia);
 							for (var i = ia - 1; i >= 0; i--)
@@ -141,28 +141,28 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Add):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number += vb.Number;
+							va.FloatNumber += vb.FloatNumber;
 
 							Stack.Push(va);
 							break;
 						case (Instruction.InstructionType.Sub):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number -= vb.Number;
+							va.FloatNumber -= vb.FloatNumber;
 
 							Stack.Push(va);
 							break;
 						case (Instruction.InstructionType.Div):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number /= vb.Number;
+							va.FloatNumber /= vb.FloatNumber;
 
 							Stack.Push(va);
 							break;
 						case (Instruction.InstructionType.Mul):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number *= vb.Number;
+							va.FloatNumber *= vb.FloatNumber;
 
 							Stack.Push(va);
 							break;
@@ -184,7 +184,7 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.Neg):
 							va = Stack.Pop();
-							va.Number = -va.Number;
+							va.FloatNumber = -va.FloatNumber;
 
 							Stack.Push(va);
 							break;
@@ -192,7 +192,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Eq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = (va.Number == vb.Number ? 1.0 : 0.0);
+							va.FloatNumber = (va.FloatNumber == vb.FloatNumber ? 1.0 : 0.0);
 
 							Stack.Push(va);
 							break;
@@ -200,7 +200,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.NEq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = (va.Number != vb.Number ? 1.0 : 0.0);
+							va.FloatNumber = (va.FloatNumber != vb.FloatNumber ? 1.0 : 0.0);
 
 							Stack.Push(va);
 							break;
@@ -208,7 +208,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Gt):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = (va.Number > vb.Number ? 1.0 : 0.0);
+							va.FloatNumber = (va.FloatNumber > vb.FloatNumber ? 1.0 : 0.0);
 
 							Stack.Push(va);
 							break;
@@ -216,7 +216,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.GtEq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = (va.Number >= vb.Number ? 1.0 : 0.0);
+							va.FloatNumber = (va.FloatNumber >= vb.FloatNumber ? 1.0 : 0.0);
 
 							Stack.Push(va);
 							break;
@@ -224,7 +224,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Lt):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = (va.Number < vb.Number ? 1.0 : 0.0);
+							va.FloatNumber = (va.FloatNumber < vb.FloatNumber ? 1.0 : 0.0);
 
 							Stack.Push(va);
 							break;
@@ -232,7 +232,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.LtEq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = (va.Number <= vb.Number ? 1.0 : 0.0);
+							va.FloatNumber = (va.FloatNumber <= vb.FloatNumber ? 1.0 : 0.0);
 
 							Stack.Push(va);
 							break;
@@ -242,9 +242,9 @@ namespace DrakeScript
 							break;
 
 						case (Instruction.InstructionType.IncVarLocal):
-							ia = (int)instruction.Arg.Number;
+							ia = instruction.Arg.IntNumber;
 							va = locals[ia];
-							va.Number++;
+							va.FloatNumber++;
 							locals[ia] = va;
 							break;
 
@@ -253,37 +253,37 @@ namespace DrakeScript
 							break;
 
 						case (Instruction.InstructionType.DecVarLocal):
-							ia = (int)instruction.Arg.Number;
+							ia = instruction.Arg.IntNumber;
 							va = locals[ia];
-							va.Number--;
+							va.FloatNumber--;
 							locals[ia] = va;
 							break;
 
 						case (Instruction.InstructionType.IncVarByGlobal):
-							IncGlobalVar(instruction.Arg.String, Stack.Pop().Number);
+							IncGlobalVar(instruction.Arg.String, Stack.Pop().FloatNumber);
 							break;
 
 						case (Instruction.InstructionType.IncVarByLocal):
-							ia = (int)instruction.Arg.Number;
+							ia = instruction.Arg.IntNumber;
 							va = locals[ia];
-							va.Number += Stack.Pop().Number;
+							va.FloatNumber += Stack.Pop().FloatNumber;
 							locals[ia] = va;
 							break;
 
 						case (Instruction.InstructionType.DecVarByGlobal):
-							IncGlobalVar(instruction.Arg.String, -Stack.Pop().Number);
+							IncGlobalVar(instruction.Arg.String, -Stack.Pop().FloatNumber);
 							break;
 
 						case (Instruction.InstructionType.DecVarByLocal):
-							ia = (int)instruction.Arg.Number;
+							ia = instruction.Arg.IntNumber;
 							va = locals[ia];
-							va.Number -= Stack.Pop().Number;
+							va.FloatNumber -= Stack.Pop().FloatNumber;
 							locals[ia] = va;
 							break;
 
 						case (Instruction.InstructionType.Dec):
 							va = Stack.Peek(0);
-							va.Number--;
+							va.FloatNumber--;
 							Stack.Poke(0, va);
 							break;
 
@@ -293,14 +293,14 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.JumpEZ):
 							va = Stack.Pop();
-							if (va.Number == 0.0)
+							if (va.FloatNumber == 0.0)
 							{
-								pos += (int)instruction.Arg.Number;
+								pos += (int)instruction.Arg.FloatNumber;
 							}
 							break;
 
 						case (Instruction.InstructionType.Jump):
-							pos += (int)instruction.Arg.Number;
+							pos += (int)instruction.Arg.FloatNumber;
 							break;
 
 						case (Instruction.InstructionType.Return):
@@ -349,7 +349,7 @@ namespace DrakeScript
 			}
 			else
 			{
-				val.Number += v;
+				val.FloatNumber += v;
 				Context.Globals[name] = val;
 			}
 		}

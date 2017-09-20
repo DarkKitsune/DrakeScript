@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace DrakeScript
 {
@@ -52,6 +53,7 @@ namespace DrakeScript
 			JumpEZ,
 			Jump
 		}
+
 
 		public InstructionType Type;
 		public Value Arg;

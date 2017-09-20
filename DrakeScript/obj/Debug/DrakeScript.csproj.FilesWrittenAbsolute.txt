@@ -4,4 +4,3 @@
 /home/dark/Projects/CSharp/DrakeScript/DrakeScript/bin/Debug/DrakeScript.dll
 /home/dark/Projects/CSharp/DrakeScript/DrakeScript/obj/Debug/DrakeScript.dll
 /home/dark/Projects/CSharp/DrakeScript/DrakeScript/obj/Debug/DrakeScript.dll.mdb
-/home/dark/Projects/CSharp/DrakeScript/DrakeScript/obj/Debug/.NETFramework,Version=v4.6.1.AssemblyAttribute.cs

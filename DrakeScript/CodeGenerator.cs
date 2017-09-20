@@ -121,7 +121,7 @@ namespace DrakeScript
 							new Instruction(
 								node.Location,
 								Instruction.InstructionType.PushArg,
-								Value.Create(argNum)
+								Value.CreateInt(argNum)
 							)
 						);
 					}
@@ -134,7 +134,7 @@ namespace DrakeScript
 								new Instruction(
 									node.Location,
 									Instruction.InstructionType.PushVarLocal,
-									Value.Create(locNum)
+									Value.CreateInt(locNum)
 								)
 							);
 						}
@@ -238,7 +238,7 @@ namespace DrakeScript
 						locNum = Locals.IndexOf((string)node.Branches["left"].Value);
 						if (locNum >= 0)
 						{
-							instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopVarLocal, Value.Create(locNum)));
+							instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopVarLocal, Value.CreateInt(locNum)));
 						}
 						else
 						{
@@ -257,7 +257,7 @@ namespace DrakeScript
 					locNum = Locals.IndexOf((string)node.Branches["left"].Value);
 					if (locNum >= 0)
 					{
-						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.IncVarByLocal, Value.Create(locNum)));
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.IncVarByLocal, Value.CreateInt(locNum)));
 					}
 					else
 					{
@@ -270,7 +270,7 @@ namespace DrakeScript
 					locNum = Locals.IndexOf((string)node.Branches["left"].Value);
 					if (locNum >= 0)
 					{
-						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.DecVarByLocal, Value.Create(locNum)));
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.DecVarByLocal, Value.CreateInt(locNum)));
 					}
 					else
 					{
@@ -288,7 +288,7 @@ namespace DrakeScript
 						new Instruction(
 							node.Location,
 							Instruction.InstructionType.PopArgs,
-							Value.Create(cargs.Count)
+							Value.CreateInt(cargs.Count)
 						)
 					);
 					instructions.AddRange(Generate(node.Branches["function"], true));
@@ -433,7 +433,7 @@ namespace DrakeScript
 								new Instruction(
 									node.Location,
 									Instruction.InstructionType.PopVarLocal,
-									Value.Create(locNum)
+									Value.CreateInt(locNum)
 								)
 							);
 						}
