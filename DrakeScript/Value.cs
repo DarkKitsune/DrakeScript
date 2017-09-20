@@ -253,7 +253,6 @@ namespace DrakeScript
 				using (var writer = new BinaryWriter(memoryStream))
 				{
 					writer.Write((short)Type);
-					writer.Write(Number);
 					switch (Type)
 					{
 						case (ValueType.String):
@@ -263,12 +262,8 @@ namespace DrakeScript
 						case (ValueType.Function):
 							writer.Write(Function.GetBytecode());
 							break;
-						case (ValueType.Array):
-							writer.Write((int)Array.Count);
-							foreach (var v in Array)
-							{
-								writer.Write(v.GetBytes());
-							}
+						case (ValueType.Number):
+							writer.Write((float)Number);
 							break;
 					}
 				}
@@ -279,7 +274,6 @@ namespace DrakeScript
 		public static Value FromReader(Context context, BinaryReader reader)
 		{
 			var type = (ValueType)reader.ReadInt16();
-			var number = reader.ReadDouble();
 			switch (type)
 			{
 				case (ValueType.String):
@@ -288,8 +282,10 @@ namespace DrakeScript
 					return Value.Create(str);
 				case (ValueType.Function):
 					return Value.Create(Function.FromReader(context, reader));
+				case (ValueType.Number):
+					return Value.Create((double)reader.ReadSingle());
 				default:
-					return Value.Create(number);
+					return Value.Nil;
 			}
 		}
 	}
