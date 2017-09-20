@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 
 namespace DrakeScript
@@ -10,7 +11,7 @@ namespace DrakeScript
 		static string DefaultString = "";
 		public static Value Nil = new Value {Type = ValueType.Nil, Number = 0.0, String = DefaultString, Reference = null};
 
-		public enum ValueType : byte
+		public enum ValueType : short
 		{
 			Nil,
 			Number,
@@ -242,6 +243,54 @@ namespace DrakeScript
 		public override int GetHashCode()
 		{
 			return DynamicValue.GetHashCode();
+		}
+
+
+		public byte[] GetBytes()
+		{
+			using (var memoryStream = new MemoryStream())
+			{
+				using (var writer = new BinaryWriter(memoryStream))
+				{
+					writer.Write((short)Type);
+					writer.Write(Number);
+					switch (Type)
+					{
+						case (ValueType.String):
+							writer.Write(String.Length);
+							writer.Write(System.Text.Encoding.ASCII.GetBytes(String));
+							break;
+						case (ValueType.Function):
+							writer.Write(Function.GetBytecode());
+							break;
+						case (ValueType.Array):
+							writer.Write((int)Array.Count);
+							foreach (var v in Array)
+							{
+								writer.Write(v.GetBytes());
+							}
+							break;
+					}
+				}
+				return memoryStream.ToArray();
+			}
+		}
+
+		public static Value FromReader(Context context, BinaryReader reader)
+		{
+			var type = (ValueType)reader.ReadInt16();
+			var number = reader.ReadDouble();
+			switch (type)
+			{
+				case (ValueType.String):
+					var strLength = reader.ReadInt32();
+					var str = System.Text.Encoding.ASCII.GetString(reader.ReadBytes(strLength));
+					return Value.Create(str);
+				case (ValueType.Function):
+					return Value.Create(Function.FromReader(context, reader));
+				default:
+					return Value.Create(number);
+			}
 		}
 	}
 }

@@ -17,6 +17,48 @@ namespace DrakeScriptTester
 			{
 				RunTests();
 			}
+			else if (args[0] == "compile")
+			{
+				if (!System.IO.File.Exists(args[1]))
+				{
+					Console.WriteLine("Script does not exist!");
+					return;
+				}
+				var context = new Context();
+				var code = context.LoadFile(args[1]);
+				var optimizer = new Optimizer();
+				optimizer.Optimize(code);
+				Console.WriteLine(code.Code.ToStringFormatted() + "\n");
+				if (System.IO.File.Exists("bytecode.bin"))
+					System.IO.File.Delete("bytecode.bin");
+				System.IO.File.WriteAllBytes("bytecode.bin", code.GetBytecode());
+			}
+			else if (args[0] == "load")
+			{
+				if (!System.IO.File.Exists(args[1]))
+				{
+					Console.WriteLine("File does not exist!");
+					return;
+				}
+				var context = new Context();
+				var code = context.LoadBytecode(args[1]);
+				Console.WriteLine(code.Code.ToStringFormatted() + "\n");
+				var interpreter = new Interpreter(context);
+				var sw = new System.Diagnostics.Stopwatch();
+				var count = 0;
+				sw.Start();
+				while (sw.ElapsedMilliseconds < 1000)
+				{
+					code.Invoke(interpreter);
+					count++;
+				}
+				sw.Stop();
+				if (interpreter.Stack.Count > 0)
+					Console.WriteLine("result: " + interpreter.Stack.Peek(0).ToString());
+				else
+					Console.WriteLine("no result");
+				Console.WriteLine("average time per run: " + (5000.0 / (double)count) + " ms over " + count + " runs");
+			}
 			else
 			{
 				if (!System.IO.File.Exists(args[0]))
@@ -33,7 +75,7 @@ namespace DrakeScriptTester
 				var sw = new System.Diagnostics.Stopwatch();
 				var count = 0;
 				sw.Start();
-				while (sw.ElapsedMilliseconds < 5000)
+				while (sw.ElapsedMilliseconds < 1000)
 				{
 					code.Invoke(interpreter);
 					count++;

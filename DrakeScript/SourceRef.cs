@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace DrakeScript
 {
@@ -22,6 +23,20 @@ namespace DrakeScript
 		public override string ToString()
 		{
 			return string.Format("{0}:{1}:{2}", Source, Line + 1, Column + 1);
+		}
+
+		public byte[] GetBytes()
+		{
+			using (var memoryStream = new MemoryStream())
+			{
+				using (var writer = new BinaryWriter(memoryStream))
+				{
+					writer.Write(Source.Name);
+					writer.Write(Line);
+					writer.Write(Column);
+				}
+				return memoryStream.ToArray();
+			}
 		}
 	}
 }

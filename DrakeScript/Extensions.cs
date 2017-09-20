@@ -16,6 +16,7 @@ namespace DrakeScript
 			return string.Format("[\n    {0}\n]", String.Join(",\n    ", instructions));
 		}
 
+
 		public static bool IsEscaped(this string str, int pos)
 		{
 			if (pos - 1 < 0 || pos - 1 >= str.Length)

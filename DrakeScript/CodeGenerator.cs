@@ -8,17 +8,19 @@ namespace DrakeScript
 		string[] Args;
 		Dictionary<string, int> ArgLookup = new Dictionary<string, int>();
 		List<string> Locals = new List<string>();
-		public bool UnrollLoops = true;
+		public bool UnrollLoops = false;
 		public int MaxUnrollBytes = 30000;
 		public Context Context;
+		public string Name;
 
 		public CodeGenerator(Context context)
 		{
 			Context = context;
 		}
 
-		public Function Generate(ASTNode node, string[] args = null)
+		public Function Generate(string name, ASTNode node, string[] args = null)
 		{
+			Name = name;
 			if (args == null)
 				Args = new string[] {};
 			else
@@ -33,7 +35,7 @@ namespace DrakeScript
 			var code = Generate(node, false);
 			code.Add(new Instruction(node.Location, Instruction.InstructionType.PushNil));
 			code.Add(new Instruction(node.Location, Instruction.InstructionType.Return));
-			return new Function(Context, code.ToArray(), Args, Locals.ToArray());
+			return new Function(name, Context, code.ToArray(), Args, Locals.ToArray());
 		}
 
 		public List<Instruction> Generate(ASTNode node, bool allowPush, bool allowConditions = false)
@@ -414,7 +416,7 @@ namespace DrakeScript
 						argsStrings[argN++] = (string)child.Value;
 					}
 					var generator = new CodeGenerator(Context);
-					var newFunc = generator.Generate((ASTNode)node.Value, argsStrings);
+					var newFunc = generator.Generate(Name, (ASTNode)node.Value, argsStrings);
 					instructions.Add(
 						new Instruction(
 							node.Location,

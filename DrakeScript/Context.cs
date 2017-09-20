@@ -34,7 +34,7 @@ namespace DrakeScript
 			var analyzer = new Analyzer();
 			tree = analyzer.Analyze(tree);
 			var generator = new CodeGenerator(this);
-			return generator.Generate(tree);
+			return generator.Generate(sourceName, tree);
 		}
 
 		public Value DoFile(string path)
@@ -56,6 +56,12 @@ namespace DrakeScript
 			var interpreter = new Interpreter(this);
 			return LoadString(sourceName, code).Invoke(interpreter);
 		}
+
+		public Function LoadBytecode(string path)
+		{
+			return Function.FromBytes(this, System.IO.File.ReadAllBytes(path));
+		}
+
 
 
 		public Value GetGlobal(string name)
@@ -108,7 +114,7 @@ namespace DrakeScript
 		}
 		public void SetGlobal(string name, Func<Value[], int, Value> value)
 		{
-			Globals[name] = Value.Create(new Function(this, value));
+			Globals[name] = Value.Create(new Function(value.ToString(), this, value));
 		}
 	}
 }
