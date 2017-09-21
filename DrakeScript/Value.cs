@@ -138,7 +138,6 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.Int;
-			val.FloatNumber = 0.0;
 			val.IntNumber = v;
 			val.Reference = null;
 			return val;
@@ -182,7 +181,6 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.String;
-			val.FloatNumber = 0.0;
 			val.Reference = v;
 			return val;
 		}
@@ -218,7 +216,6 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.Function;
-			val.FloatNumber = 0.0;
 			val.Reference = v;
 			return val;
 		}
@@ -235,7 +232,6 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.Array;
-			val.FloatNumber = 0.0;
 			val.Reference = v;
 			return val;
 		}
@@ -252,7 +248,6 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.Table;
-			val.FloatNumber = 0.0;
 			val.Reference = v;
 			return val;
 		}
