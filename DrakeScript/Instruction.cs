@@ -16,6 +16,7 @@ namespace DrakeScript
 			PushNum,
 			PushStr,
 			PushArray,
+			PushTable,
 			PushFunc,
 			PushNil,
 			PushArg,

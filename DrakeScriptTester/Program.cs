@@ -248,11 +248,30 @@ namespace DrakeScriptTester
 				Value.Create(new List<Value> {1, 2, 3}),
 				"local arr = [1]; arr[2] = 3; arr[1] = 2; return arr;"
 			),
-
 			new Test(
 				"array get",
 				Value.Create(new List<Value> {12, 4, 7}),
 				"local arr = [3 * 4, 7, 4]; return [arr[0], arr[2], arr[1]];"
+			),
+			new Test(
+				"simple table",
+				Value.Create(new Table(new Dictionary<object, Value>{{1.0, 5.0}, {5.0, 2.0}})),
+				"return {1: 5, 5: 2};"
+			),
+			new Test(
+				"empty table",
+				Value.Create(new Table()),
+				"return {};"
+			),
+			new Test(
+				"table set",
+				Value.Create(new Table(new Dictionary<object, Value>{{"woof", "meow"}})),
+				"local a = {}; local catSound = \"meow\"; a[\"woof\"] = catSound; return a;"
+			),
+			new Test(
+				"table key math and concatenation",
+				Value.Create(new Table(new Dictionary<object, Value>{{50.0, "Yellow"}, {"Test Key", 5.0}})),
+				"return {25 * 2: \"Yellow\", \"Test \" ~ \"Key\": 5};"
 			),
 		};
 

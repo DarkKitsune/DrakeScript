@@ -70,6 +70,9 @@ namespace DrakeScript
 							}
 							Stack.Push(Value.Create(new List<Value>(aa)));
 							break;
+						case (Instruction.InstructionType.PushTable):
+							Stack.Push(Value.Create(new Table()));
+							break;
 						case (Instruction.InstructionType.PushNil):
 							Stack.Push(Value.Nil);
 							break;
@@ -112,12 +115,21 @@ namespace DrakeScript
 										throw new InvalidIndexValueException("Array", ia, instruction.Location);
 									Stack.Push(va.Array[ia]);
 									break;
+								case (Value.ValueType.Table):
+									Value outValue;
+									if (va.Table.TryGetValue(vb.DynamicValue, out outValue))
+										Stack.Push(outValue);
+									else
+										Stack.Push(Value.Nil);
+									break;
+								default:
+									throw new CannotIndexTypeException(va.Type, instruction.Location);
 							}
 							break;
 						case (Instruction.InstructionType.PopIndex):
+							vc = Stack.Pop();
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							vc = Stack.Pop();
 							switch (va.Type)
 							{
 								case (Value.ValueType.Array):
@@ -136,6 +148,11 @@ namespace DrakeScript
 									else
 										tempArray[ia] = vc;
 									break;
+								case (Value.ValueType.Table):
+									va.Table[vb.DynamicValue] = vc;
+									break;
+								default:
+									throw new CannotIndexTypeException(va.Type, instruction.Location);
 							}
 							break;
 						case (Instruction.InstructionType.Add):

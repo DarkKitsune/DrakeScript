@@ -57,6 +57,7 @@
     <Compile Include="InterpreterException.cs" />
     <Compile Include="Optimizer.cs" />
     <Compile Include="CoreLibs.cs" />
+    <Compile Include="Table.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

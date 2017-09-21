@@ -196,6 +196,10 @@ namespace DrakeScript
 						Stack.Push(new ASTNode(ASTNode.NodeType.ConcatOperator, current.Location));
 						Advance(1);
 						break;
+					case (Token.TokenType.Colon):
+						Stack.Push(new ASTNode(ASTNode.NodeType.PairOperator, current.Location));
+						Advance(1);
+						break;
 					case (Token.TokenType.Not):
 						Stack.Push(new ASTNode(ASTNode.NodeType.NotOperator, current.Location));
 						Advance(1);
@@ -273,6 +277,17 @@ namespace DrakeScript
 							Stack.Push(new ASTNode(ASTNode.NodeType.Array, current.Location, parsed));
 							Advance(advanceAmount);
 						}
+						break;
+					case (Token.TokenType.BraOpen):
+						newParser = new Parser();
+						parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, 0, out advanceAmount), true);
+						foreach (var p in parsed)
+						{
+							if (p.Type != ASTNode.NodeType.Pair)
+								throw new ExpectedTokenException("...: ...", p.Location);
+						}
+						Stack.Push(new ASTNode(ASTNode.NodeType.Table, current.Location, parsed));
+						Advance(advanceAmount);
 						break;
 					case (Token.TokenType.Semicolon):
 						if (useCommaForSemicolon)

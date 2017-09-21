@@ -54,6 +54,24 @@ namespace DrakeScriptTester
 								}
 							}
 					}
+					else if (ret.Type == Value.ValueType.Table)
+					{
+						success = true;
+						if (ret.Table.Count != SuccessReturn.Table.Count)
+							success = false;
+						else
+						{
+							var keys = ret.Table.Keys;
+							foreach (var key in keys)
+							{
+								if (!ret.Table[key].Equals(SuccessReturn.Table[key]))
+								{
+									success = false;
+									break;
+								}
+							}
+						}
+					}
 					else
 						success = ret.Equals(SuccessReturn);
 				}
@@ -63,7 +81,6 @@ namespace DrakeScriptTester
 					Console.ForegroundColor = ConsoleColor.Red;
 					Console.WriteLine("Test \"" + Name + "\" failed; expected " + SuccessReturn.ToString() + " but got " + ret.ToString());
 					Console.WriteLine("Code = " + func.Code.ToStringFormatted());
-					Console.WriteLine("Globals = " + String.Join(", ", context.Globals));
 					Console.ForegroundColor = oldColor;
 				}
 				else
@@ -81,7 +98,6 @@ namespace DrakeScriptTester
 				Console.ForegroundColor = ConsoleColor.Red;
 				Console.WriteLine("Test \"" + Name + "\" failed because of exception:\n " + e.ToString());
 				Console.WriteLine("Code = " + func.Code.ToStringFormatted());
-				Console.WriteLine("Globals = " + String.Join(", ", context.Globals));
 				Console.ForegroundColor = oldColor;
 				return false;
 			}

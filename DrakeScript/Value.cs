@@ -18,7 +18,8 @@ namespace DrakeScript
 			String,
 			Function,
 			Array,
-			Int
+			Int,
+			Table
 		}
 
 		public ValueType Type;
@@ -87,6 +88,16 @@ namespace DrakeScript
 			}
 		}
 
+		public Table Table
+		{
+			get
+			{
+				if (Reference is Table)
+					return (Table)Reference;
+				return null;
+			}
+		}
+
 		public object DynamicValue
 		{
 			get
@@ -96,7 +107,9 @@ namespace DrakeScript
 					case (ValueType.Nil):
 						return null;
 					case (ValueType.Number):
-						return Number;
+						return FloatNumber;
+					case (ValueType.Int):
+						return IntNumber;
 					case (ValueType.String):
 						return String;
 					default:
@@ -231,6 +244,23 @@ namespace DrakeScript
 			return v.Array;
 		}
 		public static implicit operator Value(List<Value> v)
+		{
+			return Value.Create(v);
+		}
+
+		public static Value Create(Table v)
+		{
+			var val = new Value();
+			val.Type = ValueType.Table;
+			val.Number = 0.0;
+			val.Reference = v;
+			return val;
+		}
+		public static implicit operator Table(Value v)
+		{
+			return v.Table;
+		}
+		public static implicit operator Value(Table v)
 		{
 			return Value.Create(v);
 		}

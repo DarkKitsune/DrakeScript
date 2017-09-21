@@ -65,7 +65,7 @@ namespace DrakeScript
 			string arrayOrTableType,
 			Value.ValueType type,
 			SourceRef location
-		) : base(arrayOrTableType + " cannot be indexed with type " + type, location)
+		) : base(arrayOrTableType + " cannot be indexed with type \"" + type + "\"", location)
 		{
 			
 		}
@@ -77,7 +77,7 @@ namespace DrakeScript
 			string arrayOrTableType,
 			object index,
 			SourceRef location
-		) : base("index \"" + index + "\" does not exist in " + arrayOrTableType, location)
+		) : base("Index \"" + index + "\" does not exist in " + arrayOrTableType, location)
 		{
 
 		}
@@ -89,7 +89,18 @@ namespace DrakeScript
 			string arrayOrTableType,
 			int index,
 			SourceRef location
-		) : base("index \"" + index + "\" is below 0 in " + arrayOrTableType, location)
+		) : base("Index \"" + index + "\" is below 0 in " + arrayOrTableType, location)
+		{
+
+		}
+	}
+
+	public class CannotIndexTypeException : InterpreterException
+	{
+		public CannotIndexTypeException(
+			Value.ValueType type,
+			SourceRef location
+		) : base("Cannot index type \"" + type + "\"", location)
 		{
 
 		}

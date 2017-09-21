@@ -111,6 +111,25 @@ namespace DrakeScript
 						)
 					);
 					break;
+				case (ASTNode.NodeType.Table):
+					if (!allowPush)
+						throw new UnexpectedTokenException("{...}", node.Location);
+					instructions.Add(
+						new Instruction(
+							node.Location,
+							Instruction.InstructionType.PushTable
+						)
+					);
+					foreach (var child in (List<ASTNode>)node.Value)
+					{
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dup));
+						range = Generate(child.Branches["left"], true);
+						instructions.AddRange(range);
+						range = Generate(child.Branches["right"], true);
+						instructions.AddRange(range);
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopIndex));
+					}
+					break;
 				case (ASTNode.NodeType.Ident):
 					if (!allowPush)
 						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
@@ -225,16 +244,18 @@ namespace DrakeScript
 						Locals.Add((string)node.Branches["left"].Value);
 					}
 
-					instructions.AddRange(Generate(node.Branches["right"], true));
+					
 
 					if (node.Branches["left"].Type == ASTNode.NodeType.Index)
 					{
 						instructions.AddRange(Generate(node.Branches["left"].Branches["arrayOrTable"], true));
 						instructions.AddRange(Generate(node.Branches["left"].Branches["index"], true));
+						instructions.AddRange(Generate(node.Branches["right"], true));
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopIndex));
 					}
 					else
 					{
+						instructions.AddRange(Generate(node.Branches["right"], true));
 						locNum = Locals.IndexOf((string)node.Branches["left"].Value);
 						if (locNum >= 0)
 						{
