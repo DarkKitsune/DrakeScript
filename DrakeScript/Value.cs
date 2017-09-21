@@ -9,12 +9,12 @@ namespace DrakeScript
 		public const int MinSize = sizeof(ValueType) + sizeof(double) + 4;
 
 		static string DefaultString = "";
-		public static Value Nil = new Value {Type = ValueType.Nil, Number = 0.0, String = DefaultString, Reference = null};
+		public static Value Nil = new Value {Type = ValueType.Nil, FloatNumber = 0.0, String = DefaultString, Reference = null};
 
 		public enum ValueType : short
 		{
 			Nil,
-			Number,
+			Float,
 			String,
 			Function,
 			Array,
@@ -24,7 +24,7 @@ namespace DrakeScript
 
 		public ValueType Type;
 		public double FloatNumber;
-		public double Number
+		/*public double Number
 		{
 			get
 			{
@@ -38,7 +38,7 @@ namespace DrakeScript
 					FloatNumber = value;
 				IntNumber = (int)value;
 			}
-		}
+		}*/
 		public int IntNumber;
 		object Reference;
 
@@ -46,11 +46,11 @@ namespace DrakeScript
 		{
 			get
 			{
-				return Number != 0.0;
+				return FloatNumber != 0.0;
 			}
 			set
 			{
-				Number = (value ? 1.0 : 0.0);
+				FloatNumber = (value ? 1.0 : 0.0);
 			}
 		}
 
@@ -106,7 +106,7 @@ namespace DrakeScript
 				{
 					case (ValueType.Nil):
 						return null;
-					case (ValueType.Number):
+					case (ValueType.Float):
 						return FloatNumber;
 					case (ValueType.Int):
 						return IntNumber;
@@ -138,7 +138,7 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.Int;
-			val.Number = 0.0;
+			val.FloatNumber = 0.0;
 			val.IntNumber = v;
 			val.Reference = null;
 			return val;
@@ -147,14 +147,14 @@ namespace DrakeScript
 		public static Value Create(double v)
 		{
 			var val = new Value();
-			val.Type = ValueType.Number;
-			val.Number = v;
+			val.Type = ValueType.Float;
+			val.FloatNumber = v;
 			val.Reference = null;
 			return val;
 		}
 		public static implicit operator double(Value v)
 		{
-			return v.Number;
+			return v.FloatNumber;
 		}
 		public static implicit operator Value(double v)
 		{
@@ -164,14 +164,14 @@ namespace DrakeScript
 		public static Value Create(int v)
 		{
 			var val = new Value();
-			val.Type = ValueType.Number;
-			val.Number = v;
+			val.Type = ValueType.Float;
+			val.FloatNumber = v;
 			val.Reference = null;
 			return val;
 		}
 		public static implicit operator int(Value v)
 		{
-			return (int)v.Number;
+			return (int)v.FloatNumber;
 		}
 		public static implicit operator Value(int v)
 		{
@@ -182,7 +182,7 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.String;
-			val.Number = 0.0;
+			val.FloatNumber = 0.0;
 			val.Reference = v;
 			return val;
 		}
@@ -200,8 +200,8 @@ namespace DrakeScript
 		public static Value Create(bool v)
 		{
 			var val = new Value();
-			val.Type = ValueType.Number;
-			val.Number = (v ? 1.0 : 0.0);
+			val.Type = ValueType.Float;
+			val.FloatNumber = (v ? 1.0 : 0.0);
 			val.Reference = null;
 			return val;
 		}
@@ -218,7 +218,7 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.Function;
-			val.Number = 0.0;
+			val.FloatNumber = 0.0;
 			val.Reference = v;
 			return val;
 		}
@@ -235,7 +235,7 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.Array;
-			val.Number = 0.0;
+			val.FloatNumber = 0.0;
 			val.Reference = v;
 			return val;
 		}
@@ -252,7 +252,7 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.Table;
-			val.Number = 0.0;
+			val.FloatNumber = 0.0;
 			val.Reference = v;
 			return val;
 		}
@@ -268,8 +268,8 @@ namespace DrakeScript
 		public static Value Create()
 		{
 			var val = new Value();
-			val.Type = ValueType.Number;
-			val.Number = 0.0;
+			val.Type = ValueType.Float;
+			val.FloatNumber = 0.0;
 			val.Reference = null;
 			return val;
 		}
@@ -324,8 +324,8 @@ namespace DrakeScript
 						case (ValueType.Function):
 							writer.Write(Function.GetBytecode());
 							break;
-						case (ValueType.Number):
-							writer.Write((float)Number);
+						case (ValueType.Float):
+							writer.Write((float)FloatNumber);
 							break;
 						case (ValueType.Int):
 							writer.Write(IntNumber);
@@ -347,7 +347,7 @@ namespace DrakeScript
 					return Value.Create(str);
 				case (ValueType.Function):
 					return Value.Create(Function.FromReader(context, reader));
-				case (ValueType.Number):
+				case (ValueType.Float):
 					return Value.Create((double)reader.ReadSingle());
 				case (ValueType.Int):
 					return Value.Create((double)reader.ReadInt32());

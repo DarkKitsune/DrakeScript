@@ -20,7 +20,7 @@ namespace DrakeScript
 				{
 					
 					case (Instruction.InstructionType.IncVarByLocal):
-						if (prev.Type == Instruction.InstructionType.PushNum & prev.Arg.Number == 1)
+						if (prev.Type == Instruction.InstructionType.PushNum & prev.Arg.FloatNumber == 1)
 						{
 							code[i] = new Instruction(inst.Location, Instruction.InstructionType.IncVarLocal, inst.Arg);
 							code.RemoveAt(i - 1);
@@ -28,7 +28,7 @@ namespace DrakeScript
 						}
 						break;
 					case (Instruction.InstructionType.IncVarByGlobal):
-						if (prev.Type == Instruction.InstructionType.PushNum & prev.Arg.Number == 1)
+						if (prev.Type == Instruction.InstructionType.PushNum & prev.Arg.FloatNumber == 1)
 						{
 							code[i] = new Instruction(inst.Location, Instruction.InstructionType.IncVarGlobal, inst.Arg);
 							code.RemoveAt(i - 1);
@@ -36,7 +36,7 @@ namespace DrakeScript
 						}
 						break;
 					case (Instruction.InstructionType.DecVarByLocal):
-						if (prev.Type == Instruction.InstructionType.PushNum & prev.Arg.Number == 1)
+						if (prev.Type == Instruction.InstructionType.PushNum & prev.Arg.FloatNumber == 1)
 						{
 							code[i] = new Instruction(inst.Location, Instruction.InstructionType.DecVarLocal, inst.Arg);
 							code.RemoveAt(i - 1);
@@ -44,7 +44,7 @@ namespace DrakeScript
 						}
 						break;
 					case (Instruction.InstructionType.DecVarByGlobal):
-						if (prev.Type == Instruction.InstructionType.PushNum & prev.Arg.Number == 1)
+						if (prev.Type == Instruction.InstructionType.PushNum & prev.Arg.FloatNumber == 1)
 						{
 							code[i] = new Instruction(inst.Location, Instruction.InstructionType.DecVarGlobal, inst.Arg);
 							code.RemoveAt(i - 1);
@@ -69,16 +69,16 @@ namespace DrakeScript
 					case (Instruction.InstructionType.JumpEZ):
 						if (i < insertpos)
 						{
-							if (i + inst.Arg.Number > insertpos)
+							if (i + inst.Arg.IntNumber > insertpos)
 							{
-								inst.Arg.Number += number;
+								inst.Arg.IntNumber += number;
 								code[i] = inst;
 							}
 						}
 						else{
-							if (i + inst.Arg.Number < insertpos)
+							if (i + inst.Arg.IntNumber < insertpos)
 							{
-								inst.Arg.Number -= number;
+								inst.Arg.IntNumber -= number;
 								code[i] = inst;
 							}
 						}

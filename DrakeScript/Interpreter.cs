@@ -108,9 +108,9 @@ namespace DrakeScript
 							switch (va.Type)
 							{
 								case (Value.ValueType.Array):
-									if (vb.Type != Value.ValueType.Number)
+									if (vb.Type != Value.ValueType.Float)
 										throw new InvalidIndexTypeException("Array", vb.Type, instruction.Location);
-									ia = (int)vb.Number;
+									ia = (int)vb.FloatNumber;
 									if (ia < 0 || ia >= va.Array.Count)
 										throw new InvalidIndexValueException("Array", ia, instruction.Location);
 									Stack.Push(va.Array[ia]);
@@ -133,9 +133,9 @@ namespace DrakeScript
 							switch (va.Type)
 							{
 								case (Value.ValueType.Array):
-									if (vb.Type != Value.ValueType.Number)
+									if (vb.Type != Value.ValueType.Float)
 										throw new InvalidIndexTypeException("Array", vb.Type, instruction.Location);
-									ia = (int)vb.Number;
+									ia = (int)vb.FloatNumber;
 									if (ia < 0)
 										throw new BelowZeroIndexValueException("Array", ia, instruction.Location);
 									var tempArray = va.Array;
