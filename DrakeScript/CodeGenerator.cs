@@ -107,7 +107,7 @@ namespace DrakeScript
 						new Instruction(
 							node.Location,
 							Instruction.InstructionType.PushArray,
-							Value.Create(((List<ASTNode>)node.Value).Count)
+							Value.CreateInt(((List<ASTNode>)node.Value).Count)
 						)
 					);
 					break;
@@ -347,15 +347,15 @@ namespace DrakeScript
 							range = Generate(child, false, true);
 							tempInst.AddRange(range);
 						}
-						instructions.Add(new Instruction(node.Branches["else"].Location, Instruction.InstructionType.Jump, Value.Create(tempInst.Count)));
+						instructions.Add(new Instruction(node.Branches["else"].Location, Instruction.InstructionType.Jump, Value.CreateInt(tempInst.Count)));
 						var ifJumpDestPos = instructions.Count + 2;
-						instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(ifJumpDestPos - ifJumpInstPos - 2)));
+						instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(ifJumpDestPos - ifJumpInstPos - 2)));
 						instructions.AddRange(tempInst);
 					}
 					else
 					{
 						var ifJumpDestPos = instructions.Count + 2;
-						instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(ifJumpDestPos - ifJumpInstPos - 2)));
+						instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(ifJumpDestPos - ifJumpInstPos - 2)));
 					}
 					break;
 				case (ASTNode.NodeType.While):
@@ -371,8 +371,8 @@ namespace DrakeScript
 						range = Generate(child, false, true);
 						instructions.AddRange(range);
 					}
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.Create(whileStart - instructions.Count - 2)));
-					instructions.Insert(whileJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(instructions.Count - whileJumpInstPos)));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.CreateInt(whileStart - instructions.Count - 2)));
+					instructions.Insert(whileJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(instructions.Count - whileJumpInstPos)));
 					//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
 					break;
 				case (ASTNode.NodeType.Loop):
@@ -411,8 +411,8 @@ namespace DrakeScript
 							range = Generate(child, false, true);
 							instructions.AddRange(range);
 						}
-						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.Create(loopStart - instructions.Count - 1)));
-						instructions.Insert(loopJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.Create(instructions.Count - loopJumpInstPos)));
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.CreateInt(loopStart - instructions.Count - 1)));
+						instructions.Insert(loopJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(instructions.Count - loopJumpInstPos)));
 						//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
 					}

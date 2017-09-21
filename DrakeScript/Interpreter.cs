@@ -62,7 +62,7 @@ namespace DrakeScript
 							Stack.Push(instruction.Arg);
 							break;
 						case (Instruction.InstructionType.PushArray):
-							ia = (int)instruction.Arg.Number;
+							ia = instruction.Arg.IntNumber;
 							aa = new Value[ia];
 							for (var i = ia - 1; i >= 0; i--)
 							{
@@ -312,12 +312,12 @@ namespace DrakeScript
 							va = Stack.Pop();
 							if (va.FloatNumber == 0.0)
 							{
-								pos += (int)instruction.Arg.FloatNumber;
+								pos += instruction.Arg.IntNumber;
 							}
 							break;
 
 						case (Instruction.InstructionType.Jump):
-							pos += (int)instruction.Arg.FloatNumber;
+							pos += instruction.Arg.IntNumber;
 							break;
 
 						case (Instruction.InstructionType.Return):
