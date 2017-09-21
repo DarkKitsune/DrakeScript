@@ -277,11 +277,12 @@ namespace DrakeScript
 
 		public override string ToString()
 		{
-			if (DynamicValue == null)
-				return "nil";
-			if (DynamicValue is List<Value>)
-				return String.Format("[{0}]", String.Join(", ", (List<Value>)DynamicValue));
-			return DynamicValue.ToString();
+			switch (Type)
+			{
+				case (ValueType.Nil):
+					return "nil";
+			}
+			return (DynamicValue != null ? DynamicValue.ToString() : "nil");
 		}
 
 		public bool Equals(Value value)

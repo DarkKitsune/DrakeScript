@@ -52,7 +52,7 @@ namespace DrakeScript
 			long a;
 			if (long.TryParse(str, out a))
 			{
-				Value = a;
+				Value = (double)a;
 			}
 		}
 

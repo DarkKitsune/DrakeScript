@@ -79,7 +79,7 @@ namespace DrakeScript
 					sb.Append(", ");
 				else
 					first = false;
-				sb.Append(key.ToString());
+				sb.Append(key is string ? "\"" + key + "\"" : key.ToString());
 				sb.Append(':');
 				sb.Append(Data[key].DynamicValue.ToString());
 			}

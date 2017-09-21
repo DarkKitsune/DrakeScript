@@ -69,7 +69,7 @@ namespace DrakeScript
 						new Instruction(
 							node.Location,
 							Instruction.InstructionType.PushNum,
-							Value.Create((double)(long)(node.Value))
+							Value.Create((double)(node.Value))
 						)
 					);
 					break;

@@ -44,20 +44,11 @@ namespace DrakeScriptTester
 				var code = context.LoadBytecode(args[1]);
 				Console.WriteLine(code.Code.ToStringFormatted() + "\n");
 				var interpreter = new Interpreter(context);
-				var sw = new System.Diagnostics.Stopwatch();
-				var count = 0;
-				sw.Start();
-				while (sw.ElapsedMilliseconds < 1000)
-				{
-					code.Invoke(interpreter);
-					count++;
-				}
-				sw.Stop();
+				code.Invoke(interpreter);
 				if (interpreter.Stack.Count > 0)
 					Console.WriteLine("result: " + interpreter.Stack.Peek(0).ToString());
 				else
 					Console.WriteLine("no result");
-				Console.WriteLine("average time per run: " + (5000.0 / (double)count) + " ms over " + count + " runs");
 			}
 			else
 			{
@@ -72,20 +63,11 @@ namespace DrakeScriptTester
 				optimizer.Optimize(code);
 				Console.WriteLine(code.Code.ToStringFormatted() + "\n");
 				var interpreter = new Interpreter(context);
-				var sw = new System.Diagnostics.Stopwatch();
-				var count = 0;
-				sw.Start();
-				while (sw.ElapsedMilliseconds < 1000)
-				{
-					code.Invoke(interpreter);
-					count++;
-				}
-				sw.Stop();
+				code.Invoke(interpreter);
 				if (interpreter.Stack.Count > 0)
 					Console.WriteLine("result: " + interpreter.Stack.Peek(0).ToString());
 				else
 					Console.WriteLine("no result");
-				Console.WriteLine("average time per run: " + (5000.0 / (double)count) + " ms over " + count + " runs");
 			}
 		}
 

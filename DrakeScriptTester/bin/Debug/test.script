@@ -1,6 +1,10 @@
-local a = 0;
+local t = {};
 
-loop (1000)
-{
-    a += 1;
-}
+t.valA = 2;
+t.valB = 12.5;
+t.merp = "152";
+
+t["aaaa"] = 24 * 2;
+t[12 * 23.1] = 5;
+
+println(t);
