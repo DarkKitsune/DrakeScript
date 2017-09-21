@@ -200,6 +200,10 @@ namespace DrakeScript
 						Stack.Push(new ASTNode(ASTNode.NodeType.PairOperator, current.Location));
 						Advance(1);
 						break;
+					case (Token.TokenType.Period):
+						Stack.Push(new ASTNode(ASTNode.NodeType.DotIndexOperator, current.Location));
+						Advance(1);
+						break;
 					case (Token.TokenType.Not):
 						Stack.Push(new ASTNode(ASTNode.NodeType.NotOperator, current.Location));
 						Advance(1);

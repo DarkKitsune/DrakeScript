@@ -64,6 +64,10 @@ namespace DrakeScript
 						token = new Token(Location(), Token.TokenType.Comma);
 						Advance(1);
 						break;
+					case ('.'):
+						token = new Token(Location(), Token.TokenType.Period);
+						Advance(1);
+						break;
 					case ('+'):
 						if (At(1) == '=')
 						{

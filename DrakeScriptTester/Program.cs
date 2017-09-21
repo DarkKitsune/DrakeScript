@@ -269,6 +269,31 @@ namespace DrakeScriptTester
 				"local a = {}; local catSound = \"meow\"; a[\"woof\"] = catSound; return a;"
 			),
 			new Test(
+				"table set dot",
+				Value.Create(new Table(new Dictionary<object, Value>{{"woof", "meow"}})),
+				"local a = {}; local catSound = \"meow\"; a.woof = catSound; return a;"
+			),
+			new Test(
+				"table get 1",
+				Value.Create(1),
+				"local a = {\"a\": 1, \"b\": 2.34}; return a[\"a\"];"
+			),
+			new Test(
+				"table get 2",
+				Value.Create(2.34),
+				"local a = {\"a\": 1, \"b\": 2.34}; return a[\"b\"];"
+			),
+			new Test(
+				"table get dot 1",
+				Value.Create(1),
+				"local a = {\"a\": 1, \"b\": 2.34}; return a.a;"
+			),
+			new Test(
+				"table get dot 2",
+				Value.Create(2.34),
+				"local a = {\"a\": 1, \"b\": 2.34}; return a.b;"
+			),
+			new Test(
 				"table key math and concatenation",
 				Value.Create(new Table(new Dictionary<object, Value>{{50.0, "Yellow"}, {"Test Key", 5.0}})),
 				"return {25 * 2: \"Yellow\", \"Test \" ~ \"Key\": 5};"

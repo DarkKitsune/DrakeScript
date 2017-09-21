@@ -22,6 +22,10 @@ namespace DrakeScript
 					list[i] = Analyze(list[i]);
 				}
 			}
+			else if (node.Value is ASTNode)
+			{
+				node.Value = Analyze((ASTNode)node.Value);
+			}
 
 			ASTNode newNode, left, right;
 			switch (node.Type)
@@ -194,6 +198,24 @@ namespace DrakeScript
 					if (left.Type == ASTNode.NodeType.Ident)
 					{
 						node.Branches["left"] = new ASTNode(ASTNode.NodeType.Str, left.Location, left.Value);
+					}
+					else
+						throw new ExpectedNodeException(ASTNode.NodeType.Ident, left.Type, left.Location);
+					break;
+				case (ASTNode.NodeType.DotIndex):
+					left = node.Branches["left"];
+					right = node.Branches["right"];
+					if (left.Type == ASTNode.NodeType.Ident)
+					{
+						if (right.Type == ASTNode.NodeType.Ident)
+						{
+							newNode = new ASTNode(ASTNode.NodeType.Index, node.Location);
+							newNode.Branches.Add("arrayOrTable", node.Branches["left"]);
+							newNode.Branches.Add("index", new ASTNode(ASTNode.NodeType.Str, node.Branches["right"].Location, node.Branches["right"].Value));
+							node = newNode;
+						}
+						else
+							throw new ExpectedNodeException(ASTNode.NodeType.Ident, right.Type, right.Location);
 					}
 					else
 						throw new ExpectedNodeException(ASTNode.NodeType.Ident, left.Type, left.Location);
