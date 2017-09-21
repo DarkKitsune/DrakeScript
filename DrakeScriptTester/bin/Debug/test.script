@@ -1,10 +1,8 @@
-local t = {};
+local a = {};
 
-t.valA = 2;
-t.valB = 12.5;
-t.merp = "152";
+a.b = {};
 
-t["aaaa"] = 24 * 2;
-t[12 * 23.1] = 5;
-
-println(t);
+a.b.c = 5;
+print(a.b["c"]);
+a.b["c"] = 2;
+print(a.b["c"]);

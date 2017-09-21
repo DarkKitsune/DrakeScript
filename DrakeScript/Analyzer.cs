@@ -205,20 +205,33 @@ namespace DrakeScript
 				case (ASTNode.NodeType.DotIndex):
 					left = node.Branches["left"];
 					right = node.Branches["right"];
-					if (left.Type == ASTNode.NodeType.Ident)
+					if (right.Type == ASTNode.NodeType.Ident)
 					{
-						if (right.Type == ASTNode.NodeType.Ident)
-						{
-							newNode = new ASTNode(ASTNode.NodeType.Index, node.Location);
-							newNode.Branches.Add("arrayOrTable", node.Branches["left"]);
-							newNode.Branches.Add("index", new ASTNode(ASTNode.NodeType.Str, node.Branches["right"].Location, node.Branches["right"].Value));
-							node = newNode;
-						}
-						else
-							throw new ExpectedNodeException(ASTNode.NodeType.Ident, right.Type, right.Location);
+						newNode = new ASTNode(ASTNode.NodeType.Index, node.Location);
+						newNode.Branches.Add("arrayOrTable", left);
+						newNode.Branches.Add("index", new ASTNode(ASTNode.NodeType.Str, right.Location, right.Value));
+						node = newNode;
+					}
+					else if (right.Type == ASTNode.NodeType.Call && right.Branches["function"].Type == ASTNode.NodeType.Ident)
+					{
+						newNode = new ASTNode(ASTNode.NodeType.Index, node.Location);
+						newNode.Branches.Add("arrayOrTable", left);
+						newNode.Branches.Add("index", new ASTNode(ASTNode.NodeType.Str, right.Location, right.Branches["function"].Value));
+						node = new ASTNode(ASTNode.NodeType.Call, node.Location, right.Value);
+						node.Branches.Add("function", newNode);
+						node.Branches.Add("args", right.Branches["args"]);
+					}
+					else if (right.Type == ASTNode.NodeType.Index && right.Branches["arrayOrTable"].Type == ASTNode.NodeType.Ident)
+					{
+						newNode = new ASTNode(ASTNode.NodeType.Index, node.Location);
+						newNode.Branches.Add("arrayOrTable", left);
+						newNode.Branches.Add("index", new ASTNode(ASTNode.NodeType.Str, right.Location, right.Branches["arrayOrTable"].Value));
+						node = new ASTNode(ASTNode.NodeType.Index, node.Location, right.Value);
+						node.Branches.Add("arrayOrTable", newNode);
+						node.Branches.Add("index", right.Branches["index"]);
 					}
 					else
-						throw new ExpectedNodeException(ASTNode.NodeType.Ident, left.Type, left.Location);
+						throw new ExpectedNodeException(ASTNode.NodeType.Ident, right.Type, right.Location);
 					break;
 			}
 

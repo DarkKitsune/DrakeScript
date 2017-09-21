@@ -280,6 +280,21 @@ namespace DrakeScriptTester
 				Value.Create(new Table(new Dictionary<object, Value>{{50.0, "Yellow"}, {"Test Key", 5.0}})),
 				"return {25 * 2: \"Yellow\", \"Test \" ~ \"Key\": 5};"
 			),
+			new Test(
+				"table dot call",
+				Value.Create(168.0),
+				"local Vector = {}; Vector.Create = function(x, y) { return {\"x\": x, \"y\": y}; }; return Vector.Create(192, 168).y;"
+			),
+			new Test(
+				"table dot bracket index",
+				Value.Create(5.0),
+				"local a = {}; a.b = {}; a.b[\"c\"] = 5; return a.b[\"c\"];"
+			),
+			new Test(
+				"table mixed 1",
+				Value.Create(23.0),
+				"local Vector = {\"Create\": function(x, y) { return {\"x\": x, \"y\": y}; } }; return Vector.Create(23, 212).x;"
+			),
 		};
 
 		public static void RunTests()
