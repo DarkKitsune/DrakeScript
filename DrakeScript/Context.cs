@@ -125,6 +125,17 @@ namespace DrakeScript
 		{
 			Globals[name] = Value.Create(value);
 		}
+
+
+		public Coroutine CreateCoroutine(Function func)
+		{
+			return new Coroutine(this, func);
+		}
+
+		public Function CreateFunction(Func<Context, SourceRef, Value[], int, Value> method, int minimumParamCount)
+		{
+			return new Function(this, method, minimumParamCount);
+		}
 	}
 }
 
