@@ -8,7 +8,7 @@ namespace DrakeScript
 		string[] Args;
 		Dictionary<string, int> ArgLookup = new Dictionary<string, int>();
 		List<string> Locals = new List<string>();
-		public bool UnrollLoops = false;
+		public bool UnrollLoops = true;
 		public int MaxUnrollBytes = 30000;
 		public Context Context;
 		public string Name;
@@ -38,7 +38,7 @@ namespace DrakeScript
 			return new Function(name, Context, code.ToArray(), Args, Locals.ToArray());
 		}
 
-		public List<Instruction> Generate(ASTNode node, bool allowPush, bool allowConditions = false)
+		public List<Instruction> Generate(ASTNode node, bool requirePush, bool allowConditions = false)
 		{
 			var instructions = new List<Instruction>();
 
@@ -54,7 +54,7 @@ namespace DrakeScript
 					}
 					break;
 				case (ASTNode.NodeType.Par):
-					if (!allowPush)
+					if (!requirePush)
 						throw new UnexpectedTokenException("(...)", node.Location);
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
@@ -63,7 +63,7 @@ namespace DrakeScript
 					}
 					break;
 				case (ASTNode.NodeType.Int):
-					if (!allowPush)
+					if (!requirePush)
 						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
 					instructions.Add(
 						new Instruction(
@@ -74,7 +74,7 @@ namespace DrakeScript
 					);
 					break;
 				case (ASTNode.NodeType.Dec):
-					if (!allowPush)
+					if (!requirePush)
 						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
 					instructions.Add(
 						new Instruction(
@@ -84,8 +84,18 @@ namespace DrakeScript
 						)
 					);
 					break;
+				case (ASTNode.NodeType.Nil):
+					if (!requirePush)
+						throw new UnexpectedTokenException("nil", node.Location);
+					instructions.Add(
+						new Instruction(
+							node.Location,
+							Instruction.InstructionType.PushNil
+						)
+					);
+					break;
 				case (ASTNode.NodeType.Str):
-					if (!allowPush)
+					if (!requirePush)
 						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
 					instructions.Add(
 						new Instruction(
@@ -96,7 +106,7 @@ namespace DrakeScript
 					);
 					break;
 				case (ASTNode.NodeType.Array):
-					if (!allowPush)
+					if (!requirePush)
 						throw new UnexpectedTokenException("[...]", node.Location);
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
@@ -112,7 +122,7 @@ namespace DrakeScript
 					);
 					break;
 				case (ASTNode.NodeType.Table):
-					if (!allowPush)
+					if (!requirePush)
 						throw new UnexpectedTokenException("{...}", node.Location);
 					instructions.Add(
 						new Instruction(
@@ -131,7 +141,7 @@ namespace DrakeScript
 					}
 					break;
 				case (ASTNode.NodeType.Ident):
-					if (!allowPush)
+					if (!requirePush)
 						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
 					int argNum;
 					if (ArgLookup.TryGetValue((string)node.Value, out argNum))
@@ -314,15 +324,22 @@ namespace DrakeScript
 					);
 					instructions.AddRange(Generate(node.Branches["function"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Call));
-					if (!allowPush)
+					if (!requirePush)
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
 					break;
 				case (ASTNode.NodeType.Return):
-					if (allowPush)
+					if (requirePush)
 						throw new UnexpectedTokenException("return", node.Location);
 					range = Generate((ASTNode)node.Value, true);
 					instructions.AddRange(range);
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Return));
+					break;
+				case (ASTNode.NodeType.Yield):
+					if (requirePush)
+						throw new UnexpectedTokenException("yield", node.Location);
+					range = Generate((ASTNode)node.Value, true);
+					instructions.AddRange(range);
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Yield));
 					break;
 				case (ASTNode.NodeType.If):
 					if (!allowConditions)
@@ -382,7 +399,7 @@ namespace DrakeScript
 					var unrolled = false;
 					if (UnrollLoops && loopCond[0].Type == ASTNode.NodeType.Int)
 					{
-						var loopNum = (long)loopCond[0].Value;
+						var loopNum = (double)loopCond[0].Value;
 						var tempInst = new List<Instruction>();
 						foreach (var child in (List<ASTNode>)node.Value)
 						{
@@ -421,10 +438,12 @@ namespace DrakeScript
 					var funcName = (string)node.Branches["functionName"].Value;
 					if (funcName.Length == 0)
 					{
-						if (!allowPush)
+						if (!requirePush)
 							throw new UnexpectedTokenException("function", node.Location);
-
 					}
+					else if (requirePush)
+							throw new UnexpectedTokenException(funcName, node.Location);
+					
 					var funcArgs = (List<ASTNode>)(node.Branches["args"].Value);
 					var argsStrings = new string[funcArgs.Count];
 					var argN = 0;
@@ -473,6 +492,9 @@ namespace DrakeScript
 				default:
 					throw new NoCodeGenerationForNodeException(node.Type, node.Location);
 			}
+
+			if (requirePush & instructions.Count == 0)
+				instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushNil));
 
 			return instructions;
 		}

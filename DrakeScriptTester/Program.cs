@@ -76,6 +76,26 @@ namespace DrakeScriptTester
 		public static Test[] Tests = new Test[]
 		{
 			new Test(
+				"nothing",
+				Value.Nil,
+				""
+			),
+			new Test(
+				"only return nil",
+				Value.Nil,
+				"return nil;"
+			),
+			new Test(
+				"only return number 1",
+				Value.Create(20.0),
+				"return 20;"
+			),
+			new Test(
+				"only return number 2",
+				Value.Create(20.1261),
+				"return 20.1261;"
+			),
+			new Test(
 				"simple math expression 1",
 				Value.Create(100.2 * (241.22 / 5.4) - 2.3 + 9.99),
 				"local a = 241.22; b = 5.4; local c = 9.99; return 100.2 * (a / b) - 2.3 + c;"
@@ -294,6 +314,21 @@ namespace DrakeScriptTester
 				"table mixed 1",
 				Value.Create(23.0),
 				"local Vector = {\"Create\": function(x, y) { return {\"x\": x, \"y\": y}; } }; return Vector.Create(23, 212).x;"
+			),
+			new Test(
+				"coroutine 1",
+				Value.Create(new List<Value> {1.0, 2.0, 3.0}),
+				"local cr = coroutine.create(function() {yield 1.0; yield 2.0; return 3.0;}); return [cr(), cr(), cr()];"
+			),
+			new Test(
+				"coroutine 2",
+				Value.Create(new List<Value> {3.0, 7.0, 9.0, 4.5, 8.5, 10.5}),
+				"local cr = coroutine.create(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0), cr(), cr(), cr(2.5), cr(), cr()];"
+			),
+			new Test(
+				"coroutine 3",
+				Value.Create(new List<Value> {3.0, 7.0, 9.0, 4.5, 8.5, 10.5}),
+				"local cr = coroutine.create(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0 + 2.5 - 2.5), cr(2.0), cr(), cr(2.5), cr(), cr()];"
 			),
 		};
 

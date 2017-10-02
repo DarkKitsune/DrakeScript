@@ -11,7 +11,7 @@ namespace DrakeScript
 		public Instruction[] Code {get; internal set;}
 		public String[] Args {get; private set;}
 		public String[] Locals {get; private set;}
-		public Func<Value[], int, Value> Method;
+		public Func<Context, SourceRef, Value[], int, Value> Method;
 		public Context Context;
 		public Version Version;
 		public string File;
@@ -27,18 +27,21 @@ namespace DrakeScript
 			Locals = locals;
 		}
 
-		public Function(string file, Context context, Func<Value[], int, Value> method)
+		public Function(Context context, Func<Context, SourceRef, Value[], int, Value> method, int paramCount)
+		{
+			File = method.ToString();
+			Context = context;
+			Method = method;
+			Args = new string[paramCount];
+			Locals = new string[] {};
+		}
+
+		public Function(string file, Context context, Func<Context, SourceRef, Value[], int, Value> method, int paramCount)
 		{
 			File = file;
 			Context = context;
 			Method = method;
-			var param = method.GetMethodInfo().GetParameters();
-			Args = new string[param.Length];
-			var n = 0;
-			foreach (var p in param)
-			{
-				Args[n++] = p.Name;
-			}
+			Args = new string[paramCount];
 			Locals = new string[] {};
 		}
 
@@ -51,7 +54,9 @@ namespace DrakeScript
 			}
 			else
 			{
-				return Method(interpreter.ArgList, interpreter.ArgListCount);
+				if (interpreter.ArgListCount < Args.Length)
+					throw new NotEnoughArgumentsException(Args.Length, interpreter.ArgListCount, interpreter.CallLocation);
+				return Method(Context, interpreter.CallLocation, interpreter.ArgList, interpreter.ArgListCount);
 			}
 		}
 		internal void InvokePushInsteadOfReturn(Interpreter interpreter)
@@ -62,23 +67,51 @@ namespace DrakeScript
 			}
 			else
 			{
-				interpreter.Stack.Push(Method(interpreter.ArgList, interpreter.ArgListCount));
+				if (interpreter.ArgListCount < Args.Length)
+					throw new NotEnoughArgumentsException(Args.Length, interpreter.ArgListCount, interpreter.CallLocation);
+				interpreter.Stack.Push(Method(Context, interpreter.CallLocation, interpreter.ArgList, interpreter.ArgListCount));
 			}
 		}
-		public Value Invoke(params Value[] args)
+		public Value Invoke(Interpreter interpreter, params Value[] args)
 		{
 			if (ScriptFunction)
 			{
-				var interpreter = new Interpreter(Context);
-				interpreter.ArgList = args;
-				interpreter.ArgListCount = args.Length;
-				interpreter.CallLocation = SourceRef.Invalid;
+				if (!interpreter.PauseStatus.Paused)
+				{
+					interpreter.ArgList = args;
+					interpreter.ArgListCount = args.Length;
+				}
 				interpreter.Interpret(this);
 				return interpreter.Stack.Pop();
 			}
 			else
 			{
-				return Method(args, args.Length);
+				if (args.Length < Args.Length)
+					throw new NotEnoughArgumentsException(Args.Length, args.Length, interpreter.CallLocation);
+				return Method(Context, interpreter.CallLocation, args, args.Length);
+			}
+		}
+		public Value Invoke(
+			[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",  
+			[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0,
+			params Value[] args
+		)
+		{
+			var location = new SourceRef(new Source(sourceFilePath, ""), sourceLineNumber, 0);
+			if (ScriptFunction)
+			{
+				var interpreter = new Interpreter(Context);
+				interpreter.ArgList = args;
+				interpreter.ArgListCount = args.Length;
+				interpreter.CallLocation = location;
+				interpreter.Interpret(this);
+				return interpreter.Stack.Pop();
+			}
+			else
+			{
+				if (args.Length < Args.Length)
+					throw new NotEnoughArgumentsException(Args.Length, args.Length, location);
+				return Method(Context, location, args, args.Length);
 			}
 		}
 

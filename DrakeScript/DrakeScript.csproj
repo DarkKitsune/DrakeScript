@@ -58,6 +58,9 @@
     <Compile Include="Optimizer.cs" />
     <Compile Include="CoreLibs.cs" />
     <Compile Include="Table.cs" />
+    <Compile Include="Coroutine.cs" />
+    <Compile Include="InterpreterPause.cs" />
+    <Compile Include="CoroutineStatus.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

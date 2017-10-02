@@ -51,6 +51,7 @@ namespace DrakeScript
 			Dec,
 			Dup,
 			Return,
+			Yield,
 			JumpEZ,
 			Jump
 		}

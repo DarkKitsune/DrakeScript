@@ -13,9 +13,12 @@ namespace DrakeScript
 		public int ArgListCount = 0;
 		//public Scope CurrentScope = Scope.Create();
 		public FastStackGrowable<Value> Stack = new FastStackGrowable<Value>(1);
+		bool IsCoroutine = false;
+		public InterpreterPause PauseStatus = InterpreterPause.Finished;
 
-		public Interpreter(Context context)
+		public Interpreter(Context context, bool isCoroutine = false)
 		{
+			IsCoroutine = isCoroutine;
 			Context = context;
 		}
 
@@ -24,23 +27,41 @@ namespace DrakeScript
 			//CurrentScope = Scope.Create();
 			//ScopeStack.Push(CurrentScope);
 
-			var callLocation = CallLocation;
 			var code = func.Code;
-			if (func.Args.Length > ArgListCount)
-				throw new NotEnoughArgumentsException(func.Args.Length, ArgListCount, callLocation);
-			var args = new Value[ArgListCount];
-			for (var i = 0; i < ArgListCount; i++)
-				args[i] = ArgList[i];
-			Value[] locals = null;
-			if (func.Locals.Length > 0)
-				locals = new Value[func.Locals.Length];
+			var callLocation = CallLocation;
+
+			Value[] args;
+			Value[] locals;
+			int pos;
+			if (PauseStatus.Paused)
+			{
+				pos = PauseStatus.Location;
+				args = PauseStatus.Args;
+				locals = PauseStatus.Locals;
+			}
+			else
+			{
+				if (func.Args.Length > ArgListCount)
+					throw new NotEnoughArgumentsException(func.Args.Length, ArgListCount, callLocation);
+				
+				args = new Value[ArgListCount];
+				for (var i = 0; i < ArgListCount; i++)
+					args[i] = ArgList[i];
+				
+				locals = null;
+				if (func.Locals.Length > 0)
+					locals = new Value[func.Locals.Length];
+				pos = 0;
+			}
+
+			PauseStatus = InterpreterPause.Finished;
 
 			int ia;
 			Value va, vb, vc;
 			Value[] aa;
-			List<Value> la;
 			bool exited = false;
-			for (var pos = 0; pos < code.Length && !exited; pos++)
+			bool yielded = false;
+			for (; pos < code.Length && !exited; pos++)
 			{
 				var instruction = code[pos];
 				try
@@ -97,10 +118,19 @@ namespace DrakeScript
 							break;
 						case (Instruction.InstructionType.Call):
 							var callFunc = Stack.Pop();
-							if (callFunc.Type != Value.ValueType.Function)
-								throw new CannotCallNilException(instruction.Location);
-							CallLocation = instruction.Location;
-							callFunc.Function.InvokePushInsteadOfReturn(this);
+							switch (callFunc.Type)
+							{
+								case (Value.ValueType.Function):
+									CallLocation = instruction.Location;
+									callFunc.Function.InvokePushInsteadOfReturn(this);
+									break;
+								case (Value.ValueType.Coroutine):
+									CallLocation = instruction.Location;
+									Stack.Push(callFunc.Coroutine.Resume(ArgList, ArgListCount));
+									break;
+								default:
+									throw new CannotCallNilException(instruction.Location);
+							}
 							break;
 						case (Instruction.InstructionType.PushIndex):
 							vb = Stack.Pop();
@@ -323,6 +353,13 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Return):
 							//ScopeStack.Peek(1).Stack.Push(Stack.Pop());
 							exited = true;
+							yielded = false;
+							break;
+
+						case (Instruction.InstructionType.Yield):
+							//ScopeStack.Peek(1).Stack.Push(Stack.Pop());
+							exited = true;
+							yielded = true;
 							break;
 
 						default:
@@ -334,6 +371,9 @@ namespace DrakeScript
 					throw new InterpreterException(e.ToString(), instruction.Location);
 				}
 			}
+
+			if (yielded)
+				PauseStatus = new InterpreterPause(pos, locals, args);
 
 			/*ScopeStack.Pop();
 			if (ScopeStack.Count > 0)

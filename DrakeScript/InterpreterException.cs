@@ -105,5 +105,25 @@ namespace DrakeScript
 
 		}
 	}
+
+	public class UnexpectedTypeException : InterpreterException
+	{
+		public UnexpectedTypeException(
+			Value.ValueType type,
+			SourceRef location
+		) : base("Unexpected type \"" + type + "\"", location)
+		{
+
+		}
+
+		public UnexpectedTypeException(
+			Value.ValueType got,
+			Value.ValueType expected,
+			SourceRef location
+		) : base("Expected type \"" + expected + "\" but got \"" + got + "\"", location)
+		{
+
+		}
+	}
 }
 

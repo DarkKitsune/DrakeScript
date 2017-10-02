@@ -9,7 +9,8 @@ namespace DrakeScript
 
 		public Context()
 		{
-			CoreLibs.Core.Register(this);
+			CoreLibs.LibCore.Register(this);
+			CoreLibs.LibCoroutine.Register(this);
 		}
 
 		public Function LoadFile(string path)
@@ -112,9 +113,17 @@ namespace DrakeScript
 		{
 			Globals[name] = Value.Create(value);
 		}
-		public void SetGlobal(string name, Func<Value[], int, Value> value)
+		public void SetGlobal(string name, Function func)
 		{
-			Globals[name] = Value.Create(new Function(value.ToString(), this, value));
+			Globals[name] = Value.Create(func);
+		}
+		public void SetGlobal(string name, List<Value> value)
+		{
+			Globals[name] = Value.Create(value);
+		}
+		public void SetGlobal(string name, Table value)
+		{
+			Globals[name] = Value.Create(value);
 		}
 	}
 }

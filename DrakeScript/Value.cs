@@ -19,7 +19,8 @@ namespace DrakeScript
 			Function,
 			Array,
 			Int,
-			Table
+			Table,
+			Coroutine
 		}
 
 		public ValueType Type;
@@ -74,6 +75,16 @@ namespace DrakeScript
 			{
 				if (Reference is Function)
 					return (Function)Reference;
+				return null;
+			}
+		}
+
+		public Coroutine Coroutine
+		{
+			get
+			{
+				if (Reference is Coroutine)
+					return (Coroutine)Reference;
 				return null;
 			}
 		}
@@ -228,6 +239,22 @@ namespace DrakeScript
 			return Value.Create(v);
 		}
 
+		public static Value Create(Coroutine v)
+		{
+			var val = new Value();
+			val.Type = ValueType.Coroutine;
+			val.Reference = v;
+			return val;
+		}
+		public static implicit operator Coroutine(Value v)
+		{
+			return v.Coroutine;
+		}
+		public static implicit operator Value(Coroutine v)
+		{
+			return Value.Create(v);
+		}
+
 		public static Value Create(List<Value> v)
 		{
 			var val = new Value();
@@ -270,12 +297,33 @@ namespace DrakeScript
 		}
 
 
+		public Value VerifyType(
+			ValueType type,
+			[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",  
+			[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0
+		)
+		{
+			if (Type != type)
+				throw new UnexpectedTypeException(Type, type, new SourceRef(new Source(sourceFilePath, ""), sourceLineNumber, 0));
+			return this;
+		}
+
+		public Value VerifyType(ValueType type, SourceRef location)
+		{
+			if (Type != type)
+				throw new UnexpectedTypeException(Type, type, location);
+			return this;
+		}
+
+
 		public override string ToString()
 		{
 			switch (Type)
 			{
 				case (ValueType.Nil):
 					return "nil";
+				case (ValueType.Array):
+					return String.Format("[{0}]", String.Join(", ", Array));
 			}
 			return (DynamicValue != null ? DynamicValue.ToString() : "nil");
 		}

@@ -52,10 +52,20 @@ namespace DrakeScript
 					case (Token.TokenType.Ident):
 						switch ((string)current.Value)
 						{
+							case ("nil"):
+								root.Add(new ASTNode(ASTNode.NodeType.Nil, current.Location));
+								Advance(1);
+								break;
 							case ("return"):
 								newParser = new Parser();
 								parsed = newParser._Parse(GetUntil(Token.TokenType.Semicolon, 0, out advanceAmount));
-								Stack.Push(new ASTNode(ASTNode.NodeType.Return, current.Location, parsed.GetSafe(0)));
+								root.Add(new ASTNode(ASTNode.NodeType.Return, current.Location, parsed.GetSafe(0)));
+								Advance(advanceAmount);
+								break;
+							case ("yield"):
+								newParser = new Parser();
+								parsed = newParser._Parse(GetUntil(Token.TokenType.Semicolon, 0, out advanceAmount));
+								root.Add(new ASTNode(ASTNode.NodeType.Yield, current.Location, parsed.GetSafe(0)));
 								Advance(advanceAmount);
 								break;
 							case ("if"):
