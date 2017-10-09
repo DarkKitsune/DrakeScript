@@ -29,9 +29,9 @@ namespace DrakeScriptTester
 				var optimizer = new Optimizer();
 				optimizer.Optimize(code);
 				Console.WriteLine(code.Code.ToStringFormatted() + "\n");
-				if (System.IO.File.Exists("bytecode.bin"))
-					System.IO.File.Delete("bytecode.bin");
-				System.IO.File.WriteAllBytes("bytecode.bin", code.GetBytecode());
+				if (System.IO.File.Exists(args[2]))
+					System.IO.File.Delete(args[2]);
+				System.IO.File.WriteAllBytes(args[2], code.GetBytecode());
 			}
 			else if (args[0] == "load")
 			{
