@@ -3,7 +3,7 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="DrakeScript/Value.cs">
     <Files>
       <File FileName="DrakeScript/Value.cs" Line="352" Column="69" />
-      <File FileName="DrakeScript/InterpreterException.cs" Line="144" Column="3" />
+      <File FileName="DrakeScript/InterpreterException.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/Function.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/Context.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/CoreLibs.cs" Line="1" Column="1" />
