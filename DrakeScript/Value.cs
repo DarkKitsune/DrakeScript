@@ -9,22 +9,23 @@ namespace DrakeScript
 		public const int MinSize = sizeof(ValueType) + sizeof(double) + 4;
 
 		static string DefaultString = "";
-		public static Value Nil = new Value {Type = ValueType.Nil, FloatNumber = 0.0, String = DefaultString, Reference = null};
+		public static Value Nil = new Value {Type = ValueType.Nil, Number = 0.0, String = DefaultString, Object = null};
 
 		public enum ValueType : short
 		{
 			Nil,
-			Float,
+			Number,
 			String,
 			Function,
 			Array,
 			Int,
 			Table,
-			Coroutine
+			Coroutine,
+			Object
 		}
 
 		public ValueType Type;
-		public double FloatNumber;
+		public double Number;
 		/*public double Number
 		{
 			get
@@ -41,17 +42,17 @@ namespace DrakeScript
 			}
 		}*/
 		public int IntNumber;
-		object Reference;
+		public object Object;
 
 		public bool Bool
 		{
 			get
 			{
-				return FloatNumber != 0.0;
+				return Number != 0.0;
 			}
 			set
 			{
-				FloatNumber = (value ? 1.0 : 0.0);
+				Number = (value ? 1.0 : 0.0);
 			}
 		}
 
@@ -60,12 +61,12 @@ namespace DrakeScript
 			get
 			{
 				if (Type == ValueType.String)
-					return (string)Reference;
+					return (string)Object;
 				return DefaultString;
 			}
 			set
 			{
-				Reference = value;
+				Object = value;
 			}
 		}
 
@@ -73,8 +74,8 @@ namespace DrakeScript
 		{
 			get
 			{
-				if (Reference is Function)
-					return (Function)Reference;
+				if (Object is Function)
+					return (Function)Object;
 				return null;
 			}
 		}
@@ -83,8 +84,8 @@ namespace DrakeScript
 		{
 			get
 			{
-				if (Reference is Coroutine)
-					return (Coroutine)Reference;
+				if (Object is Coroutine)
+					return (Coroutine)Object;
 				return null;
 			}
 		}
@@ -93,8 +94,8 @@ namespace DrakeScript
 		{
 			get
 			{
-				if (Reference is List<Value>)
-					return (List<Value>)Reference;
+				if (Object is List<Value>)
+					return (List<Value>)Object;
 				return null;
 			}
 		}
@@ -103,8 +104,8 @@ namespace DrakeScript
 		{
 			get
 			{
-				if (Reference is Table)
-					return (Table)Reference;
+				if (Object is Table)
+					return (Table)Object;
 				return null;
 			}
 		}
@@ -117,14 +118,14 @@ namespace DrakeScript
 				{
 					case (ValueType.Nil):
 						return null;
-					case (ValueType.Float):
-						return FloatNumber;
+					case (ValueType.Number):
+						return Number;
 					case (ValueType.Int):
 						return IntNumber;
 					case (ValueType.String):
 						return String;
 					default:
-						return Reference;
+						return Object;
 				}
 			}
 		}
@@ -150,21 +151,21 @@ namespace DrakeScript
 			var val = new Value();
 			val.Type = ValueType.Int;
 			val.IntNumber = v;
-			val.Reference = null;
+			val.Object = null;
 			return val;
 		}
 
 		public static Value Create(double v)
 		{
 			var val = new Value();
-			val.Type = ValueType.Float;
-			val.FloatNumber = v;
-			val.Reference = null;
+			val.Type = ValueType.Number;
+			val.Number = v;
+			val.Object = null;
 			return val;
 		}
 		public static implicit operator double(Value v)
 		{
-			return v.FloatNumber;
+			return v.Number;
 		}
 		public static implicit operator Value(double v)
 		{
@@ -174,14 +175,14 @@ namespace DrakeScript
 		public static Value Create(int v)
 		{
 			var val = new Value();
-			val.Type = ValueType.Float;
-			val.FloatNumber = v;
-			val.Reference = null;
+			val.Type = ValueType.Number;
+			val.Number = v;
+			val.Object = null;
 			return val;
 		}
 		public static implicit operator int(Value v)
 		{
-			return (int)v.FloatNumber;
+			return (int)v.Number;
 		}
 		public static implicit operator Value(int v)
 		{
@@ -192,7 +193,7 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.String;
-			val.Reference = v;
+			val.Object = v;
 			return val;
 		}
 		public static implicit operator string(Value v)
@@ -205,13 +206,17 @@ namespace DrakeScript
 		{
 			return Value.Create(v);
 		}
+		public static implicit operator Value(char v)
+		{
+			return Value.Create(new String(v, 1));
+		}
 
 		public static Value Create(bool v)
 		{
 			var val = new Value();
-			val.Type = ValueType.Float;
-			val.FloatNumber = (v ? 1.0 : 0.0);
-			val.Reference = null;
+			val.Type = ValueType.Number;
+			val.Number = (v ? 1.0 : 0.0);
+			val.Object = null;
 			return val;
 		}
 		public static implicit operator bool(Value v)
@@ -227,7 +232,7 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.Function;
-			val.Reference = v;
+			val.Object = v;
 			return val;
 		}
 		public static implicit operator Function(Value v)
@@ -243,7 +248,7 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.Coroutine;
-			val.Reference = v;
+			val.Object = v;
 			return val;
 		}
 		public static implicit operator Coroutine(Value v)
@@ -259,7 +264,7 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.Array;
-			val.Reference = v;
+			val.Object = v;
 			return val;
 		}
 		public static implicit operator List<Value>(Value v)
@@ -275,7 +280,7 @@ namespace DrakeScript
 		{
 			var val = new Value();
 			val.Type = ValueType.Table;
-			val.Reference = v;
+			val.Object = v;
 			return val;
 		}
 		public static implicit operator Table(Value v)
@@ -287,12 +292,20 @@ namespace DrakeScript
 			return Value.Create(v);
 		}
 
+		public static Value Create(object obj)
+		{
+			var val = new Value();
+			val.Type = ValueType.Object;
+			val.Object = obj;
+			return val;
+		}
+
 		public static Value Create()
 		{
 			var val = new Value();
-			val.Type = ValueType.Float;
-			val.FloatNumber = 0.0;
-			val.Reference = null;
+			val.Type = ValueType.Number;
+			val.Number = 0.0;
+			val.Object = null;
 			return val;
 		}
 
@@ -312,6 +325,31 @@ namespace DrakeScript
 		{
 			if (Type != type)
 				throw new UnexpectedTypeException(Type, type, location);
+			return this;
+		}
+
+		public Value VerifyType<T>(
+			[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",  
+			[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0
+		)
+		{
+			if (Object == null || !(Object is T))
+				throw new UnexpectedTypeException(
+					DynamicValue.GetType(),
+					typeof(T),
+					new SourceRef(
+						new Source(sourceFilePath, ""),
+						sourceLineNumber,
+						0
+					)
+				);
+			return this;
+		}
+
+		public Value VerifyType<T>(SourceRef location)
+		{
+			if (Object == null || !(Object is T))
+				throw new UnexpectedTypeException(DynamicValue.GetType(), typeof(T), location);
 			return this;
 		}
 
@@ -367,8 +405,8 @@ namespace DrakeScript
 						case (ValueType.Function):
 							writer.Write(Function.GetBytecode());
 							break;
-						case (ValueType.Float):
-							writer.Write((float)FloatNumber);
+						case (ValueType.Number):
+							writer.Write((float)Number);
 							break;
 						case (ValueType.Int):
 							writer.Write(IntNumber);
@@ -390,7 +428,7 @@ namespace DrakeScript
 					return Value.Create(str);
 				case (ValueType.Function):
 					return Value.Create(Function.FromReader(context, reader));
-				case (ValueType.Float):
+				case (ValueType.Number):
 					return Value.Create((double)reader.ReadSingle());
 				case (ValueType.Int):
 					return Value.Create((double)reader.ReadInt32());

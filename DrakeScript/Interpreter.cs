@@ -15,6 +15,8 @@ namespace DrakeScript
 		public FastStackGrowable<Value> Stack = new FastStackGrowable<Value>(1);
 		bool IsCoroutine = false;
 		public InterpreterPause PauseStatus = InterpreterPause.Finished;
+		public Dictionary<string, Value> DynamicLocalConstants = new Dictionary<string, Value>();
+		public bool Yielded = false;
 
 		public Interpreter(Context context, bool isCoroutine = false)
 		{
@@ -60,8 +62,8 @@ namespace DrakeScript
 			Value va, vb, vc;
 			Value[] aa;
 			bool exited = false;
-			bool yielded = false;
-			for (; pos < code.Length && !exited; pos++)
+			Yielded = false;
+			for (; pos < code.Length && !exited && !Yielded; pos++)
 			{
 				var instruction = code[pos];
 				try
@@ -138,12 +140,20 @@ namespace DrakeScript
 							switch (va.Type)
 							{
 								case (Value.ValueType.Array):
-									if (vb.Type != Value.ValueType.Float)
+									if (vb.Type != Value.ValueType.Number)
 										throw new InvalidIndexTypeException("Array", vb.Type, instruction.Location);
-									ia = (int)vb.FloatNumber;
+									ia = (int)vb.Number;
 									if (ia < 0 || ia >= va.Array.Count)
 										throw new InvalidIndexValueException("Array", ia, instruction.Location);
 									Stack.Push(va.Array[ia]);
+									break;
+								case (Value.ValueType.String):
+									if (vb.Type != Value.ValueType.Number)
+										throw new InvalidIndexTypeException("String", vb.Type, instruction.Location);
+									ia = (int)vb.Number;
+									if (ia < 0 || ia >= va.String.Length)
+										throw new InvalidIndexValueException("String", ia, instruction.Location);
+									Stack.Push(va.String[ia]);
 									break;
 								case (Value.ValueType.Table):
 									Value outValue;
@@ -163,9 +173,9 @@ namespace DrakeScript
 							switch (va.Type)
 							{
 								case (Value.ValueType.Array):
-									if (vb.Type != Value.ValueType.Float)
+									if (vb.Type != Value.ValueType.Number)
 										throw new InvalidIndexTypeException("Array", vb.Type, instruction.Location);
-									ia = (int)vb.FloatNumber;
+									ia = (int)vb.Number;
 									if (ia < 0)
 										throw new BelowZeroIndexValueException("Array", ia, instruction.Location);
 									var tempArray = va.Array;
@@ -188,28 +198,28 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Add):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.FloatNumber += vb.FloatNumber;
+							va.Number += vb.Number;
 
 							Stack.Push(va);
 							break;
 						case (Instruction.InstructionType.Sub):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.FloatNumber -= vb.FloatNumber;
+							va.Number -= vb.Number;
 
 							Stack.Push(va);
 							break;
 						case (Instruction.InstructionType.Div):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.FloatNumber /= vb.FloatNumber;
+							va.Number /= vb.Number;
 
 							Stack.Push(va);
 							break;
 						case (Instruction.InstructionType.Mul):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.FloatNumber *= vb.FloatNumber;
+							va.Number *= vb.Number;
 
 							Stack.Push(va);
 							break;
@@ -231,7 +241,7 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.Neg):
 							va = Stack.Pop();
-							va.FloatNumber = -va.FloatNumber;
+							va.Number = -va.Number;
 
 							Stack.Push(va);
 							break;
@@ -239,7 +249,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Eq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.FloatNumber = (va.FloatNumber == vb.FloatNumber ? 1.0 : 0.0);
+							va.Number = (va.Number == vb.Number ? 1.0 : 0.0);
 
 							Stack.Push(va);
 							break;
@@ -247,7 +257,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.NEq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.FloatNumber = (va.FloatNumber != vb.FloatNumber ? 1.0 : 0.0);
+							va.Number = (va.Number != vb.Number ? 1.0 : 0.0);
 
 							Stack.Push(va);
 							break;
@@ -255,7 +265,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Gt):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.FloatNumber = (va.FloatNumber > vb.FloatNumber ? 1.0 : 0.0);
+							va.Number = (va.Number > vb.Number ? 1.0 : 0.0);
 
 							Stack.Push(va);
 							break;
@@ -263,7 +273,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.GtEq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.FloatNumber = (va.FloatNumber >= vb.FloatNumber ? 1.0 : 0.0);
+							va.Number = (va.Number >= vb.Number ? 1.0 : 0.0);
 
 							Stack.Push(va);
 							break;
@@ -271,7 +281,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Lt):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.FloatNumber = (va.FloatNumber < vb.FloatNumber ? 1.0 : 0.0);
+							va.Number = (va.Number < vb.Number ? 1.0 : 0.0);
 
 							Stack.Push(va);
 							break;
@@ -279,7 +289,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.LtEq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.FloatNumber = (va.FloatNumber <= vb.FloatNumber ? 1.0 : 0.0);
+							va.Number = (va.Number <= vb.Number ? 1.0 : 0.0);
 
 							Stack.Push(va);
 							break;
@@ -291,7 +301,7 @@ namespace DrakeScript
 						case (Instruction.InstructionType.IncVarLocal):
 							ia = instruction.Arg.IntNumber;
 							va = locals[ia];
-							va.FloatNumber++;
+							va.Number++;
 							locals[ia] = va;
 							break;
 
@@ -302,35 +312,35 @@ namespace DrakeScript
 						case (Instruction.InstructionType.DecVarLocal):
 							ia = instruction.Arg.IntNumber;
 							va = locals[ia];
-							va.FloatNumber--;
+							va.Number--;
 							locals[ia] = va;
 							break;
 
 						case (Instruction.InstructionType.IncVarByGlobal):
-							IncGlobalVar(instruction.Arg.String, Stack.Pop().FloatNumber);
+							IncGlobalVar(instruction.Arg.String, Stack.Pop().Number);
 							break;
 
 						case (Instruction.InstructionType.IncVarByLocal):
 							ia = instruction.Arg.IntNumber;
 							va = locals[ia];
-							va.FloatNumber += Stack.Pop().FloatNumber;
+							va.Number += Stack.Pop().Number;
 							locals[ia] = va;
 							break;
 
 						case (Instruction.InstructionType.DecVarByGlobal):
-							IncGlobalVar(instruction.Arg.String, -Stack.Pop().FloatNumber);
+							IncGlobalVar(instruction.Arg.String, -Stack.Pop().Number);
 							break;
 
 						case (Instruction.InstructionType.DecVarByLocal):
 							ia = instruction.Arg.IntNumber;
 							va = locals[ia];
-							va.FloatNumber -= Stack.Pop().FloatNumber;
+							va.Number -= Stack.Pop().Number;
 							locals[ia] = va;
 							break;
 
 						case (Instruction.InstructionType.Dec):
 							va = Stack.Peek(0);
-							va.FloatNumber--;
+							va.Number--;
 							Stack.Poke(0, va);
 							break;
 
@@ -340,7 +350,7 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.JumpEZ):
 							va = Stack.Pop();
-							if (va.FloatNumber == 0.0)
+							if (va.Number == 0.0)
 							{
 								pos += instruction.Arg.IntNumber;
 							}
@@ -353,13 +363,13 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Return):
 							//ScopeStack.Peek(1).Stack.Push(Stack.Pop());
 							exited = true;
-							yielded = false;
+							Yielded = false;
 							break;
 
 						case (Instruction.InstructionType.Yield):
 							//ScopeStack.Peek(1).Stack.Push(Stack.Pop());
 							exited = true;
-							yielded = true;
+							Yielded = true;
 							break;
 
 						default:
@@ -372,7 +382,7 @@ namespace DrakeScript
 				}
 			}
 
-			if (yielded)
+			if (Yielded)
 				PauseStatus = new InterpreterPause(pos, locals, args);
 
 			/*ScopeStack.Pop();
@@ -385,6 +395,10 @@ namespace DrakeScript
 		public Value GetGlobalVar(string name)
 		{
 			Value v;
+			if (DynamicLocalConstants != null && DynamicLocalConstants.TryGetValue(name, out v))
+			{
+				return v;
+			}
 			if (Context.Globals.TryGetValue(name, out v))
 			{
 				return v;
@@ -406,9 +420,18 @@ namespace DrakeScript
 			}
 			else
 			{
-				val.FloatNumber += v;
+				val.Number += v;
 				Context.Globals[name] = val;
 			}
+		}
+
+
+		public void Yield()
+		{
+			if (Yielded)
+				return;
+			Stack.Push(Value.Nil);
+			Yielded = true;
 		}
 	}
 }

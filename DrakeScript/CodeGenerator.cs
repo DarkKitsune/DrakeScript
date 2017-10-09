@@ -8,7 +8,7 @@ namespace DrakeScript
 		string[] Args;
 		Dictionary<string, int> ArgLookup = new Dictionary<string, int>();
 		List<string> Locals = new List<string>();
-		public bool UnrollLoops = true;
+		public bool UnrollLoops = false;
 		public int MaxUnrollBytes = 30000;
 		public Context Context;
 		public string Name;
@@ -488,6 +488,12 @@ namespace DrakeScript
 							);
 						}
 					}
+					break;
+				case (ASTNode.NodeType.Invalid):
+					if (requirePush)
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushNil));
+					else
+						throw new NoCodeGenerationForNodeException(node.Type, node.Location);
 					break;
 				default:
 					throw new NoCodeGenerationForNodeException(node.Type, node.Location);

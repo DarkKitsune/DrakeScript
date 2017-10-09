@@ -8,6 +8,8 @@ namespace DrakeScript
 	{
 		public ASTNode Analyze(ASTNode node)
 		{
+			if (node.Type == ASTNode.NodeType.Invalid)
+				return node;
 			var keys = node.Branches.Keys.ToArray();
 			for (var i = 0; i < keys.Length; i++)
 			{

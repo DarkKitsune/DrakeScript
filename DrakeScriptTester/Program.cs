@@ -318,18 +318,39 @@ namespace DrakeScriptTester
 			new Test(
 				"coroutine 1",
 				Value.Create(new List<Value> {1.0, 2.0, 3.0}),
-				"local cr = coroutine.create(function() {yield 1.0; yield 2.0; return 3.0;}); return [cr(), cr(), cr()];"
+				"local cr = coroutine(function() {yield 1.0; yield 2.0; return 3.0;}); return [cr(), cr(), cr()];"
 			),
 			new Test(
 				"coroutine 2",
 				Value.Create(new List<Value> {3.0, 7.0, 9.0, 4.5, 8.5, 10.5}),
-				"local cr = coroutine.create(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0), cr(), cr(), cr(2.5), cr(), cr()];"
+				"local cr = coroutine(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0), cr(), cr(), cr(2.5), cr(), cr()];"
 			),
 			new Test(
 				"coroutine 3",
 				Value.Create(new List<Value> {3.0, 7.0, 9.0, 4.5, 8.5, 10.5}),
-				"local cr = coroutine.create(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0 + 2.5 - 2.5), cr(2.0), cr(), cr(2.5), cr(), cr()];"
+				"local cr = coroutine(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0 + 2.5 - 2.5), cr(2.0), cr(), cr(2.5), cr(), cr()];"
 			),
+			new Test(
+				"string char get 1",
+				Value.Create("e"),
+				"local str = \"test\"; return str[1];"
+			),
+			new Test(
+				"string char get 2",
+				Value.Create("s"),
+				"return \"test\"[2];"
+			),
+			new Test(
+				"string slice",
+				Value.Create("es"),
+				"return slice(\"test\", 1, 2);"
+			)
+			,
+			new Test(
+				"array slice",
+				Value.Create(new List<Value> {3, 4}),
+				"return slice([1, 2, 3, 4, 5], 2, 2);"
+			)
 		};
 
 		public static void RunTests()

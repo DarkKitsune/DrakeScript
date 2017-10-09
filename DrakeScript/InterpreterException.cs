@@ -124,6 +124,33 @@ namespace DrakeScript
 		{
 
 		}
+
+		public UnexpectedTypeException(
+			Type type,
+			SourceRef location
+		) : base("Unexpected .NET type \"" + type + "\"", location)
+		{
+
+		}
+
+		public UnexpectedTypeException(
+			Type got,
+			Type expected,
+			SourceRef location
+		) : base("Expected .NET type \"" + expected + "\" but got \"" + got + "\"", location)
+		{
+
+		}
+	}
+
+	public class ExpectedCharacterException : InterpreterException
+	{
+		public ExpectedCharacterException(
+			SourceRef location
+		) : base("Expected a single character", location)
+		{
+
+		}
 	}
 }
 

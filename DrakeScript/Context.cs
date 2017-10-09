@@ -11,11 +11,14 @@ namespace DrakeScript
 		{
 			CoreLibs.LibCore.Register(this);
 			CoreLibs.LibCoroutine.Register(this);
+			CoreLibs.LibArray.Register(this);
+			CoreLibs.LibTable.Register(this);
+			CoreLibs.LibMath.Register(this);
 		}
 
 		public Function LoadFile(string path)
 		{
-			return LoadString(System.IO.Path.GetFileName(path), System.IO.File.ReadAllText(path));
+			return LoadString(System.IO.Path.GetFullPath(path), System.IO.File.ReadAllText(path));
 		}
 
 		public Function LoadString(string code,
@@ -23,7 +26,7 @@ namespace DrakeScript
 			[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0
 		)
 		{
-			return LoadString("codestring(" + System.IO.Path.GetFileName(sourceFilePath) + ":" + sourceLineNumber + ")", code);
+			return LoadString("codestring(" + System.IO.Path.GetFullPath(sourceFilePath) + ":" + sourceLineNumber + ")", code);
 		}
 		public Function LoadString(string sourceName, string code)
 		{
@@ -35,7 +38,14 @@ namespace DrakeScript
 			var analyzer = new Analyzer();
 			tree = analyzer.Analyze(tree);
 			var generator = new CodeGenerator(this);
-			return generator.Generate(sourceName, tree);
+			try
+			{
+				return generator.Generate(sourceName, tree);
+			}
+			catch (Exception e)
+			{
+				throw new Exception(e.ToString() + "\n===Code===\n" + tree.ToString());
+			}
 		}
 
 		public Value DoFile(string path)
@@ -50,7 +60,7 @@ namespace DrakeScript
 		)
 		{
 			var interpreter = new Interpreter(this);
-			return LoadString("codestring(" + System.IO.Path.GetFileName(sourceFilePath) + ":" + sourceLineNumber + ")", code).Invoke(interpreter);
+			return LoadString("codestring(" + System.IO.Path.GetFullPath(sourceFilePath) + ":" + sourceLineNumber + ")", code).Invoke(interpreter);
 		}
 		public Value DoString(string sourceName, string code)
 		{
@@ -132,7 +142,7 @@ namespace DrakeScript
 			return new Coroutine(this, func);
 		}
 
-		public Function CreateFunction(Func<Context, SourceRef, Value[], int, Value> method, int minimumParamCount)
+		public Function CreateFunction(Func<Interpreter, SourceRef, Value[], int, Value> method, int minimumParamCount)
 		{
 			return new Function(this, method, minimumParamCount);
 		}

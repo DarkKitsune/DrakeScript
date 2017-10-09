@@ -11,7 +11,7 @@ namespace DrakeScript
 		public Instruction[] Code {get; internal set;}
 		public String[] Args {get; private set;}
 		public String[] Locals {get; private set;}
-		public Func<Context, SourceRef, Value[], int, Value> Method;
+		public Func<Interpreter, SourceRef, Value[], int, Value> Method;
 		public Context Context;
 		public Version Version;
 		public string File;
@@ -28,7 +28,7 @@ namespace DrakeScript
 			Locals = locals;
 		}
 
-		public Function(Context context, Func<Context, SourceRef, Value[], int, Value> method, int paramCount)
+		public Function(Context context, Func<Interpreter, SourceRef, Value[], int, Value> method, int paramCount)
 		{
 			File = method.ToString();
 			Context = context;
@@ -37,7 +37,7 @@ namespace DrakeScript
 			Locals = new string[] {};
 		}
 
-		public Function(string file, Context context, Func<Context, SourceRef, Value[], int, Value> method, int paramCount)
+		public Function(string file, Context context, Func<Interpreter, SourceRef, Value[], int, Value> method, int paramCount)
 		{
 			File = file;
 			Context = context;
@@ -57,7 +57,7 @@ namespace DrakeScript
 			{
 				if (interpreter.ArgListCount < Args.Length)
 					throw new NotEnoughArgumentsException(Args.Length, interpreter.ArgListCount, interpreter.CallLocation);
-				return Method(Context, interpreter.CallLocation, interpreter.ArgList, interpreter.ArgListCount);
+				return Method(interpreter, interpreter.CallLocation, interpreter.ArgList, interpreter.ArgListCount);
 			}
 		}
 		internal void InvokePushInsteadOfReturn(Interpreter interpreter)
@@ -70,7 +70,7 @@ namespace DrakeScript
 			{
 				if (interpreter.ArgListCount < Args.Length)
 					throw new NotEnoughArgumentsException(Args.Length, interpreter.ArgListCount, interpreter.CallLocation);
-				interpreter.Stack.Push(Method(Context, interpreter.CallLocation, interpreter.ArgList, interpreter.ArgListCount));
+				interpreter.Stack.Push(Method(interpreter, interpreter.CallLocation, interpreter.ArgList, interpreter.ArgListCount));
 			}
 		}
 		public Value Invoke(Interpreter interpreter, params Value[] args)
@@ -89,21 +89,20 @@ namespace DrakeScript
 			{
 				if (args.Length < Args.Length)
 					throw new NotEnoughArgumentsException(Args.Length, args.Length, interpreter.CallLocation);
-				return Method(Context, interpreter.CallLocation, args, args.Length);
+				return Method(interpreter, interpreter.CallLocation, args, args.Length);
 			}
 		}
 		public Value Invoke(
-			[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",  
-			[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0,
 			params Value[] args
 		)
 		{
-			var location = new SourceRef(new Source(sourceFilePath, ""), sourceLineNumber, 0);
+			var location = SourceRef.Invalid;//new SourceRef(new Source(sourceFilePath, ""), sourceLineNumber, 0);
+			var interpreter = new Interpreter(Context);
+			interpreter.ArgList = args;
+			interpreter.ArgListCount = args.Length;
+
 			if (ScriptFunction)
 			{
-				var interpreter = new Interpreter(Context);
-				interpreter.ArgList = args;
-				interpreter.ArgListCount = args.Length;
 				interpreter.CallLocation = location;
 				interpreter.Interpret(this);
 				return interpreter.Stack.Pop();
@@ -112,7 +111,30 @@ namespace DrakeScript
 			{
 				if (args.Length < Args.Length)
 					throw new NotEnoughArgumentsException(Args.Length, args.Length, location);
-				return Method(Context, location, args, args.Length);
+				return Method(interpreter, location, args, args.Length);
+			}
+		}
+		public Value Invoke(
+			Dictionary<string, Value> dynamicConstants,
+			params Value[] args
+		)
+		{
+			var location = SourceRef.Invalid;//new SourceRef(new Source(sourceFilePath, ""), sourceLineNumber, 0);
+			var interpreter = new Interpreter(Context);
+			interpreter.ArgList = args;
+			interpreter.ArgListCount = args.Length;
+			if (ScriptFunction)
+			{
+				interpreter.CallLocation = location;
+				interpreter.Interpret(this);
+				interpreter.DynamicLocalConstants = dynamicConstants;
+				return interpreter.Stack.Pop();
+			}
+			else
+			{
+				if (args.Length < Args.Length)
+					throw new NotEnoughArgumentsException(Args.Length, args.Length, location);
+				return Method(interpreter, location, args, args.Length);
 			}
 		}
 

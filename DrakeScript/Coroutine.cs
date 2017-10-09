@@ -47,7 +47,17 @@ namespace DrakeScript
 
 		public Value Resume(params Value[] args)
 		{
+			Status = CoroutineStatus.Ready;
 			return Resume(args, args.Length);
+		}
+
+		public void Yield()
+		{
+			if (Status == CoroutineStatus.Ready)
+			{
+				Interpreter.Yield();
+				Status = CoroutineStatus.Yielded;
+			}
 		}
 	}
 }
