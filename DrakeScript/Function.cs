@@ -126,8 +126,8 @@ namespace DrakeScript
 			if (ScriptFunction)
 			{
 				interpreter.CallLocation = location;
-				interpreter.Interpret(this);
 				interpreter.DynamicLocalConstants = dynamicConstants;
+				interpreter.Interpret(this);
 				return interpreter.Stack.Pop();
 			}
 			else
