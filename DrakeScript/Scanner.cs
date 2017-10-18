@@ -22,7 +22,7 @@ namespace DrakeScript
 				}
 
 				Token token = Token.Invalid;
-
+				var wasComment = false;
 				switch (c)
 				{
 					case ('"'):
@@ -93,6 +93,20 @@ namespace DrakeScript
 						}
 						break;
 					case ('/'):
+						if (At(1) == '/')
+						{
+							wasComment = true;
+							AdvanceUntilLineBreak();
+							Advance(1);
+							break;
+						}
+						if (At(1) == '*')
+						{
+							wasComment = true;
+							AdvanceUntilEndComment();
+							Advance(2);
+							break;
+						}
 						token = new Token(Location(), Token.TokenType.Divide);
 						Advance(1);
 						break;
@@ -164,10 +178,13 @@ namespace DrakeScript
 						break;
 				}
 
-				if (!token.Valid)
-					throw new UnrecognizedTokenException(new string(c, 1), Location());
-				
-				tokenList.Add(token);
+				if (!wasComment)
+				{
+					if (!token.Valid)
+						throw new UnrecognizedTokenException(new string(c, 1), Location());
+
+					tokenList.Add(token);
+				}
 			}
 
 			return tokenList;
@@ -184,6 +201,18 @@ namespace DrakeScript
 		void Advance(int num)
 		{
 			Position += num;
+		}
+
+		void AdvanceUntilLineBreak()
+		{
+			while (At(0) != '\n' && Position < Source.Code.Length)
+				Position += 1;
+		}
+
+		void AdvanceUntilEndComment()
+		{
+			while (!(At(0) == '*' && At(1) == '/') && Position < Source.Code.Length)
+				Position += 1;
 		}
 
 		char At(int num = 0)

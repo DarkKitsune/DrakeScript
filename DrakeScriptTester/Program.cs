@@ -106,6 +106,26 @@ namespace DrakeScriptTester
 				"local a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c;"
 			),
 			new Test(
+				"comment 1",
+				Value.Create(1.0240251 / 7.35020232 / 35.23235),
+				"local a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c; //aaaaa"
+			),
+			new Test(
+				"comment 2",
+				Value.Create(1.0240251 / 7.35020232 / 35.23235),
+				"//aaaaaaaaaa safasf safa asf\nlocal a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c;"
+			),
+			new Test(
+				"comment 3",
+				Value.Create(1.0240251 / 7.35020232 / 35.23235),
+				"/*test comment*/ local a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c;"
+			),
+			new Test(
+				"comment 4",
+				Value.Create(1.0240251 / 7.35020232 / 35.23235),
+				"local a = 1.0240251; b = /*test comment*/7.35020232; c = 35.23235; return a / b / c;"
+			),
+			new Test(
 				"concat 1",
 				Value.Create("hello, world!"),
 				"return \"hello, \" ~ \"world!\";"
@@ -344,8 +364,7 @@ namespace DrakeScriptTester
 				"string slice",
 				Value.Create("es"),
 				"return slice(\"test\", 1, 2);"
-			)
-			,
+			),
 			new Test(
 				"array slice",
 				Value.Create(new List<Value> {3, 4}),
