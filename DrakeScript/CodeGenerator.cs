@@ -64,7 +64,7 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Int):
 					if (!requirePush)
-						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.Add(
 						new Instruction(
 							node.Location,
@@ -75,7 +75,7 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Dec):
 					if (!requirePush)
-						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.Add(
 						new Instruction(
 							node.Location,
@@ -96,7 +96,7 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Str):
 					if (!requirePush)
-						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.Add(
 						new Instruction(
 							node.Location,
@@ -142,7 +142,7 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Ident):
 					if (!requirePush)
-						throw new UnexpectedTokenException(node.Type + "(" + node.Value.ToString() + ")", node.Location);
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					int argNum;
 					if (ArgLookup.TryGetValue((string)node.Value, out argNum))
 					{
@@ -180,103 +180,141 @@ namespace DrakeScript
 					}
 					break;
 				case (ASTNode.NodeType.Add):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Add));
 					break;
 				case (ASTNode.NodeType.Subtract):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Sub));
 					break;
 				case (ASTNode.NodeType.Divide):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Div));
 					break;
 				case (ASTNode.NodeType.Multiply):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Mul));
 					break;
 				case (ASTNode.NodeType.Modulo):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Mod));
 					break;
 				case (ASTNode.NodeType.Power):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pow));
 					break;
 				case (ASTNode.NodeType.Concat):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Cat));
 					break;
 				case (ASTNode.NodeType.Not):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Not));
 					break;
 				case (ASTNode.NodeType.Negative):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Neg));
 					break;
 				case (ASTNode.NodeType.Positive):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					break;
 				case (ASTNode.NodeType.Eq):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Eq));
 					break;
 				case (ASTNode.NodeType.NEq):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.NEq));
 					break;
 				case (ASTNode.NodeType.Gt):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Gt));
 					break;
 				case (ASTNode.NodeType.GtEq):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.GtEq));
 					break;
 				case (ASTNode.NodeType.Lt):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Lt));
 					break;
 				case (ASTNode.NodeType.LtEq):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LtEq));
 					break;
 				case (ASTNode.NodeType.Or):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					var orJumpStart = instructions.Count;
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					var orJumpAmount = instructions.Count - orJumpStart + 1;
 					instructions.Insert(orJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpNZ, Value.CreateInt(orJumpAmount - 1)));
 					instructions.Insert(orJumpStart, new Instruction(node.Location, Instruction.InstructionType.Dup));
-					//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Or));
 					break;
 				case (ASTNode.NodeType.And):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					var andJumpStart = instructions.Count;
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					var andJumpAmount = instructions.Count - andJumpStart + 1;
 					instructions.Insert(andJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(andJumpAmount - 1)));
 					instructions.Insert(andJumpStart, new Instruction(node.Location, Instruction.InstructionType.Dup));
-					//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.And));
 					break;
 				case (ASTNode.NodeType.NewLocal):
+					if (requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					Locals.Add((string)node.Value);
 					break;
 				case (ASTNode.NodeType.Set):
+					if (requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					if (node.Branches["left"].Type == ASTNode.NodeType.NewLocal)
 					{
 						Locals.Add((string)node.Branches["left"].Value);
@@ -306,11 +344,15 @@ namespace DrakeScript
 					}
 					break;
 				case (ASTNode.NodeType.Index):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["arrayOrTable"], true));
 					instructions.AddRange(Generate(node.Branches["index"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushIndex));
 					break;
 				case (ASTNode.NodeType.PlusEq):
+					if (requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["right"], true));
 
 					locNum = Locals.IndexOf((string)node.Branches["left"].Value);
@@ -324,6 +366,8 @@ namespace DrakeScript
 					}
 					break;
 				case (ASTNode.NodeType.MinusEq):
+					if (requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["right"], true));
 
 					locNum = Locals.IndexOf((string)node.Branches["left"].Value);
@@ -370,6 +414,8 @@ namespace DrakeScript
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Yield));
 					break;
 				case (ASTNode.NodeType.If):
+					if (requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					if (!allowConditions)
 						throw new UnexpectedTokenException("if", node.Location);
 					var ifCond = (List<ASTNode>)node.Branches["condition"].Value;
@@ -404,6 +450,8 @@ namespace DrakeScript
 					}
 					break;
 				case (ASTNode.NodeType.While):
+					if (requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					var whileCond = (List<ASTNode>)node.Branches["condition"].Value;
 					if (whileCond.Count != 1)
 						throw new InvalidConditionException("while", node.Location);
@@ -421,6 +469,8 @@ namespace DrakeScript
 					//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
 					break;
 				case (ASTNode.NodeType.Loop):
+					if (requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					var loopCond = (List<ASTNode>)node.Branches["condition"].Value;
 					if (loopCond.Count != 1)
 						throw new InvalidConditionException("loop", node.Location);
