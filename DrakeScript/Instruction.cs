@@ -31,6 +31,8 @@ namespace DrakeScript
 			Sub,
 			Div,
 			Mul,
+			Mod,
+			Pow,
 			Cat,
 			Not,
 			Neg,
@@ -53,6 +55,7 @@ namespace DrakeScript
 			Return,
 			Yield,
 			JumpEZ,
+			JumpNZ,
 			Jump
 		}
 

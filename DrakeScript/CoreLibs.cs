@@ -13,6 +13,16 @@ namespace DrakeScript
 				context.SetGlobal("print", context.CreateFunction(Print, 0));
 				context.SetGlobal("println", context.CreateFunction(PrintLn, 0));
 				context.SetGlobal("time", context.CreateFunction(Time, 0));
+
+				context.SetGlobal("true", 1.0);
+				context.SetGlobal("false", 0.0);
+				context.SetGlobal("inf", double.PositiveInfinity);
+				context.SetGlobal("maxNumber", double.MaxValue);
+				context.SetGlobal("minNumber", double.MinValue);
+				context.SetGlobal("NaN", double.NaN);
+				context.SetGlobal("epsilon", double.Epsilon);
+				context.SetGlobal("pi", Math.PI);
+				context.SetGlobal("e", Math.E);
 			}
 
 			public static Value Print(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -114,6 +124,9 @@ namespace DrakeScript
 				context.SetGlobal("round", context.CreateFunction(Round, 1));
 				context.SetGlobal("floor", context.CreateFunction(Floor, 1));
 				context.SetGlobal("ceil", context.CreateFunction(Ceil, 1));
+				context.SetGlobal("sqrt", context.CreateFunction(Sqrt, 1));
+				context.SetGlobal("sqr", context.CreateFunction(Sqr, 1));
+				context.SetGlobal("pow", context.CreateFunction(Pow, 2));
 			}
 
 			public static Value Cos(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -159,6 +172,21 @@ namespace DrakeScript
 			public static Value Ceil(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
 				return Math.Ceiling(args[0].Number);
+			}
+
+			public static Value Sqrt(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+			{
+				return Math.Sqrt(args[0].Number);
+			}
+
+			public static Value Sqr(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+			{
+				return args[0].Number * args[0].Number;
+			}
+
+			public static Value Pow(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+			{
+				return Math.Pow(args[0].Number, args[1].Number);
 			}
 		}
 	}

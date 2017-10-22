@@ -199,6 +199,16 @@ namespace DrakeScript
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Mul));
 					break;
+				case (ASTNode.NodeType.Modulo):
+					instructions.AddRange(Generate(node.Branches["left"], true));
+					instructions.AddRange(Generate(node.Branches["right"], true));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Mod));
+					break;
+				case (ASTNode.NodeType.Power):
+					instructions.AddRange(Generate(node.Branches["left"], true));
+					instructions.AddRange(Generate(node.Branches["right"], true));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pow));
+					break;
 				case (ASTNode.NodeType.Concat):
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
@@ -244,6 +254,24 @@ namespace DrakeScript
 					instructions.AddRange(Generate(node.Branches["left"], true));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LtEq));
+					break;
+				case (ASTNode.NodeType.Or):
+					instructions.AddRange(Generate(node.Branches["left"], true));
+					var orJumpStart = instructions.Count;
+					instructions.AddRange(Generate(node.Branches["right"], true));
+					var orJumpAmount = instructions.Count - orJumpStart + 1;
+					instructions.Insert(orJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpNZ, Value.CreateInt(orJumpAmount - 1)));
+					instructions.Insert(orJumpStart, new Instruction(node.Location, Instruction.InstructionType.Dup));
+					//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Or));
+					break;
+				case (ASTNode.NodeType.And):
+					instructions.AddRange(Generate(node.Branches["left"], true));
+					var andJumpStart = instructions.Count;
+					instructions.AddRange(Generate(node.Branches["right"], true));
+					var andJumpAmount = instructions.Count - andJumpStart + 1;
+					instructions.Insert(andJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(andJumpAmount - 1)));
+					instructions.Insert(andJumpStart, new Instruction(node.Location, Instruction.InstructionType.Dup));
+					//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.And));
 					break;
 				case (ASTNode.NodeType.NewLocal):
 					Locals.Add((string)node.Value);

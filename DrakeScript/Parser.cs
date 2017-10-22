@@ -202,6 +202,14 @@ namespace DrakeScript
 						Stack.Push(new ASTNode(ASTNode.NodeType.MultiplyOperator, current.Location));
 						Advance(1);
 						break;
+					case (Token.TokenType.Modulo):
+						Stack.Push(new ASTNode(ASTNode.NodeType.ModuloOperator, current.Location));
+						Advance(1);
+						break;
+					case (Token.TokenType.Power):
+						Stack.Push(new ASTNode(ASTNode.NodeType.PowerOperator, current.Location));
+						Advance(1);
+						break;
 					case (Token.TokenType.Tilde):
 						Stack.Push(new ASTNode(ASTNode.NodeType.ConcatOperator, current.Location));
 						Advance(1);
@@ -240,6 +248,14 @@ namespace DrakeScript
 						break;
 					case (Token.TokenType.LtEq):
 						Stack.Push(new ASTNode(ASTNode.NodeType.LtEqOperator, current.Location));
+						Advance(1);
+						break;
+					case (Token.TokenType.Or):
+						Stack.Push(new ASTNode(ASTNode.NodeType.OrOperator, current.Location));
+						Advance(1);
+						break;
+					case (Token.TokenType.And):
+						Stack.Push(new ASTNode(ASTNode.NodeType.AndOperator, current.Location));
 						Advance(1);
 						break;
 					case (Token.TokenType.Set):

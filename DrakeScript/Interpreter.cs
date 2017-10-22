@@ -66,6 +66,7 @@ namespace DrakeScript
 			for (; pos < code.Length && !exited && !Yielded; pos++)
 			{
 				var instruction = code[pos];
+				//Console.WriteLine(instruction);
 				try
 				{
 					switch (instruction.Type)
@@ -224,6 +225,22 @@ namespace DrakeScript
 							Stack.Push(va);
 							break;
 
+						case (Instruction.InstructionType.Mod):
+							vb = Stack.Pop();
+							va = Stack.Pop();
+							va.Number %= vb.Number;
+
+							Stack.Push(va);
+							break;
+
+						case (Instruction.InstructionType.Pow):
+							vb = Stack.Pop();
+							va = Stack.Pop();
+							va.Number = Math.Pow(va.Number, vb.Number);
+
+							Stack.Push(va);
+							break;
+
 						case (Instruction.InstructionType.Cat):
 							vb = Stack.Pop();
 							va = Stack.Pop();
@@ -356,6 +373,14 @@ namespace DrakeScript
 							}
 							break;
 
+						case (Instruction.InstructionType.JumpNZ):
+							va = Stack.Pop();
+							if (va.Number != 0.0)
+							{
+								pos += instruction.Arg.IntNumber;
+							}
+							break;
+
 						case (Instruction.InstructionType.Jump):
 							pos += instruction.Arg.IntNumber;
 							break;
@@ -375,6 +400,14 @@ namespace DrakeScript
 						default:
 							throw new NoCaseForInstructionException(instruction.Type, instruction.Location);
 					}
+
+					/*Console.Write("Stack: ");
+					foreach (Value item in Stack)
+					{
+						Console.Write(item.ToString());
+						Console.Write(", ");
+					}
+					Console.WriteLine();*/
 				}
 				catch (Exception e)
 				{

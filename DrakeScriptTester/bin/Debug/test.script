@@ -1,3 +1,1 @@
-local a = "test";
-local b = a ~ "!";
-print(b);
+println(2 == 1 && 1 == 1);

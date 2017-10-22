@@ -114,6 +114,14 @@ namespace DrakeScript
 						token = new Token(Location(), Token.TokenType.Multiply);
 						Advance(1);
 						break;
+					case ('%'):
+						token = new Token(Location(), Token.TokenType.Modulo);
+						Advance(1);
+						break;
+					case ('^'):
+						token = new Token(Location(), Token.TokenType.Power);
+						Advance(1);
+						break;
 					case ('='):
 						if (At(1) == '=')
 						{
@@ -160,6 +168,20 @@ namespace DrakeScript
 						{
 							token = new Token(Location(), Token.TokenType.Lt);
 							Advance(1);
+						}
+						break;
+					case ('|'):
+						if (At(1) == '|')
+						{
+							token = new Token(Location(), Token.TokenType.Or);
+							Advance(2);
+						}
+						break;
+					case ('&'):
+						if (At(1) == '&')
+						{
+							token = new Token(Location(), Token.TokenType.And);
+							Advance(2);
 						}
 						break;
 					case ('~'):
