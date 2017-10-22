@@ -335,7 +335,7 @@ namespace DrakeScript
 		{
 			if (Object == null || !(Object is T))
 				throw new UnexpectedTypeException(
-					DynamicValue.GetType(),
+					DynamicValue?.GetType(),
 					typeof(T),
 					new SourceRef(
 						new Source(sourceFilePath, ""),
@@ -349,7 +349,7 @@ namespace DrakeScript
 		public Value VerifyType<T>(SourceRef location)
 		{
 			if (Object == null || !(Object is T))
-				throw new UnexpectedTypeException(DynamicValue.GetType(), typeof(T), location);
+				throw new UnexpectedTypeException(DynamicValue?.GetType(), typeof(T), location);
 			return this;
 		}
 
