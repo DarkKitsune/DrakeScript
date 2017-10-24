@@ -447,7 +447,7 @@ namespace DrakeScript
 				case (ValueType.Number):
 					return Value.Create((double)reader.ReadSingle());
 				case (ValueType.Int):
-					return Value.Create((double)reader.ReadInt32());
+					return Value.CreateInt(reader.ReadInt32());
 				default:
 					return Value.Nil;
 			}

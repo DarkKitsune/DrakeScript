@@ -153,7 +153,7 @@ namespace DrakeScript
 					writer.Write(Location.GetBytes());
 					writer.Write(Args.Length);
 					writer.Write(Locals.Length);
-					writer.Write(Code.Length);	
+					writer.Write(Code.Length);
 					foreach (var inst in Code)
 					{
 						writer.Write(inst.GetBytes());

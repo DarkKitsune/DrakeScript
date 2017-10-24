@@ -12,6 +12,7 @@ function iterate(array)
     yield nil;
 }
 
+println("func ", iterate);
 local cr = coroutine(iterate);
 local readValue = 0;
 while (readValue != nil)
