@@ -146,10 +146,6 @@ namespace DrakeScript
 			{
 				using (var writer = new BinaryWriter(memoryStream))
 				{
-					var version = typeof(Function).Assembly.GetName().Version;
-					writer.Write(version.Major);
-					writer.Write(version.Minor);
-					writer.Write(version.Build);
 					writer.Write(Location.GetBytes());
 					writer.Write(Args.Length);
 					writer.Write(Locals.Length);
@@ -163,22 +159,22 @@ namespace DrakeScript
 			}
 		}
 
-		public static Function FromBytes(Context context, byte[] bytes)
+		public void WriteByteCodeFile(BinaryWriter writer)
 		{
-			using (var memoryStream = new MemoryStream(bytes))
-			{
-				using (var reader = new BinaryReader(memoryStream))
-				{
-					return FromReader(context, reader);
-				}
-			}
+			var version = typeof(Function).Assembly.GetName().Version;
+			writer.Write(version.Major);
+			writer.Write(version.Minor);
+			writer.Write(version.Build);
+			writer.Write(GetBytecode());
+		}
+
+		public static Function FromBytes(Context context, BinaryReader reader)
+		{
+			return FromReader(context, reader);
 		}
 
 		internal static Function FromReader(Context context, BinaryReader reader)
 		{
-			var vMajor = reader.ReadInt32();
-			var vMinor = reader.ReadInt32();
-			var vBuild = reader.ReadInt32();
 			var location = SourceRef.FromReader(reader);
 			var args = new string[reader.ReadInt32()];
 			var locals = new string[reader.ReadInt32()];

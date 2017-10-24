@@ -31,7 +31,10 @@ namespace DrakeScriptTester
 				Console.WriteLine(code.ToStringFormatted() + "\n");
 				if (System.IO.File.Exists(args[2]))
 					System.IO.File.Delete(args[2]);
-				System.IO.File.WriteAllBytes(args[2], code.GetBytecode());
+				using (var writer = new System.IO.BinaryWriter(System.IO.File.OpenWrite(args[2])))
+				{
+					code.WriteByteCodeFile(writer);
+				}
 			}
 			else if (args[0] == "load")
 			{

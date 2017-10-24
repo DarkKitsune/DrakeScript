@@ -70,7 +70,13 @@ namespace DrakeScript
 
 		public Function LoadBytecode(string path)
 		{
-			return Function.FromBytes(this, System.IO.File.ReadAllBytes(path));
+			using (var reader = new System.IO.BinaryReader(System.IO.File.OpenRead(path)))
+			{
+				var vMajor = reader.ReadInt32();
+				var vMinor = reader.ReadInt32();
+				var vBuild = reader.ReadInt32();
+				return Function.FromBytes(this, reader);
+			}
 		}
 
 
