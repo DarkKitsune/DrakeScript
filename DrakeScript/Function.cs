@@ -168,11 +168,6 @@ namespace DrakeScript
 			writer.Write(GetBytecode());
 		}
 
-		public static Function FromBytes(Context context, BinaryReader reader)
-		{
-			return FromReader(context, reader);
-		}
-
 		internal static Function FromReader(Context context, BinaryReader reader)
 		{
 			var location = SourceRef.FromReader(reader);

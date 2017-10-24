@@ -75,7 +75,7 @@ namespace DrakeScript
 				var vMajor = reader.ReadInt32();
 				var vMinor = reader.ReadInt32();
 				var vBuild = reader.ReadInt32();
-				return Function.FromBytes(this, reader);
+				return Function.FromReader(this, reader);
 			}
 		}
 
