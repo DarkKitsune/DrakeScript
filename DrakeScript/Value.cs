@@ -13,15 +13,15 @@ namespace DrakeScript
 
 		public enum ValueType : short
 		{
-			Nil,
-			Number,
-			String,
-			Function,
-			Array,
-			Int,
-			Table,
-			Coroutine,
-			Object
+			Nil = 0,
+			Number = 1,
+			String = 2,
+			Function = 3,
+			Array = 4,
+			Int = 5,
+			Table = 6,
+			Coroutine = 7,
+			Object = 8
 		}
 
 		public ValueType Type;
@@ -78,6 +78,10 @@ namespace DrakeScript
 					return (Function)Object;
 				return null;
 			}
+			set
+			{
+				Object = value;
+			}
 		}
 
 		public Coroutine Coroutine
@@ -87,6 +91,10 @@ namespace DrakeScript
 				if (Object is Coroutine)
 					return (Coroutine)Object;
 				return null;
+			}
+			set
+			{
+				Object = value;
 			}
 		}
 
@@ -98,6 +106,10 @@ namespace DrakeScript
 					return (List<Value>)Object;
 				return null;
 			}
+			set
+			{
+				Object = value;
+			}
 		}
 
 		public Table Table
@@ -107,6 +119,10 @@ namespace DrakeScript
 				if (Object is Table)
 					return (Table)Object;
 				return null;
+			}
+			set
+			{
+				Object = value;
 			}
 		}
 

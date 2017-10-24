@@ -81,7 +81,7 @@ namespace DrakeScriptTester
 					var oldColor = Console.ForegroundColor;
 					Console.ForegroundColor = ConsoleColor.Red;
 					Console.WriteLine("Test \"" + Name + "\" failed; expected " + SuccessReturn.ToString() + " but got " + ret.ToString());
-					Console.WriteLine("Code = " + func.Code.ToStringFormatted());
+					Console.WriteLine("Code = " + func.ToStringFormatted());
 					Console.ForegroundColor = oldColor;
 				}
 				else
@@ -98,7 +98,7 @@ namespace DrakeScriptTester
 				var oldColor = Console.ForegroundColor;
 				Console.ForegroundColor = ConsoleColor.Red;
 				Console.WriteLine("Test \"" + Name + "\" failed because of exception:\n " + e.ToString());
-				Console.WriteLine("Code = " + func.Code.ToStringFormatted());
+				Console.WriteLine("Code = " + func.ToStringFormatted());
 				Console.ForegroundColor = oldColor;
 				return false;
 			}

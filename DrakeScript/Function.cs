@@ -14,12 +14,12 @@ namespace DrakeScript
 		public Func<Interpreter, SourceRef, Value[], int, Value> Method;
 		public Context Context;
 		public Version Version;
-		public string File;
+		public SourceRef Location;
 
 
-		public Function(string file, Context context, Instruction[] code, String[] args, String[] locals)
+		public Function(SourceRef location, Context context, Instruction[] code, String[] args, String[] locals)
 		{
-			File = file;
+			Location = location;
 			Version = typeof(Context).Assembly.GetName().Version;
 			Context = context;
 			ScriptFunction = true;
@@ -30,16 +30,16 @@ namespace DrakeScript
 
 		public Function(Context context, Func<Interpreter, SourceRef, Value[], int, Value> method, int paramCount)
 		{
-			File = method.ToString();
+			Location = new SourceRef(new Source(method.ToString(), ""), 0, 0);
 			Context = context;
 			Method = method;
 			Args = new string[paramCount];
 			Locals = new string[] {};
 		}
 
-		public Function(string file, Context context, Func<Interpreter, SourceRef, Value[], int, Value> method, int paramCount)
+		public Function(SourceRef location, Context context, Func<Interpreter, SourceRef, Value[], int, Value> method, int paramCount)
 		{
-			File = file;
+			Location = location;
 			Context = context;
 			Method = method;
 			Args = new string[paramCount];
@@ -68,6 +68,7 @@ namespace DrakeScript
 			}
 			else
 			{
+				//Console.WriteLine("Calling " + Method.GetMethodInfo().Name + " with args " + String.Join(", ", interpreter.ArgList));
 				if (interpreter.ArgListCount < Args.Length)
 					throw new NotEnoughArgumentsException(Args.Length, interpreter.ArgListCount, interpreter.CallLocation);
 				interpreter.Stack.Push(Method(interpreter, interpreter.CallLocation, interpreter.ArgList, interpreter.ArgListCount));
@@ -149,8 +150,7 @@ namespace DrakeScript
 					writer.Write(version.Major);
 					writer.Write(version.Minor);
 					writer.Write(version.Build);
-					writer.Write(File.Length);
-					writer.Write(System.Text.Encoding.ASCII.GetBytes(File));
+					writer.Write(Location.GetBytes());
 					writer.Write(Args.Length);
 					writer.Write(Locals.Length);
 					writer.Write(Code.Length);	
@@ -179,17 +179,15 @@ namespace DrakeScript
 			var vMajor = reader.ReadInt32();
 			var vMinor = reader.ReadInt32();
 			var vBuild = reader.ReadInt32();
-			var filenameLength = reader.ReadInt32();
-			var filename = System.Text.Encoding.ASCII.GetString(reader.ReadBytes(filenameLength));
-			var dummySource = new Source(filename, "");
+			var location = SourceRef.FromReader(reader);
 			var args = new string[reader.ReadInt32()];
 			var locals = new string[reader.ReadInt32()];
 			var code = new Instruction[reader.ReadInt32()];
 			for (var i = 0; i < code.Length; i++)
 			{
-				code[i] = Instruction.FromReader(context, reader, dummySource);
+				code[i] = Instruction.FromReader(context, reader, location.Source);
 			}
-			return new Function(filename, context, code, args, locals);
+			return new Function(location, context, code, args, locals);
 		}
 	}
 }

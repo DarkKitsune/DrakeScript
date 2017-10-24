@@ -53,7 +53,7 @@ namespace DrakeScript
 						switch ((string)current.Value)
 						{
 							case ("nil"):
-								root.Add(new ASTNode(ASTNode.NodeType.Nil, current.Location));
+								Stack.Push(new ASTNode(ASTNode.NodeType.Nil, current.Location));
 								Advance(1);
 								break;
 							case ("return"):

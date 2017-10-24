@@ -49,7 +49,7 @@ namespace DrakeScript
 				args = new Value[ArgListCount];
 				for (var i = 0; i < ArgListCount; i++)
 					args[i] = ArgList[i];
-				
+
 				locals = null;
 				if (func.Locals.Length > 0)
 					locals = new Value[func.Locals.Length];
@@ -244,7 +244,40 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Cat):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.String += vb.String;
+
+							switch (va.Type)
+							{
+								case (Value.ValueType.String):
+									va.String += vb.ToString();
+									break;
+								case (Value.ValueType.Array):
+									if (vb.Type == Value.ValueType.Array)
+									{
+										var ret = new List<Value>(va.Array.Count + vb.Array.Count);
+										ret.AddRange(va.Array);
+										ret.AddRange(vb.Array);
+										va.Array = ret;
+									}
+									else
+										throw new UnexpectedRightTypeException(vb.Type, instruction.Location);
+									break;
+								case (Value.ValueType.Table):
+									if (vb.Type == Value.ValueType.Table)
+									{
+										var ret = new Table(va.Table.InternalDictionary);
+										foreach (var kvp in vb.Table.InternalDictionary)
+										{
+											ret[kvp.Key] = kvp.Value;
+										}
+										va.Table = ret;
+									}
+									else
+										throw new UnexpectedRightTypeException(vb.Type, instruction.Location);
+									break;
+								default:
+									va = Value.Create(va.ToString() + vb.ToString());
+									break;
+							}
 
 							Stack.Push(va);
 							break;
@@ -266,17 +299,15 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Eq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = (va.Number == vb.Number ? 1.0 : 0.0);
 
-							Stack.Push(va);
+							Stack.Push((va.Equals(vb) ? 1.0 : 0.0));
 							break;
 
 						case (Instruction.InstructionType.NEq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = (va.Number != vb.Number ? 1.0 : 0.0);
 
-							Stack.Push(va);
+							Stack.Push((!va.Equals(vb) ? 1.0 : 0.0));
 							break;
 
 						case (Instruction.InstructionType.Gt):

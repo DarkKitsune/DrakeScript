@@ -11,16 +11,14 @@ namespace DrakeScript
 		public bool UnrollLoops = false;
 		public int MaxUnrollBytes = 30000;
 		public Context Context;
-		public string Name;
 
 		public CodeGenerator(Context context)
 		{
 			Context = context;
 		}
 
-		public Function Generate(string name, ASTNode node, string[] args = null)
+		public Function Generate(SourceRef location, ASTNode node, string[] args = null)
 		{
-			Name = name;
 			if (args == null)
 				Args = new string[] {};
 			else
@@ -35,7 +33,7 @@ namespace DrakeScript
 			var code = Generate(node, false);
 			code.Add(new Instruction(node.Location, Instruction.InstructionType.PushNil));
 			code.Add(new Instruction(node.Location, Instruction.InstructionType.Return));
-			return new Function(name, Context, code.ToArray(), Args, Locals.ToArray());
+			return new Function(location, Context, code.ToArray(), Args, Locals.ToArray());
 		}
 
 		public List<Instruction> Generate(ASTNode node, bool requirePush, bool allowConditions = false)
@@ -496,8 +494,8 @@ namespace DrakeScript
 					if (!unrolled)
 					{
 						//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.EnterScope));
-						var loopStart = instructions.Count;
 						instructions.AddRange(Generate(loopCond[0], true));
+						var loopStart = instructions.Count;
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dup));
 						var loopJumpInstPos = instructions.Count;
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dec));
@@ -506,7 +504,7 @@ namespace DrakeScript
 							range = Generate(child, false, true);
 							instructions.AddRange(range);
 						}
-						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.CreateInt(loopStart - instructions.Count - 1)));
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.CreateInt(loopStart - instructions.Count - 2)));
 						instructions.Insert(loopJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(instructions.Count - loopJumpInstPos)));
 						//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
@@ -534,7 +532,7 @@ namespace DrakeScript
 						argsStrings[argN++] = (string)child.Value;
 					}
 					var generator = new CodeGenerator(Context);
-					var newFunc = generator.Generate(Name, (ASTNode)node.Value, argsStrings);
+					var newFunc = generator.Generate(node.Location, (ASTNode)node.Value, argsStrings);
 					instructions.Add(
 						new Instruction(
 							node.Location,

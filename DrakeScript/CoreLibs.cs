@@ -13,6 +13,8 @@ namespace DrakeScript
 				context.SetGlobal("print", context.CreateFunction(Print, 0));
 				context.SetGlobal("println", context.CreateFunction(PrintLn, 0));
 				context.SetGlobal("time", context.CreateFunction(Time, 0));
+				context.SetGlobal("string", context.CreateFunction(ConvToString, 1));
+				context.SetGlobal("type", context.CreateFunction(GetValueType, 1));
 
 				context.SetGlobal("true", 1.0);
 				context.SetGlobal("false", 0.0);
@@ -45,6 +47,14 @@ namespace DrakeScript
 			public static Value Time(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
 				return (double)DateTime.Now.Ticks / (double)TimeSpan.TicksPerSecond;
+			}
+			public static Value ConvToString(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+			{
+				return args[0].ToString();
+			}
+			public static Value GetValueType(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+			{
+				return args[0].Type.ToString();
 			}
 		}
 

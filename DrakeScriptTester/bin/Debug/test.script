@@ -1,1 +1,21 @@
-print(5 == 1 || 1 ==1);
+
+function iterate(array)
+{
+    println("arg: ", type(array));
+    local n = 0;
+    loop (length(array))
+    {
+        println("yielding ", array[n]);
+        yield array[n];
+        n += 1;
+    }
+    yield nil;
+}
+
+local cr = coroutine(iterate);
+local readValue = 0;
+while (readValue != nil)
+{
+    readValue = cr([1, 2, 3]);
+    println("read: " ~ readValue);
+}

@@ -11,9 +11,17 @@ namespace DrakeScript
 			return string.Format("[\n    {0}\n]", String.Join(",\n    ", tokens));
 		}
 
-		public static string ToStringFormatted(this Instruction[] instructions)
+		public static string ToStringFormatted(this Function function)
 		{
-			return string.Format("[\n    {0}\n]", String.Join(",\n    ", instructions));
+			var str = string.Format("{0}[\n    {1}\n]", function.Location, String.Join(",\n    ", function.Code));
+			foreach (var inst in function.Code)
+			{
+				if (inst.Type == Instruction.InstructionType.PushFunc)
+				{
+					str += "\n" + ToStringFormatted(inst.Arg.Function);
+				}
+			}
+			return str;
 		}
 
 

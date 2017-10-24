@@ -28,7 +28,7 @@ namespace DrakeScriptTester
 				var code = context.LoadFile(args[1]);
 				var optimizer = new Optimizer();
 				optimizer.Optimize(code);
-				Console.WriteLine(code.Code.ToStringFormatted() + "\n");
+				Console.WriteLine(code.ToStringFormatted() + "\n");
 				if (System.IO.File.Exists(args[2]))
 					System.IO.File.Delete(args[2]);
 				System.IO.File.WriteAllBytes(args[2], code.GetBytecode());
@@ -42,7 +42,7 @@ namespace DrakeScriptTester
 				}
 				var context = new Context();
 				var code = context.LoadBytecode(args[1]);
-				Console.WriteLine(code.Code.ToStringFormatted() + "\n");
+				Console.WriteLine(code.ToStringFormatted() + "\n");
 				var interpreter = new Interpreter(context);
 				code.Invoke(interpreter);
 				if (interpreter.Stack.Count > 0)
@@ -61,7 +61,7 @@ namespace DrakeScriptTester
 				var code = context.LoadFile(args[0]);
 				var optimizer = new Optimizer();
 				optimizer.Optimize(code);
-				Console.WriteLine(code.Code.ToStringFormatted() + "\n");
+				Console.WriteLine(code.ToStringFormatted() + "\n");
 				var interpreter = new Interpreter(context);
 				code.Invoke(interpreter);
 				if (interpreter.Stack.Count > 0)
@@ -334,6 +334,11 @@ namespace DrakeScriptTester
 				"table mixed 1",
 				Value.Create(23.0),
 				"local Vector = {\"Create\": function(x, y) { return {\"x\": x, \"y\": y}; } }; return Vector.Create(23, 212).x;"
+			),
+			new Test(
+				"table concat",
+				Value.Create(new Table(new Dictionary<object, Value> {{"a", 5}, {"b", 7}, {"c", 5}, {"d", 7}})),
+				"return {\"a\": 5, \"b\": 7} ~ {\"c\": 5, \"d\": 7};"
 			),
 			new Test(
 				"coroutine 1",

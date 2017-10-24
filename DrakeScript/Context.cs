@@ -18,7 +18,7 @@ namespace DrakeScript
 
 		public Function LoadFile(string path)
 		{
-			return LoadString(System.IO.Path.GetFullPath(path), System.IO.File.ReadAllText(path));
+			return LoadString(System.IO.Path.GetFileName(path), System.IO.File.ReadAllText(path));
 		}
 
 		public Function LoadString(string code,
@@ -26,7 +26,7 @@ namespace DrakeScript
 			[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0
 		)
 		{
-			return LoadString("codestring(" + System.IO.Path.GetFullPath(sourceFilePath) + ":" + sourceLineNumber + ")", code);
+			return LoadString("codestring(" + System.IO.Path.GetFileName(sourceFilePath) + ":" + sourceLineNumber + ")", code);
 		}
 		public Function LoadString(string sourceName, string code)
 		{
@@ -40,7 +40,7 @@ namespace DrakeScript
 			var generator = new CodeGenerator(this);
 			try
 			{
-				return generator.Generate(sourceName, tree);
+				return generator.Generate(new SourceRef(source, -1, 0), tree);
 			}
 			catch (Exception e)
 			{
@@ -60,7 +60,7 @@ namespace DrakeScript
 		)
 		{
 			var interpreter = new Interpreter(this);
-			return LoadString("codestring(" + System.IO.Path.GetFullPath(sourceFilePath) + ":" + sourceLineNumber + ")", code).Invoke(interpreter);
+			return LoadString("codestring(" + System.IO.Path.GetFileName(sourceFilePath) + ":" + sourceLineNumber + ")", code).Invoke(interpreter);
 		}
 		public Value DoString(string sourceName, string code)
 		{

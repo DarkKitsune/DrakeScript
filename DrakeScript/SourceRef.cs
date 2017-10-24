@@ -38,6 +38,11 @@ namespace DrakeScript
 				return memoryStream.ToArray();
 			}
 		}
+
+		public static SourceRef FromReader(BinaryReader reader)
+		{
+			return new SourceRef(new Source(reader.ReadString(), ""), reader.ReadInt32(), reader.ReadInt32());
+		}
 	}
 }
 

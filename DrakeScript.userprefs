@@ -1,21 +1,23 @@
 ﻿<Properties StartupItem="DrakeScriptTester/DrakeScriptTester.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="DrakeScript/Value.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="DrakeScriptTester/Program.cs">
     <Files>
       <File FileName="DrakeScript/Function.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/Context.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/CoreLibs.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/Coroutine.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Interpreter.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/Interpreter.cs" Line="272" Column="26" />
       <File FileName="DrakeScript/CodeGenerator.cs" Line="1" Column="1" />
-      <File FileName="DrakeScriptTester/Program.cs" Line="1" Column="1" />
+      <File FileName="DrakeScriptTester/Program.cs" Line="341" Column="12" />
       <File FileName="DrakeScript/Extensions.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/Scanner.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/Token.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/Parser.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/ASTNode.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/Instruction.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Value.cs" Line="352" Column="52" />
+      <File FileName="DrakeScript/Value.cs" Line="146" Column="5" />
+      <File FileName="DrakeScript/InterpreterException.cs" Line="204" Column="35" />
+      <File FileName="DrakeScript/Table.cs" Line="58" Column="51" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

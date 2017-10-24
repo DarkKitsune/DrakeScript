@@ -17,16 +17,6 @@ namespace DrakeScript
 		}
 	}
 
-	public class UnexpectedLeftOperandException : InterpreterException
-	{
-		public UnexpectedLeftOperandException(
-			ValueType got, ValueType expected, SourceRef location
-		) : base("Illegal operation", location)
-		{
-			
-		}
-	}
-
 	public class CannotCallNilException : InterpreterException
 	{
 		public CannotCallNilException(
@@ -138,6 +128,80 @@ namespace DrakeScript
 			Type expected,
 			SourceRef location
 		) : base("Expected .NET type \"" + expected + "\" but got \"" + got + "\"", location)
+		{
+
+		}
+	}
+
+	public class UnexpectedLeftTypeException : InterpreterException
+	{
+		public UnexpectedLeftTypeException(
+			Value.ValueType type,
+			SourceRef location
+		) : base("Unexpected left operand type \"" + type + "\"", location)
+		{
+
+		}
+
+		public UnexpectedLeftTypeException(
+			Value.ValueType got,
+			Value.ValueType expected,
+			SourceRef location
+		) : base("Expected left operand type \"" + expected + "\" but got \"" + got + "\"", location)
+		{
+
+		}
+
+		public UnexpectedLeftTypeException(
+			Type type,
+			SourceRef location
+		) : base("Unexpected left operand .NET type \"" + type + "\"", location)
+		{
+
+		}
+
+		public UnexpectedLeftTypeException(
+			Type got,
+			Type expected,
+			SourceRef location
+		) : base("Expected left operand .NET type \"" + expected + "\" but got \"" + got + "\"", location)
+		{
+
+		}
+	}
+
+	public class UnexpectedRightTypeException : InterpreterException
+	{
+		public UnexpectedRightTypeException(
+			Value.ValueType type,
+			SourceRef location
+		) : base("Unexpected right operand type \"" + type + "\"", location)
+		{
+
+		}
+
+		public UnexpectedRightTypeException(
+			Value.ValueType got,
+			Value.ValueType expected,
+			SourceRef location
+		) : base("Expected right operand type \"" + expected + "\" but got \"" + got + "\"", location)
+		{
+
+		}
+
+		public UnexpectedRightTypeException(
+			Type type,
+			SourceRef location
+		) : base("Unexpected right operand .NET type \"" + type + "\"", location)
+		{
+
+		}
+
+		public UnexpectedRightTypeException(
+			Type got,
+			Type expected,
+			SourceRef location
+		) : base("Expected right operand .NET type \"" + expected + "\" but got \"" + got + "\"", location)
 		{
 
 		}

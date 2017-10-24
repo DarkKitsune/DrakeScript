@@ -6,13 +6,13 @@ namespace DrakeScript
 {
 	public class Table
 	{
-		Dictionary<object, Value> Data = new Dictionary<object, Value>();
+		public Dictionary<object, Value> InternalDictionary {get; private set;} = new Dictionary<object, Value>();
 
 		public int Count
 		{
 			get
 			{
-				return Data.Count;
+				return InternalDictionary.Count;
 			}
 		}
 
@@ -22,19 +22,19 @@ namespace DrakeScript
 			get
 			{
 				Value outValue;
-				if (Data.TryGetValue(key, out outValue))
+				if (InternalDictionary.TryGetValue(key, out outValue))
 					return outValue;
 				return Value.Nil;
 			}
 			set
 			{
-				Data[key] = value;
+				InternalDictionary[key] = value;
 			}
 		}
 
 		public bool TryGetValue(object key, out Value val)
 		{
-			return Data.TryGetValue(key, out val);
+			return InternalDictionary.TryGetValue(key, out val);
 		}
 
 
@@ -42,7 +42,7 @@ namespace DrakeScript
 		{
 			get
 			{
-				return Data.Keys.ToArray();
+				return InternalDictionary.Keys.ToArray();
 			}
 		}
 
@@ -50,16 +50,16 @@ namespace DrakeScript
 		{
 			get
 			{
-				return Data.Values.ToArray();
+				return InternalDictionary.Values.ToArray();
 			}
 		}
 
 
 		public Table(Dictionary<object, Value> baseDict)
 		{
-			foreach (var key in baseDict.Keys)
+			foreach (var kvp in baseDict)
 			{
-				Data[key] = baseDict[key];
+				InternalDictionary[kvp.Key] = kvp.Value;
 			}
 		}
 		public Table()
@@ -81,7 +81,7 @@ namespace DrakeScript
 					first = false;
 				sb.Append(key is string ? "\"" + key + "\"" : key.ToString());
 				sb.Append(':');
-				sb.Append(Data[key].DynamicValue.ToString());
+				sb.Append(InternalDictionary[key].ToString());
 			}
 			sb.Append('}');
 			return sb.ToString();
