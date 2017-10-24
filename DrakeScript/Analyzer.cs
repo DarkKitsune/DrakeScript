@@ -169,6 +169,68 @@ namespace DrakeScript
 						}
 					}
 					break;
+				case (ASTNode.NodeType.Modulo):
+					left = node.Branches["left"];
+					if (left.Value is long)
+					{
+						right = node.Branches["right"];
+						if (right.Value is long)
+						{
+							node = left;
+							node.Value = (long)left.Value % (long)right.Value;
+						}
+						else if (right.Value is double)
+						{
+							node = left;
+							node.Value = (double)(long)left.Value % (double)right.Value;
+						}
+					}
+					else if (left.Value is double)
+					{
+						right = node.Branches["right"];
+						if (right.Value is long)
+						{
+							node = left;
+							node.Value = (double)left.Value % (double)(long)right.Value;
+						}
+						else if (right.Value is double)
+						{
+							node = left;
+							node.Value = (double)left.Value % (double)right.Value;
+						}
+					}
+					break;
+				case (ASTNode.NodeType.Power):
+					left = node.Branches["left"];
+					if (left.Value is long)
+					{
+						right = node.Branches["right"];
+						if (right.Value is long)
+						{
+							node = left;
+							node.Value = (long)Math.Pow((double)(long)left.Value, (double)(long)right.Value);
+						}
+						else if (right.Value is double)
+						{
+							node = left;
+							node.Value = (long)Math.Pow((double)(long)left.Value, (double)right.Value);
+						}
+					}
+					else if (left.Value is double)
+					{
+						right = node.Branches["right"];
+						if (right.Value is long)
+						{
+							node = left;
+							node.Value = Math.Pow((double)left.Value, (double)(long)right.Value);
+						}
+						else if (right.Value is double)
+						{
+							node = left;
+							node.Value = Math.Pow((double)left.Value, (double)right.Value);
+						}
+					}
+					break;
 				case (ASTNode.NodeType.Set):
 					left = node.Branches["left"];
 					if (left.Type == ASTNode.NodeType.Ident)

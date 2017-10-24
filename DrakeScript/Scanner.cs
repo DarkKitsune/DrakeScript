@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace DrakeScript
 {
 	public class Scanner
 	{
+		public Dictionary<string, List<Token>> Macros = new Dictionary<string, List<Token>>();
+
 		public List<Token> Scan(Source source)
 		{
 			var tokenList = new List<Token>();
@@ -188,7 +191,55 @@ namespace DrakeScript
 						token = new Token(Location(), Token.TokenType.Tilde);
 						Advance(1);
 						break;
+					case ('#'):
+						var loc = Location();
+						wasComment = true;
+						var directiveString = GetUntilLineBreak().Trim();
+						var dsb = new System.Text.StringBuilder();
+						for (var dsbi = 0; dsbi < directiveString.Length; dsbi++)
+						{
+							if (!(directiveString[dsbi] == ' ' && dsbi < directiveString.Length - 1 && directiveString[dsbi + 1] == ' '))
+								dsb.Append(directiveString[dsbi]);
+						}
+						var directiveParts = dsb.ToString().Split(' ');
+						if (directiveParts.Length < 1)
+							break;
+						var directive = directiveParts[0];
+						switch (directive)
+						{
+							case ("define"):
+								if (directiveParts.Length < 2)
+									break;
+								var macro = directiveParts[1];
+								var arg = "";
+								if (directiveParts.Length >= 3)
+									arg = String.Join(" ", directiveParts.Skip(2));
+								var dsource = new Source("(Macro '" + macro + "' at " + loc + ")", arg);
+								Macros[macro] = (new Scanner()).Scan(dsource);
+								break;
+						}
+						Advance(1);
+						break;
 					default:
+						foreach (var kvp in Macros)
+						{
+							if (Matches(kvp.Key))
+							{
+								wasComment = true;
+
+								var mtokens = new List<Token>(kvp.Value.Count);
+								foreach (var mtoken in kvp.Value)
+								{
+									var mloc = Location();
+									var nmtoken = new Token(new SourceRef(new Source("Expansion of " + mtoken.Location.Source.Name + " in " + mloc.Source.Name, ""), mloc.Line, mloc.Column), mtoken.Type, mtoken.Value, 0);
+									mtokens.Add(nmtoken);
+								}
+								tokenList.AddRange(mtokens);
+
+								Advance(kvp.Key.Length - 1);
+								break;
+							}
+						}
 						if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_')
 						{
 							token = ScanIdentifier();
@@ -227,12 +278,27 @@ namespace DrakeScript
 
 		void AdvanceUntilLineBreak()
 		{
+			Position++;
 			while (At(0) != '\n' && Position < Source.Code.Length)
 				Position += 1;
 		}
 
+		string GetUntilLineBreak()
+		{
+			char chr;
+			var sb = new System.Text.StringBuilder();
+			Position++;
+			while ((chr = At(0)) != '\n' && Position < Source.Code.Length)
+			{
+				sb.Append(chr);
+				Position += 1;
+			}
+			return sb.ToString();
+		}
+
 		void AdvanceUntilEndComment()
 		{
+			Position++;
 			while (!(At(0) == '*' && At(1) == '/') && Position < Source.Code.Length)
 				Position += 1;
 		}
@@ -242,6 +308,18 @@ namespace DrakeScript
 			if (Position + num < 0 || Position + num >= Source.Code.Length)
 				return '\0';
 			return Source.Code[Position + num];
+		}
+
+		bool Matches(string str, int num = 0)
+		{
+			for (var i = 0; i < str.Length; i++)
+			{
+				if (str[i] != At(num + i))
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 
 		bool IsEscaped(int offset = 0)

@@ -1,22 +1,12 @@
+#define count 12 a
 
-function iterate(array)
+loop (10)
 {
-    println("arg: ", type(array));
-    local n = 0;
-    loop (length(array))
+    local t = time();
+    local ang = 0;
+    loop (100000)
     {
-        println("yielding ", array[n]);
-        yield array[n];
-        n += 1;
+        ang += 360 / count;
     }
-    yield nil;
-}
-
-println("func ", iterate);
-local cr = coroutine(iterate);
-local readValue = 0;
-while (readValue != nil)
-{
-    readValue = cr([1, 2, 3]);
-    println("read: " ~ readValue);
+    println(time() - t);
 }

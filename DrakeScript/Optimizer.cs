@@ -15,40 +15,52 @@ namespace DrakeScript
 				Instruction next = Instruction.Nop;
 				if (i + 1 < code.Count)
 					next = code[i + 1];
-				
+
 				switch (inst.Type)
 				{
 					
 					case (Instruction.InstructionType.IncVarByLocal):
-						if (prev.Type == Instruction.InstructionType.PushNum & prev.Arg.Number == 1)
+						if (prev.Type == Instruction.InstructionType.PushNum && prev.Arg.Number == 1)
 						{
 							code[i] = new Instruction(inst.Location, Instruction.InstructionType.IncVarLocal, inst.Arg);
 							code.RemoveAt(i - 1);
 							FixJumps(code, i - 1, -1);
+							i--;
 						}
 						break;
 					case (Instruction.InstructionType.IncVarByGlobal):
-						if (prev.Type == Instruction.InstructionType.PushNum & prev.Arg.Number == 1)
+						if (prev.Type == Instruction.InstructionType.PushNum && prev.Arg.Number == 1)
 						{
 							code[i] = new Instruction(inst.Location, Instruction.InstructionType.IncVarGlobal, inst.Arg);
 							code.RemoveAt(i - 1);
 							FixJumps(code, i - 1, -1);
+							i--;
 						}
 						break;
 					case (Instruction.InstructionType.DecVarByLocal):
-						if (prev.Type == Instruction.InstructionType.PushNum & prev.Arg.Number == 1)
+						if (prev.Type == Instruction.InstructionType.PushNum && prev.Arg.Number == 1)
 						{
 							code[i] = new Instruction(inst.Location, Instruction.InstructionType.DecVarLocal, inst.Arg);
 							code.RemoveAt(i - 1);
 							FixJumps(code, i - 1, -1);
+							i--;
 						}
 						break;
 					case (Instruction.InstructionType.DecVarByGlobal):
-						if (prev.Type == Instruction.InstructionType.PushNum & prev.Arg.Number == 1)
+						if (prev.Type == Instruction.InstructionType.PushNum && prev.Arg.Number == 1)
 						{
 							code[i] = new Instruction(inst.Location, Instruction.InstructionType.DecVarGlobal, inst.Arg);
 							code.RemoveAt(i - 1);
 							FixJumps(code, i - 1, -1);
+							i--;
+						}
+						break;
+					case (Instruction.InstructionType.PopVarGlobal):
+						if (prev.Type == Instruction.InstructionType.PushVarGlobal)
+						{
+							code.RemoveAt(i - 1);
+							code.RemoveAt(i - 1);
+							FixJumps(code, i - 1, -2);
 						}
 						break;
 				}

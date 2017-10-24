@@ -18,6 +18,15 @@ namespace DrakeScript
 		public TokenType Type {get; private set;}
 		public object Value {get; private set;}
 
+		public Token(SourceRef location, TokenType type, object value, int dummy)
+		{
+			Valid = true;
+			Location = location;
+			Type = type;
+
+			Value = value;
+		}
+
 		public Token(SourceRef location, TokenType type, string valueString = null)
 		{
 			Valid = true;
