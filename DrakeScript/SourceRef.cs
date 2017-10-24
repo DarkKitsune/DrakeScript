@@ -7,6 +7,7 @@ namespace DrakeScript
 	{
 		public static SourceRef Invalid = new SourceRef {Valid = false, Source = null, Line = 0, Column = 0};
 
+
 		public bool Valid {get; private set;}
 		public Source Source {get; private set;}
 		public int Line {get; private set;}
