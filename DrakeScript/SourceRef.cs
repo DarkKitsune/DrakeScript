@@ -31,7 +31,8 @@ namespace DrakeScript
 			{
 				using (var writer = new BinaryWriter(memoryStream))
 				{
-					writer.Write(Source.Name);
+					writer.Write(Source.Name.Length);
+					writer.Write(System.Text.UTF8Encoding.UTF8.GetBytes(Source.Name));
 					writer.Write(Line);
 					writer.Write(Column);
 				}
@@ -41,7 +42,7 @@ namespace DrakeScript
 
 		public static SourceRef FromReader(BinaryReader reader)
 		{
-			return new SourceRef(new Source(reader.ReadString(), ""), reader.ReadInt32(), reader.ReadInt32());
+			return new SourceRef(new Source(System.Text.UTF8Encoding.UTF8.GetString(reader.ReadBytes(reader.ReadInt32())), ""), reader.ReadInt32(), reader.ReadInt32());
 		}
 	}
 }
