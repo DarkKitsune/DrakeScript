@@ -52,7 +52,6 @@
     <Compile Include="Analyzer.cs" />
     <Compile Include="CodeGenerator.cs" />
     <Compile Include="Interpreter.cs" />
-    <Compile Include="Scope.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="InterpreterException.cs" />
     <Compile Include="Optimizer.cs" />
