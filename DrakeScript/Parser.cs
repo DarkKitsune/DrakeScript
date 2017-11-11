@@ -65,6 +65,10 @@ namespace DrakeScript
 								Stack.Push(new ASTNode(ASTNode.NodeType.OtherwiseOperator, current.Location));
 								Advance(1);
 								break;
+							case ("contains"):
+								Stack.Push(new ASTNode(ASTNode.NodeType.ContainsOperator, current.Location));
+								Advance(1);
+								break;
 							case ("true"):
 								Stack.Push(new ASTNode(ASTNode.NodeType.Int, current.Location, 1.0));
 								Advance(1);

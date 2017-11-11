@@ -58,9 +58,10 @@ namespace DrakeScript
 			JumpNZ = 45,
 			Jump = 46,
 			Is = 47,
-			EqNil = 48,
-			Push0 = 49,
-			Push1 = 50
+			Contains = 48,
+			EqNil = 49,
+			Push0 = 50,
+			Push1 = 51,
 		}
 
 

@@ -432,14 +432,26 @@ namespace DrakeScript
 
 		public bool Equals(Value value)
 		{
-			var dyn = DynamicValue;
-			if (dyn == null)
-			{
-				if (value.DynamicValue == null)
-					return true;
+			if (value.Type != Type)
 				return false;
+			switch (Type)
+			{
+				case (ValueType.Nil):
+					return true;
+				case (ValueType.Number):
+					return Number == value.Number;
+				case (ValueType.String):
+					return String == value.String;
+				default:
+					var dyn = DynamicValue;
+					if (dyn == null)
+					{
+						if (value.DynamicValue == null)
+							return true;
+						return false;
+					}
+					return dyn.Equals(value.DynamicValue);
 			}
-			return dyn.Equals(value.DynamicValue);
 		}
 
 		public override bool Equals(object obj)

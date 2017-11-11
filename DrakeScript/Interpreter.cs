@@ -446,6 +446,39 @@ namespace DrakeScript
 							Stack.Push(va.ActualType == vb.ObjectAs<Type>());
 							break;
 
+						case (Instruction.InstructionType.Contains):
+							vb = Stack.Pop();
+							va = Stack.Pop();
+							bool found = false;
+							switch (va.Type)
+							{
+								case (Value.ValueType.Array):
+									foreach (var v in va.Array)
+									{
+										if (v.Equals(vb))
+										{
+											found = true;
+											break;
+										}
+									}
+									Stack.Push(found);
+									break;
+								case (Value.ValueType.Table):
+									foreach (var v in va.Table.InternalDictionary.Keys)
+									{
+										if (v.Equals(vb.DynamicValue))
+										{
+											found = true;
+											break;
+										}
+									}
+									Stack.Push(found);
+									break;
+								default:
+									throw new CannotIndexTypeException(va.Type, instruction.Location);
+							}
+							break;
+
 						default:
 							throw new NoCaseForInstructionException(instruction.Type, instruction.Location);
 					}

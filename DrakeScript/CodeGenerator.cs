@@ -208,6 +208,13 @@ namespace DrakeScript
 					var otherwiseJumpAmount = instructions.Count - otherwiseJumpStart + 1;
 					instructions.Insert(otherwiseJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(otherwiseJumpAmount - 1)));
 					break;
+				case (ASTNode.NodeType.Contains):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
+					instructions.AddRange(Generate(node.Branches["left"], true));
+					instructions.AddRange(Generate(node.Branches["right"], true));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Contains));
+					break;
 				case (ASTNode.NodeType.Add):
 					if (!requirePush)
 						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
