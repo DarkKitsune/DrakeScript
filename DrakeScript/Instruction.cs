@@ -56,7 +56,11 @@ namespace DrakeScript
 			Yield = 43,
 			JumpEZ = 44,
 			JumpNZ = 45,
-			Jump = 46
+			Jump = 46,
+			Is = 47,
+			EqNil = 48,
+			Push0 = 49,
+			Push1 = 50
 		}
 
 
@@ -80,14 +84,14 @@ namespace DrakeScript
 		}
 
 
-		public byte[] GetBytes()
+		public byte[] GetBytes(Context context)
 		{
 			using (var memoryStream = new MemoryStream())
 			{
 				using (var writer = new BinaryWriter(memoryStream))
 				{
 					writer.Write((short)Type);
-					writer.Write(Arg.GetBytes());
+					writer.Write(Arg.GetBytes(context));
 					writer.Write(Location.Line);
 					writer.Write(Location.Column);
 				}

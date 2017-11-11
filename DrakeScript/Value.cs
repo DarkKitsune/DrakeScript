@@ -10,6 +10,8 @@ namespace DrakeScript
 
 		static string DefaultString = "";
 		public static Value Nil = new Value {Type = ValueType.Nil, Number = 0.0, String = DefaultString, Object = null};
+		public static Value Zero = new Value {Type = ValueType.Number, Number = 0.0, String = DefaultString, Object = null};
+		public static Value One = new Value {Type = ValueType.Number, Number = 1.0, String = DefaultString, Object = null};
 
 		public enum ValueType : short
 		{
@@ -146,6 +148,23 @@ namespace DrakeScript
 			}
 		}
 
+		public bool Is<T>()
+		{
+			return Object is T;
+		}
+
+		public bool Is(ValueType t)
+		{
+			return Type == t;
+		}
+
+		public T ObjectAs<T>()
+		{
+			if (Object is T)
+				return (T)Object;
+			return default(T);
+		}
+
 		public bool IsNil
 		{
 			get
@@ -159,6 +178,35 @@ namespace DrakeScript
 			get
 			{
 				return String != null;
+			}
+		}
+
+		public Type ActualType
+		{
+			get
+			{
+				switch (Type)
+				{
+					case (ValueType.Array):
+						return typeof(List<Value>);
+					case (ValueType.Coroutine):
+						return typeof(Coroutine);
+					case (ValueType.Function):
+						return typeof(Function);
+					case (ValueType.Int):
+					case (ValueType.Number):
+						return typeof(double);
+					case (ValueType.Nil):
+						return null;
+					case (ValueType.Object):
+						return Object.GetType();
+					case (ValueType.String):
+						return typeof(string);
+					case (ValueType.Table):
+						return typeof(Table);
+					default:
+						return DynamicValue.GetType();
+				}
 			}
 		}
 
@@ -405,7 +453,7 @@ namespace DrakeScript
 		}
 
 
-		public byte[] GetBytes()
+		public byte[] GetBytes(Context context)
 		{
 			using (var memoryStream = new MemoryStream())
 			{
@@ -426,6 +474,17 @@ namespace DrakeScript
 							break;
 						case (ValueType.Int):
 							writer.Write(IntNumber);
+							break;
+						case (ValueType.Object):
+							var otype = Object.GetType();
+							int id;
+							if (!context.IDFromType.TryGetValue(otype, out id))
+							{
+								writer.Write(-1);
+								break;
+							}
+							writer.Write(id);
+							context.ToBytesConv[otype].Invoke(writer, this);
 							break;
 					}
 				}
@@ -448,6 +507,12 @@ namespace DrakeScript
 					return Value.Create((double)reader.ReadSingle());
 				case (ValueType.Int):
 					return Value.CreateInt(reader.ReadInt32());
+				case (ValueType.Object):
+					var id = reader.ReadInt32();
+					Type otype;
+					if (!context.TypeFromID.TryGetValue(id, out otype))
+						return Value.Nil;
+					return context.FromBytesConv[otype].Invoke(reader);
 				default:
 					return Value.Nil;
 			}

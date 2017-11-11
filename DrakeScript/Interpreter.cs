@@ -66,7 +66,7 @@ namespace DrakeScript
 			for (; pos < code.Length && !exited && !Yielded; pos++)
 			{
 				var instruction = code[pos];
-				//Console.WriteLine(instruction);
+				//Console.WriteLine(pos + " " + instruction);
 				try
 				{
 					switch (instruction.Type)
@@ -84,6 +84,12 @@ namespace DrakeScript
 						case (Instruction.InstructionType.PushStr):
 						case (Instruction.InstructionType.PushFunc):
 							Stack.Push(instruction.Arg);
+							break;
+						case (Instruction.InstructionType.Push0):
+							Stack.Push(Value.Zero);
+							break;
+						case (Instruction.InstructionType.Push1):
+							Stack.Push(Value.One);
 							break;
 						case (Instruction.InstructionType.PushArray):
 							ia = instruction.Arg.IntNumber;
@@ -303,6 +309,12 @@ namespace DrakeScript
 							Stack.Push((va.Equals(vb) ? 1.0 : 0.0));
 							break;
 
+						case (Instruction.InstructionType.EqNil):
+							va = Stack.Pop();
+
+							Stack.Push(va.IsNil);
+							break;
+
 						case (Instruction.InstructionType.NEq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
@@ -426,6 +438,12 @@ namespace DrakeScript
 							//ScopeStack.Peek(1).Stack.Push(Stack.Pop());
 							exited = true;
 							Yielded = true;
+							break;
+
+						case (Instruction.InstructionType.Is):
+							vb = Stack.Pop();
+							va = Stack.Pop();
+							Stack.Push(va.ActualType == vb.ObjectAs<Type>());
 							break;
 
 						default:

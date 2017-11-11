@@ -8,8 +8,8 @@ namespace DrakeScript
 		string[] Args;
 		Dictionary<string, int> ArgLookup = new Dictionary<string, int>();
 		List<string> Locals = new List<string>();
-		public bool UnrollLoops = false;
-		public int MaxUnrollBytes = 30000;
+		public bool UnrollLoops = true;
+		public int MaxUnrollBytes = 10000;
 		public Context Context;
 
 		public CodeGenerator(Context context)
@@ -176,6 +176,37 @@ namespace DrakeScript
 							);
 						}
 					}
+					break;
+				case (ASTNode.NodeType.Is):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
+					instructions.AddRange(Generate(node.Branches["left"], true));
+					instructions.AddRange(Generate(node.Branches["right"], true));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Is));
+					break;
+				case (ASTNode.NodeType.Then):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
+					instructions.AddRange(Generate(node.Branches["left"], true));
+					var thenJumpStart = instructions.Count;
+					instructions.AddRange(Generate(node.Branches["right"], true));
+					var thenJumpAmount = instructions.Count - thenJumpStart + 1;
+					instructions.Insert(thenJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(thenJumpAmount)));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.CreateInt(1)));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushNil));
+					break;
+				case (ASTNode.NodeType.Otherwise):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
+					instructions.AddRange(Generate(node.Branches["left"], true));
+					instructions.Add(new Instruction(node.Branches["left"].Location, Instruction.InstructionType.Dup));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushNil));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Eq));
+					var otherwiseJumpStart = instructions.Count;
+					instructions.Add(new Instruction(node.Branches["right"].Location, Instruction.InstructionType.Pop));
+					instructions.AddRange(Generate(node.Branches["right"], true));
+					var otherwiseJumpAmount = instructions.Count - otherwiseJumpStart + 1;
+					instructions.Insert(otherwiseJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(otherwiseJumpAmount - 1)));
 					break;
 				case (ASTNode.NodeType.Add):
 					if (!requirePush)

@@ -6,6 +6,12 @@ namespace DrakeScript
 	public class Context
 	{
 		public Table Globals = new Table();
+		internal Dictionary<Type, Func<System.IO.BinaryReader, Value>> FromBytesConv = new Dictionary<Type, Func<System.IO.BinaryReader, Value>>();
+		internal Dictionary<Type, Action<System.IO.BinaryWriter, Value>> ToBytesConv = new Dictionary<Type, Action<System.IO.BinaryWriter, Value>>();
+		internal Dictionary<int, Type> TypeFromID = new Dictionary<int, Type>();
+		internal Dictionary<Type, int> IDFromType = new Dictionary<Type, int>();
+		int NextTypeID;
+
 
 		public Context()
 		{
@@ -14,6 +20,16 @@ namespace DrakeScript
 			CoreLibs.LibArray.Register(this);
 			CoreLibs.LibTable.Register(this);
 			CoreLibs.LibMath.Register(this);
+		}
+
+		public void SetBinaryConversionMethods(Type type, Func<System.IO.BinaryReader, Value> fromBin, Action<System.IO.BinaryWriter, Value> toBin)
+		{
+			FromBytesConv[type] = fromBin;
+			ToBytesConv[type] = toBin;
+			var id = NextTypeID;
+			NextTypeID++;
+			TypeFromID[id] = type;
+			IDFromType[type] = id;
 		}
 
 		public Function LoadFile(string path)
@@ -138,6 +154,10 @@ namespace DrakeScript
 			Globals[name] = Value.Create(value);
 		}
 		public void SetGlobal(string name, Table value)
+		{
+			Globals[name] = Value.Create(value);
+		}
+		public void SetGlobal(string name, Object value)
 		{
 			Globals[name] = Value.Create(value);
 		}

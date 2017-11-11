@@ -13,7 +13,8 @@ namespace DrakeScript
 
 		public ASTNode Parse(List<Token> tokens)
 		{
-			return new ASTNode(ASTNode.NodeType.Root, SourceRef.Invalid, _Parse(tokens));
+			var tree = new ASTNode(ASTNode.NodeType.Root, SourceRef.Invalid, _Parse(tokens));
+			return tree;
 		}
 
 		List<ASTNode> _Parse(List<Token> tokens, bool useCommaForSemicolon = false)
@@ -52,6 +53,26 @@ namespace DrakeScript
 					case (Token.TokenType.Ident):
 						switch ((string)current.Value)
 						{
+							case ("is"):
+								Stack.Push(new ASTNode(ASTNode.NodeType.IsOperator, current.Location));
+								Advance(1);
+								break;
+							case ("then"):
+								Stack.Push(new ASTNode(ASTNode.NodeType.ThenOperator, current.Location));
+								Advance(1);
+								break;
+							case ("otherwise"):
+								Stack.Push(new ASTNode(ASTNode.NodeType.OtherwiseOperator, current.Location));
+								Advance(1);
+								break;
+							case ("true"):
+								Stack.Push(new ASTNode(ASTNode.NodeType.Int, current.Location, 1.0));
+								Advance(1);
+								break;
+							case ("false"):
+								Stack.Push(new ASTNode(ASTNode.NodeType.Int, current.Location, 0.0));
+								Advance(1);
+								break;
 							case ("nil"):
 								Stack.Push(new ASTNode(ASTNode.NodeType.Nil, current.Location));
 								Advance(1);

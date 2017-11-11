@@ -9,8 +9,8 @@ namespace DrakeScript
 	{
 		public bool ScriptFunction {get; private set;}
 		public Instruction[] Code {get; internal set;}
-		public String[] Args {get; private set;}
-		public String[] Locals {get; private set;}
+		public String[] Args {get; internal set;}
+		public String[] Locals {get; internal set;}
 		public Func<Interpreter, SourceRef, Value[], int, Value> Method;
 		public Context Context;
 		public Version Version;
@@ -152,7 +152,7 @@ namespace DrakeScript
 					writer.Write(Code.Length);
 					foreach (var inst in Code)
 					{
-						writer.Write(inst.GetBytes());
+						writer.Write(inst.GetBytes(Context));
 					}
 				}
 				return memoryStream.ToArray();

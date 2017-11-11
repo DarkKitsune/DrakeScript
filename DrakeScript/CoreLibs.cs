@@ -10,14 +10,20 @@ namespace DrakeScript
 		{
 			public static void Register(Context context)
 			{
+				context.SetGlobal("array", typeof(List<Value>));
+				context.SetGlobal("coroutine", typeof(Coroutine));
+				context.SetGlobal("function", typeof(Function));
+				context.SetGlobal("int", typeof(double));
+				context.SetGlobal("number", typeof(double));
+				context.SetGlobal("string", typeof(string));
+				context.SetGlobal("table", typeof(Table));
+
 				context.SetGlobal("print", context.CreateFunction(Print, 0));
 				context.SetGlobal("println", context.CreateFunction(PrintLn, 0));
 				context.SetGlobal("time", context.CreateFunction(Time, 0));
-				context.SetGlobal("string", context.CreateFunction(ConvToString, 1));
+				context.SetGlobal("toString", context.CreateFunction(ConvToString, 1));
 				context.SetGlobal("type", context.CreateFunction(GetValueType, 1));
 
-				context.SetGlobal("true", 1.0);
-				context.SetGlobal("false", 0.0);
 				context.SetGlobal("inf", double.PositiveInfinity);
 				context.SetGlobal("maxNumber", double.MaxValue);
 				context.SetGlobal("minNumber", double.MinValue);
@@ -54,7 +60,7 @@ namespace DrakeScript
 			}
 			public static Value GetValueType(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
-				return args[0].Type.ToString();
+				return Value.Create(args[0].ActualType);
 			}
 		}
 
@@ -121,6 +127,7 @@ namespace DrakeScript
 			}
 		}
 
+		public static Random Random = new Random();
 		public static class LibMath
 		{
 			public static void Register(Context context)
@@ -137,6 +144,7 @@ namespace DrakeScript
 				context.SetGlobal("sqrt", context.CreateFunction(Sqrt, 1));
 				context.SetGlobal("sqr", context.CreateFunction(Sqr, 1));
 				context.SetGlobal("pow", context.CreateFunction(Pow, 2));
+				context.SetGlobal("rand", context.CreateFunction(Rand, 2));
 			}
 
 			public static Value Cos(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -197,6 +205,11 @@ namespace DrakeScript
 			public static Value Pow(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
 				return Math.Pow(args[0].Number, args[1].Number);
+			}
+
+			public static Value Rand(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+			{
+				return args[0].Number + (args[1].Number - args[0].Number) * Random.NextDouble();
 			}
 		}
 	}

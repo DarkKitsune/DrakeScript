@@ -377,6 +377,81 @@ namespace DrakeScriptTester
 				"array slice",
 				Value.Create(new List<Value> {3, 4}),
 				"return slice([1, 2, 3, 4, 5], 2, 2);"
+			),
+			new Test(
+				"type check number 1",
+				Value.Create(true),
+				"return 1 is number;"
+			),
+			new Test(
+				"type check number 2",
+				Value.Create(false),
+				"return \"Test\" is number;"
+			),
+			new Test(
+				"type check number 3",
+				Value.Create(true),
+				"return 4 + 1 is number;"
+			),
+			new Test(
+				"type check array 1",
+				Value.Create(true),
+				"return [1, 2, 3, 4] is array;"
+			),
+			new Test(
+				"type check array 2",
+				Value.Create(false),
+				"return 9 is array;"
+			),
+			new Test(
+				"type check array 3",
+				Value.Create(false),
+				"return \"Test\" is array;"
+			),
+			new Test(
+				"type check array 4",
+				Value.Create(true),
+				"return [1, 2] ~ [3, 4] is array;"
+			),
+			new Test(
+				"then 1",
+				Value.Create(1),
+				"return true then 1;"
+			),
+			new Test(
+				"then 2",
+				Value.Nil,
+				"return false then 1;"
+			),
+			new Test(
+				"then 3",
+				Value.Create(7),
+				"return true then 1 + 6;"
+			),
+			new Test(
+				"then 4",
+				Value.Create(new List<Value>{1, 2, 3}),
+				"return true then [1] ~ [2, 3];"
+			),
+			new Test(
+				"then otherwise 1",
+				Value.Create(1),
+				"return true then 1 otherwise 2;"
+			),
+			new Test(
+				"then otherwise 2",
+				Value.Create(2),
+				"return false then 1 otherwise 2;"
+			),
+			new Test(
+				"then otherwise 3",
+				Value.Create(""),
+				"local var = 5; return var is string then var otherwise \"\";"
+			),
+			new Test(
+				"then otherwise 4",
+				Value.Create("Hello"),
+				"local var = \"Hello\"; return var is string then var otherwise \"\";"
 			)
 		};
 

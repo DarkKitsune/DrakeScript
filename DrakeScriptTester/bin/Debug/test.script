@@ -1,12 +1,11 @@
-#define count 12 a
+local t = time();
 
-loop (10)
+loop (10000)
 {
-    local t = time();
-    local ang = 0;
-    loop (100000)
+    if (a == false)
     {
-        ang += 360 / count;
+        
     }
-    println(time() - t);
 }
+
+println((time() - t) * 1000, " ms");
