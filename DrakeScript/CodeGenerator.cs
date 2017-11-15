@@ -423,15 +423,8 @@ namespace DrakeScript
 						range = Generate(child, true);
 						instructions.AddRange(range);
 					}
-					instructions.Add(
-						new Instruction(
-							node.Location,
-							Instruction.InstructionType.PopArgs,
-							Value.CreateInt(cargs.Count)
-						)
-					);
 					instructions.AddRange(Generate(node.Branches["function"], true));
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Call));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Call, Value.CreateInt(cargs.Count)));
 					if (!requirePush)
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
 					break;

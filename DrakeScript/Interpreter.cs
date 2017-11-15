@@ -115,7 +115,8 @@ namespace DrakeScript
 						case (Instruction.InstructionType.PopVarLocal):
 							locals[instruction.Arg.IntNumber] = Stack.Pop();
 							break;
-						case (Instruction.InstructionType.PopArgs):
+						case (Instruction.InstructionType.Call):
+							var callFunc = Stack.Pop();
 							ia = instruction.Arg.IntNumber;
 							if (ArgList.Length < ia)
 								Array.Resize(ref ArgList, ia);
@@ -124,9 +125,6 @@ namespace DrakeScript
 								ArgList[i] = Stack.Pop();
 							}
 							ArgListCount = ia;
-							break;
-						case (Instruction.InstructionType.Call):
-							var callFunc = Stack.Pop();
 							switch (callFunc.Type)
 							{
 								case (Value.ValueType.Function):

@@ -6,7 +6,7 @@ namespace DrakeScript
 {
 	public struct Value
 	{
-		public const int MinSize = sizeof(ValueType) + sizeof(double) + 4;
+		public const int MinSize = sizeof(ValueType) + sizeof(double) + sizeof(int) + 4;
 
 		static string DefaultString = "";
 		public static Value Nil = new Value {Type = ValueType.Nil, Number = 0.0, String = DefaultString, Object = null};
@@ -28,25 +28,22 @@ namespace DrakeScript
 
 		public ValueType Type;
 		public double Number;
-		/*public double Number
-		{
-			get
-			{
-				if (Type == ValueType.Number)
-					return FloatNumber;
-				return (double)IntNumber;
-			}
-			set
-			{
-				if (Type == ValueType.Number)
-					FloatNumber = value;
-				IntNumber = (int)value;
-			}
-		}*/
 		public int IntNumber;
 		public object Object;
 
 		public bool Bool
+		{
+			get
+			{
+				return Number != 0.0;
+			}
+			set
+			{
+				Number = (value ? 1.0 : 0.0);
+			}
+		}
+
+		public bool BoolDirect
 		{
 			get
 			{
@@ -65,6 +62,18 @@ namespace DrakeScript
 				if (Type == ValueType.String)
 					return (string)Object;
 				return DefaultString;
+			}
+			set
+			{
+				Object = value;
+			}
+		}
+
+		public string StringDirect
+		{
+			get
+			{
+				return (string)Object;
 			}
 			set
 			{
@@ -141,7 +150,7 @@ namespace DrakeScript
 					case (ValueType.Int):
 						return IntNumber;
 					case (ValueType.String):
-						return String;
+						return StringDirect;
 					default:
 						return Object;
 				}
@@ -441,7 +450,7 @@ namespace DrakeScript
 				case (ValueType.Number):
 					return Number == value.Number;
 				case (ValueType.String):
-					return String == value.String;
+					return StringDirect == value.StringDirect;
 				default:
 					var dyn = DynamicValue;
 					if (dyn == null)
