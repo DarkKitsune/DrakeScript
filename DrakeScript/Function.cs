@@ -180,6 +180,11 @@ namespace DrakeScript
 			}
 			return new Function(location, context, code, args, locals);
 		}
+
+		public override string ToString()
+		{
+			return string.Format("Function at {0}", Location.ToString());
+		}
 	}
 }
 

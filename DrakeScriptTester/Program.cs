@@ -139,6 +139,26 @@ namespace DrakeScriptTester
 				"local a = \"hello, \"; local b = \"world!\"; return a ~ b;"
 			),
 			new Test(
+				"concat 3",
+				Value.Create("hello, 6!"),
+				"local a = \"hello, \"; local b = 6; return a ~ b ~ \"!\";"
+			),
+			new Test(
+				"concat 4",
+				Value.Create("hello, [1, 2, 3]!"),
+				"local a = \"hello, \"; local b = [1, 2, 3]; return a ~ b ~ \"!\";"
+			),
+			new Test(
+				"concat 5",
+				Value.Create("hello, Function at codestring(Test.cs:27):1:28!"),
+				"local a = \"hello, \"; local function b(){}; return a ~ b ~ \"!\";"
+			),
+			new Test(
+				"concat 6",
+					Value.Create("hello, {1:4, 5:5, \"test\":6}!"),
+					"local a = \"hello, \"; local b = {1: 4, 5: 5, \"test\":6}; return a ~ b ~ \"!\";"
+			),
+			new Test(
 				"local noarg function 1",
 				Value.Create("Hello, world!"),
 				"local function a() {return \"Hello, world!\";} return a();"
@@ -159,12 +179,12 @@ namespace DrakeScriptTester
 				"function a() {return \"Hello, world!\";} return a();"
 			),
 			new Test(
-				"global noarg function 2",
+				"global arg function 1",
 				Value.Create("Hello, world!"),
 				"function a(str) {return str;} return a(\"Hello, world!\");"
 			),
 			new Test(
-				"global arg function 1",
+				"global arg function 2",
 				Value.Create(21.4 + 47.0 / 124.0 * 93.2),
 				"function a(a, b, c, d) {return a + b / c * d;} return a(21.4, 47, 124, 93.2);"
 			),
