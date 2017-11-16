@@ -69,6 +69,10 @@ namespace DrakeScript
 								Stack.Push(new ASTNode(ASTNode.NodeType.ContainsOperator, current.Location));
 								Advance(1);
 								break;
+							case ("lengthof"):
+								Stack.Push(new ASTNode(ASTNode.NodeType.LengthOperator, current.Location));
+								Advance(1);
+								break;
 							case ("true"):
 								Stack.Push(new ASTNode(ASTNode.NodeType.Int, current.Location, 1.0));
 								Advance(1);
@@ -444,7 +448,7 @@ namespace DrakeScript
 					TempStackList.Add(node);
 			}
 
-			for (var precedence = 1; precedence <= 15 && Stack.Count >= 2; precedence++)
+			for (var precedence = 1; precedence <= ASTNode.MaxPrecedence && Stack.Count >= 2; precedence++)
 			{
 				for (var pos = 0; pos < TempStackList.Count - 1;)
 				{

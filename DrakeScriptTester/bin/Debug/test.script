@@ -1,13 +1,10 @@
 local t = time();
 
-function test(a, b, c, d)
-{
-    return a + b + c + d;
-}
+local arr = [1, 2, 3, 4, 5];
 
 loop (100000)
 {
-    test(1, 2, 3, 4);
+    a = lengthof arr;
 }
 
 println((time() - t) * 1000, " ms");

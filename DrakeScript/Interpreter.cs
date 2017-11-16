@@ -477,6 +477,24 @@ namespace DrakeScript
 							}
 							break;
 
+						case (Instruction.InstructionType.Length):
+							va = Stack.Pop();
+							switch (va.Type)
+							{
+								case (Value.ValueType.Array):
+									Stack.Push(va.Array.Count);
+									break;
+								case (Value.ValueType.Table):
+									Stack.Push(va.Table.Count);
+									break;
+								case (Value.ValueType.String):
+									Stack.Push(va.String.Length);
+									break;
+								default:
+									throw new CannotIndexTypeException(va.Type, instruction.Location);
+							}
+							break;
+
 						default:
 							throw new NoCaseForInstructionException(instruction.Type, instruction.Location);
 					}

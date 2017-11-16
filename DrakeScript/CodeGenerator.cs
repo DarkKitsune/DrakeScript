@@ -215,6 +215,12 @@ namespace DrakeScript
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Contains));
 					break;
+				case (ASTNode.NodeType.Length):
+					if (!requirePush)
+						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
+					instructions.AddRange(Generate(node.Branches["right"], true));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Length));
+					break;
 				case (ASTNode.NodeType.Add):
 					if (!requirePush)
 						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);

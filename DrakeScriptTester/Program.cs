@@ -452,6 +452,22 @@ namespace DrakeScriptTester
 				"then otherwise 4",
 				Value.Create("Hello"),
 				"local var = \"Hello\"; return var is string then var otherwise \"\";"
+			),
+			new Test(
+				"lengthof 1",
+				Value.Create(3),
+					"return lengthof [1, 4, 87];"
+			),
+			new Test(
+				"lengthof 2",
+				Value.Create(3),
+				"return lengthof {\"aa\": 1, 4: 4, \"nn\": 87};"
+			)
+			,
+			new Test(
+				"lengthof 3",
+				Value.Create(-5),
+				"return -lengthof \"abcde\";"
 			)
 		};
 
