@@ -155,8 +155,8 @@ namespace DrakeScriptTester
 			),
 			new Test(
 				"concat 6",
-					Value.Create("hello, {1:4, 5:5, \"test\":6}!"),
-					"local a = \"hello, \"; local b = {1: 4, 5: 5, \"test\":6}; return a ~ b ~ \"!\";"
+				Value.Create("hello, {1:4, 5:5, \"test\":6}!"),
+				"local a = \"hello, \"; local b = {1: 4, 5: 5, \"test\":6}; return a ~ b ~ \"!\";"
 			),
 			new Test(
 				"local noarg function 1",
