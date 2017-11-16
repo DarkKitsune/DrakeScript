@@ -9,7 +9,7 @@ namespace DrakeScript
 		Dictionary<string, int> ArgLookup = new Dictionary<string, int>();
 		List<string> Locals = new List<string>();
 		public bool UnrollLoops = true;
-		public int MaxUnrollBytes = 10000;
+		public int MaxUnrollBytes = 2048;
 		public Context Context;
 
 		public CodeGenerator(Context context)
@@ -31,9 +31,19 @@ namespace DrakeScript
 				}
 			}
 			var code = Generate(node, false);
+			VerifyCode(code);
 			code.Add(new Instruction(node.Location, Instruction.InstructionType.PushNil));
 			code.Add(new Instruction(node.Location, Instruction.InstructionType.Return));
 			return new Function(location, Context, code.ToArray(), Args, Locals.ToArray());
+		}
+
+		void VerifyCode(List<Instruction> code)
+		{
+			foreach (var inst in code)
+			{
+				if (inst.Type == Instruction.InstructionType._Break)
+					throw new UnexpectedTokenException("break", inst.Location);
+			}
 		}
 
 		public List<Instruction> Generate(ASTNode node, bool requirePush, bool allowConditions = false)
@@ -448,6 +458,11 @@ namespace DrakeScript
 					instructions.AddRange(range);
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Yield));
 					break;
+				case (ASTNode.NodeType.Break):
+					if (requirePush)
+						throw new UnexpectedTokenException("break", node.Location);
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType._Break));
+					break;
 				case (ASTNode.NodeType.If):
 					if (requirePush)
 						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
@@ -494,6 +509,7 @@ namespace DrakeScript
 					var whileStart = instructions.Count;
 					instructions.AddRange(Generate(whileCond[0], true));
 					var whileJumpInstPos = instructions.Count;
+					var whileBreakConvertStart = instructions.Count;
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
 						range = Generate(child, false, true);
@@ -501,6 +517,13 @@ namespace DrakeScript
 					}
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.CreateInt(whileStart - instructions.Count - 2)));
 					instructions.Insert(whileJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(instructions.Count - whileJumpInstPos)));
+					for (var whileBreakInd = whileBreakConvertStart; whileBreakInd < instructions.Count; whileBreakInd++)
+					{
+						if (instructions[whileBreakInd].Type == Instruction.InstructionType._Break)
+						{
+							instructions[whileBreakInd] = new Instruction(instructions[whileBreakInd].Location, Instruction.InstructionType.Jump, Value.CreateInt(instructions.Count - whileBreakInd - 1));
+						}
+					}
 					//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
 					break;
 				case (ASTNode.NodeType.Loop):
@@ -510,6 +533,7 @@ namespace DrakeScript
 					if (loopCond.Count != 1)
 						throw new InvalidConditionException("loop", node.Location);
 					var unrolled = false;
+					var loopBreakConvertStart = instructions.Count;
 					if (UnrollLoops && loopCond[0].Type == ASTNode.NodeType.Int)
 					{
 						var loopNum = (double)loopCond[0].Value;
@@ -524,6 +548,13 @@ namespace DrakeScript
 							for (var urn = 0; urn < loopNum; urn++)
 							{
 								instructions.AddRange(tempInst);
+							}
+							for (var loopBreakInd = loopBreakConvertStart; loopBreakInd < instructions.Count; loopBreakInd++)
+							{
+								if (instructions[loopBreakInd].Type == Instruction.InstructionType._Break)
+								{
+									instructions[loopBreakInd] = new Instruction(instructions[loopBreakInd].Location, Instruction.InstructionType.Jump, Value.CreateInt(instructions.Count - loopBreakInd - 1));
+								}
 							}
 							unrolled = true;
 						}
@@ -544,6 +575,13 @@ namespace DrakeScript
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.CreateInt(loopStart - instructions.Count - 2)));
 						instructions.Insert(loopJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(instructions.Count - loopJumpInstPos)));
 						//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
+						for (var loopBreakInd = loopBreakConvertStart; loopBreakInd < instructions.Count; loopBreakInd++)
+						{
+							if (instructions[loopBreakInd].Type == Instruction.InstructionType._Break)
+							{
+								instructions[loopBreakInd] = new Instruction(instructions[loopBreakInd].Location, Instruction.InstructionType.Jump, Value.CreateInt(instructions.Count - loopBreakInd - 1));
+							}
+						}
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
 					}
 					break;

@@ -23,6 +23,7 @@ namespace DrakeScript
 			Pop = 10,
 			PopVarGlobal = 11,
 			PopVarLocal = 12,
+			_Break = 13,
 			Call = 14,
 			PushIndex = 15,
 			PopIndex = 16,

@@ -97,6 +97,10 @@ namespace DrakeScript
 								root.Add(new ASTNode(ASTNode.NodeType.Yield, current.Location, parsed.GetSafe(0)));
 								Advance(advanceAmount);
 								break;
+							case ("break"):
+								root.Add(new ASTNode(ASTNode.NodeType.Break, current.Location));
+								Advance(1);
+								break;
 							case ("if"):
 								newParser = new Parser();
 								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));

@@ -219,7 +219,7 @@ namespace DrakeScript
 			var num = 0;
 			for (var i = pos; i < end; i++)
 			{
-				if (code[i].Type ==Instruction.InstructionType.PushVarGlobal)
+				if (code[i].Type ==Instruction.InstructionType.PushVarGlobal && code[i].Arg.String == name)
 					num++;
 			}
 			return num;

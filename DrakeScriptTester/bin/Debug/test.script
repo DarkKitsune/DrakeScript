@@ -2,9 +2,6 @@ local t = time();
 
 local arr = [1, 2, 3, 4, 5];
 
-loop (100000)
-{
-    a = lengthof arr;
-}
+
 
 println((time() - t) * 1000, " ms");

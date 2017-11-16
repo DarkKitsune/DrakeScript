@@ -462,12 +462,21 @@ namespace DrakeScriptTester
 				"lengthof 2",
 				Value.Create(3),
 				"return lengthof {\"aa\": 1, 4: 4, \"nn\": 87};"
-			)
-			,
+			),
 			new Test(
 				"lengthof 3",
 				Value.Create(-5),
 				"return -lengthof \"abcde\";"
+			),
+			new Test(
+				"break 1",
+				Value.Create(6),
+				"local a = 0;loop(30){a += 1; if (a > 5) {break;}}return a;"
+			),
+			new Test(
+				"break 2",
+				Value.Create(new List<Value> {6, 6, 6, 6}),
+				"local a = 0;local b = [];loop(4){a = 0; loop (30) {if (a > 5) {break;} a += 1;} b = b ~ [a];}return b;"
 			)
 		};
 
