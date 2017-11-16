@@ -1,7 +1,12 @@
+time();
 local t = time();
 
-local arr = [1, 2, 3, 4, 5];
-
-
-
+local a = 0;
+local b = [11, 2, 3, 1, 2, 3, 1, 2, 3, 6, 7];
+local c;
+loop (100000)
+{
+    a += 1;
+    c = b contains 6;
+}
 println((time() - t) * 1000, " ms");

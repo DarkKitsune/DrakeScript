@@ -17,11 +17,12 @@ namespace DrakeScript
 		}
 	}
 
-	public class CannotCallNilException : InterpreterException
+	public class CannotCallTypeException : InterpreterException
 	{
-		public CannotCallNilException(
+		public CannotCallTypeException(
+			Value.ValueType type,
 			SourceRef location
-		) : base("Function does not exist", location)
+		) : base("Cannot call a value of type " + type, location)
 		{
 
 		}

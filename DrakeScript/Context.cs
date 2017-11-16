@@ -6,6 +6,7 @@ namespace DrakeScript
 	public class Context
 	{
 		public Table Globals = new Table();
+		public Dictionary<Type, Dictionary<string, Function>> Methods = new Dictionary<Type, Dictionary<string, Function>>();
 		internal Dictionary<Type, Func<System.IO.BinaryReader, Value>> FromBytesConv = new Dictionary<Type, Func<System.IO.BinaryReader, Value>>();
 		internal Dictionary<Type, Action<System.IO.BinaryWriter, Value>> ToBytesConv = new Dictionary<Type, Action<System.IO.BinaryWriter, Value>>();
 		internal Dictionary<int, Type> TypeFromID = new Dictionary<int, Type>();

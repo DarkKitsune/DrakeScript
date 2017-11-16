@@ -191,6 +191,7 @@ namespace DrakeScript
 								var newRoot = new ASTNode(ASTNode.NodeType.Root, SourceRef.Invalid, parsed);
 								node = new ASTNode(ASTNode.NodeType.Function, current.Location, newRoot);
 								node.Branches["args"] = new ASTNode(ASTNode.NodeType.Args, functionPar.Location, functionPar.Value);
+								node.Branches["additionalArgs"] = new ASTNode(ASTNode.NodeType.Int, functionPar.Location, 0);
 								node.Branches["functionName"] = new ASTNode(ASTNode.NodeType.Ident, current.Location, functionName);
 								if (functionName.Length > 0)
 								{
@@ -311,6 +312,7 @@ namespace DrakeScript
 							var newNode = new ASTNode(ASTNode.NodeType.Call, top.Location);
 							newNode.Branches.Add("function", Stack.Pop());
 							newNode.Branches.Add("args", new ASTNode(ASTNode.NodeType.Args, current.Location, parsed));
+							newNode.Branches.Add("additionalArgs", new ASTNode(ASTNode.NodeType.Int, current.Location, 0));
 							Stack.Push(newNode);
 							Advance(advanceAmount);
 						}

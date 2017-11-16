@@ -9,7 +9,7 @@ namespace DrakeScript
 		Dictionary<string, int> ArgLookup = new Dictionary<string, int>();
 		List<string> Locals = new List<string>();
 		public bool UnrollLoops = true;
-		public int MaxUnrollBytes = 2048;
+		public int MaxUnrollBytes = 4096;
 		public Context Context;
 
 		public CodeGenerator(Context context)
@@ -433,14 +433,30 @@ namespace DrakeScript
 					}
 					break;
 				case (ASTNode.NodeType.Call):
+					instructions.AddRange(Generate(node.Branches["function"], true));
 					var cargs = (List<ASTNode>)(node.Branches["args"].Value);
 					foreach (var child in cargs)
 					{
 						range = Generate(child, true);
 						instructions.AddRange(range);
 					}
-					instructions.AddRange(Generate(node.Branches["function"], true));
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Call, Value.CreateInt(cargs.Count)));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Call, Value.CreateInt(cargs.Count + (int)node.Branches["additionalArgs"].Value)));
+					if (!requirePush)
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
+					break;
+				case (ASTNode.NodeType.MethodCall):
+					instructions.AddRange(Generate(node.Branches["arrayOrTable"], true));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dup));
+					instructions.AddRange(Generate(node.Branches["index"], true));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushIndex));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Swap));
+					cargs = (List<ASTNode>)(node.Branches["args"].Value);
+					foreach (var child in cargs)
+					{
+						range = Generate(child, true);
+						instructions.AddRange(range);
+					}
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Call, Value.CreateInt(cargs.Count + (int)node.Branches["additionalArgs"].Value)));
 					if (!requirePush)
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
 					break;

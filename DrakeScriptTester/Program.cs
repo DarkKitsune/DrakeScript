@@ -497,6 +497,16 @@ namespace DrakeScriptTester
 				"break 2",
 				Value.Create(new List<Value> {6, 6, 6, 6}),
 				"local a = 0;local b = [];loop(4){a = 0; loop (30) {if (a > 5) {break;} a += 1;} b = b ~ [a];}return b;"
+			),
+			new Test(
+				"method 1",
+				Value.Create(new List<Value> {22, 23, 24}),
+				"local t = {\"v\": 21, \"getV\": function(this) { this.v = this.v + 1; return this.v; }}; return [t:getV(), t:getV(), t:getV()];"
+			),
+			new Test(
+				"method 2",
+				Value.Create(35),
+				"number.add = function(num, amount) {return num + amount;}; return 34:add(1);"
 			)
 		};
 

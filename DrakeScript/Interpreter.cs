@@ -116,7 +116,6 @@ namespace DrakeScript
 							locals[instruction.Arg.IntNumber] = Stack.Pop();
 							break;
 						case (Instruction.InstructionType.Call):
-							var callFunc = Stack.Pop();
 							ia = instruction.Arg.IntNumber;
 							if (ArgList.Length < ia)
 								Array.Resize(ref ArgList, ia);
@@ -124,6 +123,7 @@ namespace DrakeScript
 							{
 								ArgList[i] = Stack.Pop();
 							}
+							var callFunc = Stack.Pop();
 							ArgListCount = ia;
 							switch (callFunc.Type)
 							{
@@ -136,12 +136,27 @@ namespace DrakeScript
 									Stack.Push(callFunc.Coroutine.Resume(ArgList, ArgListCount));
 									break;
 								default:
-									throw new CannotCallNilException(instruction.Location);
+									throw new CannotCallTypeException(callFunc.Type, instruction.Location);
 							}
 							break;
 						case (Instruction.InstructionType.PushIndex):
 							vb = Stack.Pop();
 							va = Stack.Pop();
+
+							if (vb.Type == Value.ValueType.String)
+							{
+								Dictionary<string, Function> typeMethods;
+								if (Context.Methods.TryGetValue(va.ActualType, out typeMethods))
+								{
+									Function method;
+									if (typeMethods.TryGetValue(vb.String, out method))
+									{
+										Stack.Push(Value.Create(method));
+										break;
+									}
+								}
+							}
+
 							switch (va.Type)
 							{
 								case (Value.ValueType.Array):
@@ -195,6 +210,25 @@ namespace DrakeScript
 									break;
 								case (Value.ValueType.Table):
 									va.Table[vb.DynamicValue] = vc;
+									break;
+								case (Value.ValueType.Object):
+									if (va.Is<Type>())
+									{
+										if (vb.Type != Value.ValueType.String)
+											throw new InvalidIndexTypeException("Type", vb.Type, instruction.Location);
+										if (vc.Type != Value.ValueType.Function)
+											throw new UnexpectedTypeException(vc.Type, instruction.Location);
+										var type = va.ObjectAs<Type>();
+										var methodName = vb.String;
+										Dictionary<string, Function> methodDict;
+										if (!Context.Methods.TryGetValue(type, out methodDict))
+										{
+											methodDict = new Dictionary<string, Function>();
+											Context.Methods.Add(type, methodDict);
+										}
+										methodDict[methodName] = vc.Function;
+									}
+
 									break;
 								default:
 									throw new CannotIndexTypeException(va.Type, instruction.Location);
@@ -404,6 +438,13 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.Dup):
 							Stack.Push(Stack.Peek(0));
+							break;
+
+						case (Instruction.InstructionType.Swap):
+							vb = Stack.Pop();
+							va = Stack.Pop();
+							Stack.Push(vb);
+							Stack.Push(va);
 							break;
 
 						case (Instruction.InstructionType.JumpEZ):
