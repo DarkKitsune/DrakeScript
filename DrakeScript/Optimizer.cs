@@ -117,7 +117,7 @@ namespace DrakeScript
 							var locals = func.Locals;
 							var locNum = locals.Length;
 							Array.Resize(ref locals, locNum + 1);
-							locals[locNum] = "__loc_" + code[i].Arg.String;
+							locals[locNum] = "__loc_" + code[i].Arg.String + "_" + i;
 							func.Locals = locals;
 							var loca = code[i].Location;
 							var name = code[i].Arg.String;

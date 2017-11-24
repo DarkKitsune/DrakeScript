@@ -1,12 +1,13 @@
 time();
 local t = time();
 
-local a = 0;
-local b = [11, 2, 3, 1, 2, 3, 1, 2, 3, 6, 7];
-local c;
+foo = {};
+
 loop (100000)
 {
-    a += 1;
-    c = b contains 6;
+    foo.bar = 1234;
+    foo.baz = 5678;
+    foo.bax = 5678;
 }
+
 println((time() - t) * 1000, " ms");

@@ -100,67 +100,122 @@ namespace DrakeScript
 
 		public Value GetGlobal(string name)
 		{
-			return Globals[name];
+			if (name == null)
+				throw new ArgumentNullException();
+			var path = name.Split('.');
+			var table = Globals;
+			for (var i = 0; i < path.Length - 1; i++)
+			{
+				var part = path[i];
+				Value tval;
+				if (!table.TryGetValue(part, out tval))
+					throw new KeyNotFoundException("key \"" + part + "\" in global path \"" + name + "\" does not exist");
+				if (tval.Type != Value.ValueType.Table)
+					throw new Exception("key \"" + part + "\" in global path \"" + name + "\" is not a table");
+				table = tval.Table;
+			}
+			return table[path[path.Length - 1]];
+		}
+		public void SetGlobal(string name, Value value)
+		{
+			if (name == null)
+				throw new ArgumentNullException();
+			var path = name.Split('.');
+			var table = Globals;
+			for (var i = 0; i < path.Length - 1; i++)
+			{
+				var part = path[i];
+				Value tval;
+				if (!table.TryGetValue(part, out tval))
+				{
+					table[part] = table = new Table();
+					continue;
+				}
+				if (tval.Type != Value.ValueType.Table)
+					throw new Exception("key \"" + part + "\" in global path \"" + name + "\" is not a table");
+				table = tval.Table;
+			}
+			table[path[path.Length - 1]] = value;
 		}
 		public void SetGlobal(string name, byte value)
 		{
-			Globals[name] = Value.Create((double)value);
+			SetGlobal(name, Value.Create((double)value));
 		}
 		public void SetGlobal(string name, sbyte value)
 		{
-			Globals[name] = Value.Create((double)value);
+			SetGlobal(name, Value.Create((double)value));
 		}
 		public void SetGlobal(string name, short value)
 		{
-			Globals[name] = Value.Create((double)value);
+			SetGlobal(name, Value.Create((double)value));
 		}
 		public void SetGlobal(string name, int value)
 		{
-			Globals[name] = Value.Create((double)value);
+			SetGlobal(name, Value.Create((double)value));
 		}
 		public void SetGlobal(string name, long value)
 		{
-			Globals[name] = Value.Create((double)value);
+			SetGlobal(name, Value.Create((double)value));
 		}
 		public void SetGlobal(string name, ushort value)
 		{
-			Globals[name] = Value.Create((double)value);
+			SetGlobal(name, Value.Create((double)value));
 		}
 		public void SetGlobal(string name, uint value)
 		{
-			Globals[name] = Value.Create((double)value);
+			SetGlobal(name, Value.Create((double)value));
 		}
 		public void SetGlobal(string name, ulong value)
 		{
-			Globals[name] = Value.Create((double)value);
+			SetGlobal(name, Value.Create((double)value));
 		}
 		public void SetGlobal(string name, float value)
 		{
-			Globals[name] = Value.Create(value);
+			SetGlobal(name, Value.Create(value));
 		}
 		public void SetGlobal(string name, double value)
 		{
-			Globals[name] = Value.Create(value);
+			SetGlobal(name, Value.Create(value));
 		}
 		public void SetGlobal(string name, string value)
 		{
-			Globals[name] = Value.Create(value);
+			SetGlobal(name, Value.Create(value));
 		}
 		public void SetGlobal(string name, Function func)
 		{
-			Globals[name] = Value.Create(func);
+			SetGlobal(name, Value.Create(func));
 		}
 		public void SetGlobal(string name, List<Value> value)
 		{
-			Globals[name] = Value.Create(value);
+			SetGlobal(name, Value.Create(value));
 		}
 		public void SetGlobal(string name, Table value)
 		{
-			Globals[name] = Value.Create(value);
+			SetGlobal(name, Value.Create(value));
 		}
 		public void SetGlobal(string name, Object value)
 		{
-			Globals[name] = Value.Create(value);
+			SetGlobal(name, Value.Create(value));
+		}
+
+		public Function GetMethod(Type type, string name)
+		{
+			Dictionary<string, Function> mtable;
+			if (!Methods.TryGetValue(type, out mtable))
+				return null;
+			Function ret;
+			if (!mtable.TryGetValue(name, out ret))
+				return null;
+			return ret;
+		}
+		public void AddMethod(Type type, string name, Function func)
+		{
+			Dictionary<string, Function> mtable;
+			if (!Methods.TryGetValue(type, out mtable))
+			{
+				Methods.Add(type, mtable = new Dictionary<string, Function>());
+			}
+			mtable[name] = func;
 		}
 
 
