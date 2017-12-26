@@ -116,18 +116,49 @@ namespace DrakeScript
 				case (ASTNode.NodeType.Array):
 					if (!requirePush)
 						throw new UnexpectedTokenException("[...]", node.Location);
+                    var tinst = new List<Instruction>();
 					foreach (var child in (List<ASTNode>)node.Value)
 					{
 						range = Generate(child, true, false);
-						instructions.AddRange(range);
+                        tinst.AddRange(range);
 					}
-					instructions.Add(
-						new Instruction(
-							node.Location,
-							Instruction.InstructionType.PushArray,
-							Value.CreateInt(((List<ASTNode>)node.Value).Count)
-						)
-					);
+                    var potentialArray = new List<Value>();
+                    var immediate = true;
+                    foreach (var inst in tinst)
+                    {
+                        if (inst.Type == Instruction.InstructionType.Push0 || inst.Type == Instruction.InstructionType.Push1)
+                            potentialArray.Add((double)inst.Arg);
+                        else if (inst.Type == Instruction.InstructionType.PushFunc)
+                            potentialArray.Add((Function)inst.Arg);
+                        else if (inst.Type == Instruction.InstructionType.PushNum)
+                            potentialArray.Add((double)inst.Arg);
+                        else if (inst.Type == Instruction.InstructionType.PushStr)
+                            potentialArray.Add((string)inst.Arg);
+                        else
+                        {
+                            immediate = false;
+                            break;
+                        }
+                    }
+                    if (immediate)
+                        instructions.Add(
+                            new Instruction(
+                                node.Location,
+                                Instruction.InstructionType.PushArrayI,
+                                potentialArray
+                            )
+                        );
+                    else
+                    {
+                        instructions.AddRange(tinst);
+					    instructions.Add(
+    						new Instruction(
+    							node.Location,
+    							Instruction.InstructionType.PushArray,
+    							Value.CreateInt(((List<ASTNode>)node.Value).Count)
+    						)
+    					);
+                    }
 					break;
 				case (ASTNode.NodeType.Table):
 					if (!requirePush)

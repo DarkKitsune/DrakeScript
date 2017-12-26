@@ -1,13 +1,1 @@
-time();
-local t = time();
-
-foo = {};
-
-loop (100000)
-{
-    foo.bar = 1234;
-    foo.baz = 5678;
-    foo.bax = 5678;
-}
-
-println((time() - t) * 1000, " ms");
+print([1, 2, 3, 4, 5, 6, 7, 8, 9]);

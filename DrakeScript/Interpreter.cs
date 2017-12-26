@@ -100,6 +100,15 @@ namespace DrakeScript
 							}
 							Stack.Push(Value.Create(new List<Value>(aa)));
 							break;
+                        case (Instruction.InstructionType.PushArrayI):
+                            var la = instruction.Arg.Array;
+                            var lb = new List<Value>(la.Count);
+                            for (var i = 0; i < la.Count; i++)
+                            {
+                                lb.Add(la[i]);
+                            }
+                            Stack.Push(Value.Create(lb));
+                            break;
 						case (Instruction.InstructionType.PushTable):
 							Stack.Push(Value.Create(new Table()));
 							break;

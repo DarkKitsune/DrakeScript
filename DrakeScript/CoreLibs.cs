@@ -143,6 +143,7 @@ namespace DrakeScript
 				context.SetGlobal("ceil", context.CreateFunction(Ceil, 1));
 				context.SetGlobal("sqrt", context.CreateFunction(Sqrt, 1));
 				context.SetGlobal("sqr", context.CreateFunction(Sqr, 1));
+                context.SetGlobal("root", context.CreateFunction(Root, 2));
 				context.SetGlobal("pow", context.CreateFunction(Pow, 2));
 				context.SetGlobal("rand", context.CreateFunction(Rand, 2));
 			}
@@ -201,6 +202,11 @@ namespace DrakeScript
 			{
 				return args[0].Number * args[0].Number;
 			}
+
+            public static Value Root(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return Math.Pow(args[0].Number, 1.0 / args[1].Number);
+            }
 
 			public static Value Pow(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{

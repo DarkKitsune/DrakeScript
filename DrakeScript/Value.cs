@@ -496,6 +496,11 @@ namespace DrakeScript
 						case (ValueType.Int):
 							writer.Write(IntNumber);
 							break;
+                        case (ValueType.Array):
+                            writer.Write(Array.Count);
+                            foreach (var e in Array)
+                                writer.Write(e.GetBytes(context));
+                            break;
 						case (ValueType.Object):
 							var otype = Object.GetType();
 							int id;
@@ -528,6 +533,12 @@ namespace DrakeScript
 					return Value.Create((double)reader.ReadSingle());
 				case (ValueType.Int):
 					return Value.CreateInt(reader.ReadInt32());
+                case (ValueType.Array):
+                    var count = reader.ReadInt32();
+                    var array = new List<Value>(count);
+                    for (var i = 0; i < count; i++)
+                        array.Add(Value.FromReader(context, reader));
+                    return Value.Create(array);
 				case (ValueType.Object):
 					var id = reader.ReadInt32();
 					Type otype;

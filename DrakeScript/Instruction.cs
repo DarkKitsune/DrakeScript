@@ -64,6 +64,7 @@ namespace DrakeScript
 			Push1 = 51,
 			Length = 52,
 			Swap = 53,
+            PushArrayI = 54,
 		}
 
 

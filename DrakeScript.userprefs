@@ -1,28 +1,39 @@
-﻿<Properties StartupConfiguration="{817E37F1-3F3D-4DD7-AAEF-9730DB954001}|Default" StartupItem="DrakeScriptTester/DrakeScriptTester.csproj">
-  <MonoDevelop.Ide.Workbench ActiveDocument="DrakeScript/Context.cs">
+﻿<Properties StartupConfiguration="{817E37F1-3F3D-4DD7-AAEF-9730DB954001}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="DrakeScript/Interpreter.cs">
     <Files>
-      <File FileName="DrakeScript/CoreLibs.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Value.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Context.cs" Line="132" Column="15" />
+      <File FileName="DrakeScript/Value.cs" Line="219" Column="5" />
+      <File FileName="DrakeScript/Context.cs" Line="1" Column="1" />
       <File FileName="DrakeScriptTester/Program.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Parser.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/Parser.cs" Line="342" Column="18" />
       <File FileName="DrakeScript/ASTNode.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/CodeGenerator.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Interpreter.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Instruction.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/Optimizer.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/Instruction.cs" Line="67" Column="29" />
+      <File FileName="DrakeScript/Optimizer.cs" Line="120" Column="64" />
       <File FileName="DrakeScript/Scanner.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/Token.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/Function.cs" Line="1" Column="1" />
       <File FileName="DrakeScript/Analyzer.cs" Line="1" Column="1" />
-      <File FileName="DrakeScript/InterpreterException.cs" Line="1" Column="1" />
+      <File FileName="DrakeScript/CoreLibs.cs" Line="163" Column="35" />
+      <File FileName="DrakeScript/CodeGenerator.cs" Line="150" Column="27" />
+      <File FileName="DrakeScript/Interpreter.cs" Line="104" Column="59" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="DrakeScript" expanded="True">
+            <Node name="DrakeScript" expanded="True">
+              <Node name="Interpreter.cs" selected="True" />
+            </Node>
+            <Node name="DrakeScriptTester" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.ItemProperties.DrakeScriptTester PreferredExecutionTarget="MonoDevelop.Default" />
+  <MultiItemStartupConfigurations />
 </Properties>
