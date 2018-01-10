@@ -508,7 +508,13 @@ namespace DrakeScriptTester
 				Value.Create(35),
 				"number.add = function(num, amount) {return num + amount;}; return 34:add(1);"
 			)
-		};
+            ,
+            new Test(
+                "nested functions and writing to own argument",
+                Value.Create(3),
+                "local function test_nest(x) { local function test_square(x) { return x+1; } x = test_square(x); return x; } return test_nest(2);"
+            )
+        };
 
 		public static void RunTests()
 		{
