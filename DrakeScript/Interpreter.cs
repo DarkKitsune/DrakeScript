@@ -124,7 +124,10 @@ namespace DrakeScript
 						case (Instruction.InstructionType.PopVarLocal):
 							locals[instruction.Arg.IntNumber] = Stack.Pop();
 							break;
-						case (Instruction.InstructionType.Call):
+                        case (Instruction.InstructionType.PopArg):
+                            args[instruction.Arg.IntNumber] = Stack.Pop();
+                            break;
+                        case (Instruction.InstructionType.Call):
 							ia = instruction.Arg.IntNumber;
 							if (ArgList.Length < ia)
 								Array.Resize(ref ArgList, ia);

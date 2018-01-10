@@ -65,7 +65,8 @@ namespace DrakeScript
 			Length = 52,
 			Swap = 53,
             PushArrayI = 54,
-		}
+            PopArg = 55,
+        }
 
 
 		public InstructionType Type;

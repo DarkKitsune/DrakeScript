@@ -1,1 +1,12 @@
-print([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
+function test_nest(x)
+{
+	local function test_square(x)
+	{
+		return x+1;
+	}
+	x = test_square(x);
+	return x;
+}
+
+println(test_nest(2));

@@ -1,0 +1,7 @@
+C:\Users\Norm & Barb\Documents\projects\csharp\DrakeScript\DrakeScriptTester\bin\Debug\DrakeScriptTester.exe
+C:\Users\Norm & Barb\Documents\projects\csharp\DrakeScript\DrakeScriptTester\bin\Debug\DrakeScriptTester.pdb
+C:\Users\Norm & Barb\Documents\projects\csharp\DrakeScript\DrakeScriptTester\bin\Debug\DrakeScript.dll
+C:\Users\Norm & Barb\Documents\projects\csharp\DrakeScript\DrakeScriptTester\bin\Debug\DrakeScript.pdb
+C:\Users\Norm & Barb\Documents\projects\csharp\DrakeScript\DrakeScriptTester\obj\Debug\DrakeScriptTester.csprojResolveAssemblyReference.cache
+C:\Users\Norm & Barb\Documents\projects\csharp\DrakeScript\DrakeScriptTester\obj\Debug\DrakeScriptTester.exe
+C:\Users\Norm & Barb\Documents\projects\csharp\DrakeScript\DrakeScriptTester\obj\Debug\DrakeScriptTester.pdb

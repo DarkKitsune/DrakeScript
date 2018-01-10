@@ -422,8 +422,15 @@ namespace DrakeScript
 						}
 						else
 						{
-							instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopVarGlobal, Value.Create((string)node.Branches["left"].Value)));
-						}
+                            if (ArgLookup.TryGetValue((string)node.Branches["left"].Value, out argNum))
+                            {
+                                instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopArg, Value.CreateInt(argNum)));
+                            }
+                            else
+                            {
+                                instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopVarGlobal, Value.Create((string)node.Branches["left"].Value)));
+                            }
+                        }
 					}
 					break;
 				case (ASTNode.NodeType.Index):

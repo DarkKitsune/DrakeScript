@@ -1,0 +1,5 @@
+C:\Users\Norm & Barb\Documents\projects\csharp\DrakeScript\DrakeScript\bin\Debug\DrakeScript.dll
+C:\Users\Norm & Barb\Documents\projects\csharp\DrakeScript\DrakeScript\bin\Debug\DrakeScript.pdb
+C:\Users\Norm & Barb\Documents\projects\csharp\DrakeScript\DrakeScript\obj\Debug\DrakeScript.dll
+C:\Users\Norm & Barb\Documents\projects\csharp\DrakeScript\DrakeScript\obj\Debug\DrakeScript.pdb
+C:\Users\Norm & Barb\Documents\projects\csharp\DrakeScript\DrakeScript\obj\Debug\DrakeScript.csprojResolveAssemblyReference.cache
