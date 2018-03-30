@@ -25,7 +25,16 @@ namespace DrakeScriptTester
 					return;
 				}
 				var context = new Context();
-				var code = context.LoadFile(args[1]);
+                Function code;
+                try
+                {
+                    code = context.LoadFile(args[1]);
+                }
+                catch (DrakeScript.CompileException e)
+                {
+                    Console.WriteLine("Compile error: " + e);
+                    return;
+                }
 				var optimizer = new Optimizer();
 				optimizer.Optimize(code);
 				Console.WriteLine(code.ToStringFormatted() + "\n");
@@ -38,7 +47,12 @@ namespace DrakeScriptTester
 			}
 			else if (args[0] == "load")
 			{
-				if (!System.IO.File.Exists(args[1]))
+                if (args.Length == 1)
+                {
+                    Console.WriteLine("File not specified!");
+                    return;
+                }
+                if (!System.IO.File.Exists(args[1]))
 				{
 					Console.WriteLine("File does not exist!");
 					return;
@@ -61,8 +75,17 @@ namespace DrakeScriptTester
 					return;
 				}
 				var context = new Context();
-				var code = context.LoadFile(args[0]);
-				var optimizer = new Optimizer();
+                Function code;
+                try
+                {
+                    code = context.LoadFile(args[0]);
+                }
+                catch (DrakeScript.CompileException e)
+                {
+                    Console.WriteLine("Compile error: " + e);
+                    return;
+                }
+                var optimizer = new Optimizer();
 				optimizer.Optimize(code);
 				Console.WriteLine(code.ToStringFormatted() + "\n");
 				var interpreter = new Interpreter(context);
@@ -72,9 +95,6 @@ namespace DrakeScriptTester
 				else
 					Console.WriteLine("no result");
 			}
-
-            Console.WriteLine("Press any key...");
-            Console.ReadKey();
 		}
 
 

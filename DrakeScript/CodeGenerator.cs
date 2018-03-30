@@ -393,14 +393,16 @@ namespace DrakeScript
 				case (ASTNode.NodeType.NewLocal):
 					if (requirePush)
 						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
-					Locals.Add((string)node.Value);
+                    if (!Locals.Contains((string)node.Value))
+					    Locals.Add((string)node.Value);
 					break;
 				case (ASTNode.NodeType.Set):
 					if (requirePush)
 						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					if (node.Branches["left"].Type == ASTNode.NodeType.NewLocal)
 					{
-						Locals.Add((string)node.Branches["left"].Value);
+                        if (!Locals.Contains((string)node.Branches["left"].Value))
+                            Locals.Add((string)node.Branches["left"].Value);
 					}
 
 					

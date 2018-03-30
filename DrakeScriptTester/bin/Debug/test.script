@@ -1,10 +1,15 @@
-function test_power(x,n)
+local t = time();
+
+local arr = [1, 2, 3];
+loop (1000)
 {
-	if(n <= 0){return 1;}
-	if(n == 1){return x;}
-	x = x*x;
-	n = n-1;
-	return test_power(x,n);
+	local i = 0;
+	loop (lengthof arr)
+	{
+		arr[i] = arr[i] + 1;
+		i += 1;
+	}
 }
-a = test_power(2,4);
-println("16 = " ~ a);
+
+print(arr);
+print("Time taken: ", (time() - t) * 1000, " ms");
