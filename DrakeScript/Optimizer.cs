@@ -66,7 +66,30 @@ namespace DrakeScript
 							i -= 2;
 						}
 						break;
-					case (Instruction.InstructionType.Eq):
+                    case (Instruction.InstructionType.Return):
+                        if (prev.Type == Instruction.InstructionType.PushNil)
+                        {
+                            code[i] = new Instruction(inst.Location, Instruction.InstructionType.ReturnNil);
+                            code.RemoveAt(i - 1);
+                            FixJumps(code, i - 1, -1);
+                            i--;
+                        }
+                        else if (prev.Type == Instruction.InstructionType.Push0)
+                        {
+                            code[i] = new Instruction(inst.Location, Instruction.InstructionType.Return0);
+                            code.RemoveAt(i - 1);
+                            FixJumps(code, i - 1, -1);
+                            i--;
+                        }
+                        else if (prev.Type == Instruction.InstructionType.Push1)
+                        {
+                            code[i] = new Instruction(inst.Location, Instruction.InstructionType.Return1);
+                            code.RemoveAt(i - 1);
+                            FixJumps(code, i - 1, -1);
+                            i--;
+                        }
+                        break;
+                    case (Instruction.InstructionType.Eq):
 						if (prev.Type == Instruction.InstructionType.PushNil)
 						{
 							code[i] = new Instruction(inst.Location, Instruction.InstructionType.EqNil);
@@ -152,9 +175,10 @@ namespace DrakeScript
 				{
 					case (Instruction.InstructionType.Jump):
 					case (Instruction.InstructionType.JumpEZ):
-						if (i < insertpos)
+                    case (Instruction.InstructionType.JumpNZ):
+                        if (i < insertpos)
 						{
-							if (i + inst.Arg.IntNumber > insertpos)
+							if (i + inst.Arg.IntNumber >= insertpos)
 							{
 								inst.Arg.IntNumber += number;
 								code[i] = inst;

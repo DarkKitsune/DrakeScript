@@ -66,6 +66,9 @@ namespace DrakeScript
 			Swap = 53,
             PushArrayI = 54,
             PopArg = 55,
+            ReturnNil = 56,
+            Return0 = 57,
+            Return1 = 58
         }
 
 

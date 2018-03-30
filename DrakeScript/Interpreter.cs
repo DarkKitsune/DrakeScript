@@ -480,13 +480,29 @@ namespace DrakeScript
 							break;
 
 						case (Instruction.InstructionType.Return):
-							//ScopeStack.Peek(1).Stack.Push(Stack.Pop());
 							exited = true;
 							Yielded = false;
 							break;
 
-						case (Instruction.InstructionType.Yield):
-							//ScopeStack.Peek(1).Stack.Push(Stack.Pop());
+                        case (Instruction.InstructionType.ReturnNil):
+                            Stack.Push(Value.Nil);
+                            exited = true;
+                            Yielded = false;
+                            break;
+
+                        case (Instruction.InstructionType.Return0):
+                            Stack.Push(Value.Zero);
+                            exited = true;
+                            Yielded = false;
+                            break;
+
+                        case (Instruction.InstructionType.Return1):
+                            Stack.Push(Value.One);
+                            exited = true;
+                            Yielded = false;
+                            break;
+
+                        case (Instruction.InstructionType.Yield):
 							exited = true;
 							Yielded = true;
 							break;

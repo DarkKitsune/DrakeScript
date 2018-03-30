@@ -32,8 +32,7 @@ namespace DrakeScript
 			}
 			var code = Generate(node, false);
 			VerifyCode(code);
-			code.Add(new Instruction(node.Location, Instruction.InstructionType.PushNil));
-			code.Add(new Instruction(node.Location, Instruction.InstructionType.Return));
+			code.Add(new Instruction(node.Location, Instruction.InstructionType.ReturnNil));
 			return new Function(location, Context, code.ToArray(), Args, Locals.ToArray());
 		}
 
