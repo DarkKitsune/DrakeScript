@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using PowerDS;
 
 namespace DrakeScript
@@ -351,9 +352,82 @@ namespace DrakeScript
 							va = Stack.Pop();
 
 							Stack.Push((va.Equals(vb) ? 1.0 : 0.0));
-							break;
+                            break;
 
-						case (Instruction.InstructionType.EqNil):
+                        case (Instruction.InstructionType.SEq):
+                            vb = Stack.Pop();
+                            va = Stack.Pop();
+
+                            if (vb.Type != va.Type)
+                            {
+                                Stack.Push(0.0);
+                                break;
+                            }
+                            if (va.Type == Value.ValueType.Table)
+                            {
+                                if (va.TableDirect.Count != vb.TableDirect.Count)
+                                {
+                                    Stack.Push(0.0);
+                                    break;
+                                }
+                                ia = 0;
+                                foreach (var kvp in va.TableDirect.InternalDictionary)
+                                {
+                                    if (!vb.TableDirect.InternalDictionary.TryGetValue(kvp.Key, out vc))
+                                    {
+                                        Stack.Push(0.0);
+                                        ia = -1;
+                                        break;
+                                    }
+                                    if ((vc.Object == null && kvp.Value.Object != null) || !vc.Equals(kvp.Value))
+                                    {
+                                        Stack.Push(0.0);
+                                        ia = -1;
+                                        break;
+                                    }
+                                }
+                                if (ia == -1)
+                                    break;
+                                Stack.Push(1.0);
+                                break;
+                            }
+                            if (va.Type == Value.ValueType.Array)
+                            {
+                                if (va.ArrayDirect.Count != vb.ArrayDirect.Count)
+                                {
+                                    Stack.Push(0.0);
+                                    break;
+                                }
+                                ia = va.ArrayDirect.Count;
+                                for (var i = 0; i < ia; i++)
+                                {
+                                    if ((va.ArrayDirect[i].Object == null && vb.ArrayDirect[i].Object != null) || !va.ArrayDirect[i].Equals(vb.ArrayDirect[i]))
+                                    {
+                                        Stack.Push(0.0);
+                                        ia = -1;
+                                        break;
+                                    }
+                                }
+                                if (ia == -1)
+                                    break;
+                                Stack.Push(1.0);
+                                break;
+                            }
+                            if (va.Object is IEnumerable<KeyValuePair<object, Value>>)
+                            {
+                                Stack.Push(((IEnumerable<KeyValuePair<object, Value>>)va.Object).SequenceEqual(((IEnumerable<KeyValuePair<object, Value>>)vb.Object)) ? 1.0 : 0.0);
+                                break;
+                            }
+                            if (va.Object is IEnumerable<Value>)
+                            {
+                                Stack.Push(((IEnumerable<Value>)va.Object).SequenceEqual(((IEnumerable<Value>)vb.Object)) ? 1.0 : 0.0);
+                                break;
+                            }
+
+                            Stack.Push(0.0);
+                            break;
+
+                        case (Instruction.InstructionType.EqNil):
 							va = Stack.Pop();
 
 							Stack.Push(va.IsNil);
@@ -442,7 +516,13 @@ namespace DrakeScript
 							locals[ia] = va;
 							break;
 
-						case (Instruction.InstructionType.Dec):
+                        case (Instruction.InstructionType.Inc):
+                            va = Stack.Peek(0);
+                            va.Number++;
+                            Stack.Poke(0, va);
+                            break;
+
+                        case (Instruction.InstructionType.Dec):
 							va = Stack.Peek(0);
 							va.Number--;
 							Stack.Poke(0, va);

@@ -334,7 +334,14 @@ namespace DrakeScript
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Eq));
 					break;
-				case (ASTNode.NodeType.NEq):
+                case (ASTNode.NodeType.SEq):
+                    if (!requirePush)
+                        throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
+                    instructions.AddRange(Generate(node.Branches["left"], true));
+                    instructions.AddRange(Generate(node.Branches["right"], true));
+                    instructions.Add(new Instruction(node.Location, Instruction.InstructionType.SEq));
+                    break;
+                case (ASTNode.NodeType.NEq):
 					if (!requirePush)
 						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["left"], true));

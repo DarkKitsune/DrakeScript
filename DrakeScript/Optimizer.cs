@@ -113,7 +113,25 @@ namespace DrakeScript
 							i -= 2;
 						}
 						break;
-					case (Instruction.InstructionType.PushNum):
+                    case (Instruction.InstructionType.Add):
+                        if (prev.Type == Instruction.InstructionType.Push1)
+                        {
+                            code[i] = new Instruction(inst.Location, Instruction.InstructionType.Inc);
+                            code.RemoveAt(i - 1);
+                            FixJumps(code, i - 1, -1);
+                            i--;
+                        }
+                        break;
+                    case (Instruction.InstructionType.Sub):
+                        if (prev.Type == Instruction.InstructionType.Push1)
+                        {
+                            code[i] = new Instruction(inst.Location, Instruction.InstructionType.Dec);
+                            code.RemoveAt(i - 1);
+                            FixJumps(code, i - 1, -1);
+                            i--;
+                        }
+                        break;
+                    case (Instruction.InstructionType.PushNum):
 						if (inst.Arg.Number == 0.0)
 						{
 							code[i] = new Instruction(inst.Location, Instruction.InstructionType.Push0);

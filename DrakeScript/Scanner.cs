@@ -128,8 +128,16 @@ namespace DrakeScript
 					case ('='):
 						if (At(1) == '=')
 						{
-							token = new Token(Location(), Token.TokenType.Eq);
-							Advance(2);
+                            if (At(2) == '=')
+                            {
+                                token = new Token(Location(), Token.TokenType.SEq);
+                                Advance(3);
+                            }
+                            else
+                            {
+                                token = new Token(Location(), Token.TokenType.Eq);
+                                Advance(2);
+                            }
 						}
 						else
 						{

@@ -68,7 +68,9 @@ namespace DrakeScript
             PopArg = 55,
             ReturnNil = 56,
             Return0 = 57,
-            Return1 = 58
+            Return1 = 58,
+            Inc = 59,
+            SEq = 60
         }
 
 

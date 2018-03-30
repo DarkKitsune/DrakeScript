@@ -264,7 +264,11 @@ namespace DrakeScript
 						Stack.Push(new ASTNode(ASTNode.NodeType.EqualsOperator, current.Location));
 						Advance(1);
 						break;
-					case (Token.TokenType.NEq):
+                    case (Token.TokenType.SEq):
+                        Stack.Push(new ASTNode(ASTNode.NodeType.SeqEqualsOperator, current.Location));
+                        Advance(1);
+                        break;
+                    case (Token.TokenType.NEq):
 						Stack.Push(new ASTNode(ASTNode.NodeType.NotEqualsOperator, current.Location));
 						Advance(1);
 						break;
