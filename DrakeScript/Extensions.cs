@@ -18,7 +18,7 @@ namespace DrakeScript
 			{
 				if (inst.Type == Instruction.InstructionType.PushFunc)
 				{
-					str += "\n" + ToStringFormatted(inst.Arg.Function);
+					str += "\n" + ToStringFormatted(inst.Arg.FunctionDirect);
 				}
 			}
 			return str;

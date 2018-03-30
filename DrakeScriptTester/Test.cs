@@ -43,12 +43,12 @@ namespace DrakeScriptTester
 					if (ret.Type == Value.ValueType.Array)
 					{
 						success = true;
-						if (ret.Array.Count != SuccessReturn.Array.Count)
+						if (ret.ArrayDirect.Count != SuccessReturn.ArrayDirect.Count)
 							success = false;
 						else
-							for (var i = 0; i < ret.Array.Count; i++)
+							for (var i = 0; i < ret.ArrayDirect.Count; i++)
 							{
-								if (!ret.Array[i].Equals(SuccessReturn.Array[i]))
+								if (!ret.ArrayDirect[i].Equals(SuccessReturn.ArrayDirect[i]))
 								{
 									success = false;
 									break;
@@ -58,14 +58,14 @@ namespace DrakeScriptTester
 					else if (ret.Type == Value.ValueType.Table)
 					{
 						success = true;
-						if (ret.Table.Count != SuccessReturn.Table.Count)
+						if (ret.TableDirect.Count != SuccessReturn.TableDirect.Count)
 							success = false;
 						else
 						{
-							var keys = ret.Table.Keys;
+							var keys = ret.TableDirect.Keys;
 							foreach (var key in keys)
 							{
-								if (!ret.Table[key].Equals(SuccessReturn.Table[key]))
+								if (!ret.TableDirect[key].Equals(SuccessReturn.TableDirect[key]))
 								{
 									success = false;
 									break;

@@ -83,7 +83,19 @@ namespace DrakeScript
 			}
 		}
 
-		public Coroutine Coroutine
+        public Function FunctionDirect
+        {
+            get
+            {
+                return (Function)Object;
+            }
+            set
+            {
+                Object = value;
+            }
+        }
+
+        public Coroutine Coroutine
 		{
 			get
 			{
@@ -97,7 +109,19 @@ namespace DrakeScript
 			}
 		}
 
-		public List<Value> Array
+        public Coroutine CoroutineDirect
+        {
+            get
+            {
+                return (Coroutine)Object;
+            }
+            set
+            {
+                Object = value;
+            }
+        }
+
+        public List<Value> Array
 		{
 			get
 			{
@@ -111,7 +135,19 @@ namespace DrakeScript
 			}
 		}
 
-		public Table Table
+        public List<Value> ArrayDirect
+        {
+            get
+            {
+                return (List<Value>)Object;
+            }
+            set
+            {
+                Object = value;
+            }
+        }
+
+        public Table Table
 		{
 			get
 			{
@@ -125,7 +161,19 @@ namespace DrakeScript
 			}
 		}
 
-		public object DynamicValue
+        public Table TableDirect
+        {
+            get
+            {
+                return (Table)Object;
+            }
+            set
+            {
+                Object = value;
+            }
+        }
+
+        public object DynamicValue
 		{
 			get
 			{
@@ -167,14 +215,6 @@ namespace DrakeScript
 			get
 			{
 				return Type == ValueType.Nil;
-			}
-		}
-
-		public bool IsValid
-		{
-			get
-			{
-				return String != null;
 			}
 		}
 
@@ -260,7 +300,7 @@ namespace DrakeScript
 		public static implicit operator string(Value v)
 		{
 			if (v.Type == ValueType.String)
-				return v.String;
+				return v.StringDirect;
 			return v.ToString();
 		}
 		public static implicit operator Value(string v)
@@ -422,7 +462,7 @@ namespace DrakeScript
 				case (ValueType.Nil):
 					return "nil";
 				case (ValueType.Array):
-					return String.Format("[{0}]", String.Join(", ", Array));
+					return String.Format("[{0}]", String.Join(", ", ArrayDirect));
 			}
 			return (DynamicValue != null ? DynamicValue.ToString() : "nil");
 		}
@@ -472,11 +512,11 @@ namespace DrakeScript
 					switch (Type)
 					{
 						case (ValueType.String):
-							writer.Write(String.Length);
-							writer.Write(System.Text.Encoding.ASCII.GetBytes(String));
+							writer.Write(StringDirect.Length);
+							writer.Write(System.Text.Encoding.ASCII.GetBytes(StringDirect));
 							break;
 						case (ValueType.Function):
-							writer.Write(Function.GetBytecode());
+							writer.Write(FunctionDirect.GetBytecode());
 							break;
 						case (ValueType.Number):
 							writer.Write((float)Number);
@@ -485,8 +525,8 @@ namespace DrakeScript
 							writer.Write(IntNumber);
 							break;
                         case (ValueType.Array):
-                            writer.Write(Array.Count);
-                            foreach (var e in Array)
+                            writer.Write(ArrayDirect.Count);
+                            foreach (var e in ArrayDirect)
                                 writer.Write(e.GetBytes(context));
                             break;
 						case (ValueType.Object):

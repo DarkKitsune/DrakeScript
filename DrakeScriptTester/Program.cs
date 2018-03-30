@@ -72,6 +72,9 @@ namespace DrakeScriptTester
 				else
 					Console.WriteLine("no result");
 			}
+
+            Console.WriteLine("Press any key...");
+            Console.ReadKey();
 		}
 
 

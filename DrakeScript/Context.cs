@@ -112,7 +112,7 @@ namespace DrakeScript
 					throw new KeyNotFoundException("key \"" + part + "\" in global path \"" + name + "\" does not exist");
 				if (tval.Type != Value.ValueType.Table)
 					throw new Exception("key \"" + part + "\" in global path \"" + name + "\" is not a table");
-				table = tval.Table;
+				table = tval.TableDirect;
 			}
 			return table[path[path.Length - 1]];
 		}
@@ -133,7 +133,7 @@ namespace DrakeScript
 				}
 				if (tval.Type != Value.ValueType.Table)
 					throw new Exception("key \"" + part + "\" in global path \"" + name + "\" is not a table");
-				table = tval.Table;
+				table = tval.TableDirect;
 			}
 			table[path[path.Length - 1]] = value;
 		}

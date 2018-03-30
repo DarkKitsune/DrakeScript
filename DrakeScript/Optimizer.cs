@@ -110,17 +110,17 @@ namespace DrakeScript
 				{
 					if (code[i].Type == Instruction.InstructionType.PushVarGlobal)
 					{
-						var end = NextPossibleGlobalChange(code, i, code[i].Arg.String);
-						var gets = CountGlobalGets(code, i, end, code[i].Arg.String);
+						var end = NextPossibleGlobalChange(code, i, code[i].Arg.StringDirect);
+						var gets = CountGlobalGets(code, i, end, code[i].Arg.StringDirect);
 						if (gets > 2)
 						{
 							var locals = func.Locals;
 							var locNum = locals.Length;
 							Array.Resize(ref locals, locNum + 1);
-							locals[locNum] = "__loc_" + code[i].Arg.String + "_" + i;
+							locals[locNum] = "__loc_" + code[i].Arg.StringDirect + "_" + i;
 							func.Locals = locals;
 							var loca = code[i].Location;
-							var name = code[i].Arg.String;
+							var name = code[i].Arg.StringDirect;
 							code.Insert(i, new Instruction(loca, Instruction.InstructionType.Dup));
 							code.Insert(i, new Instruction(loca, Instruction.InstructionType.PushVarGlobal, name));
 							i += 2;
@@ -129,7 +129,7 @@ namespace DrakeScript
 							FixJumps(code, i - 2, 2);
 							for (var j = i; j < end; j++)
 							{
-								if (code[j].Type == Instruction.InstructionType.PushVarGlobal && code[j].Arg.String == name)
+								if (code[j].Type == Instruction.InstructionType.PushVarGlobal && code[j].Arg.StringDirect == name)
 								{
 									code[j] = new Instruction(code[j].Location, Instruction.InstructionType.PushVarLocal, Value.CreateInt(locNum));
 								}
@@ -196,7 +196,7 @@ namespace DrakeScript
 							case (Instruction.InstructionType.IncVarByGlobal):
 							case (Instruction.InstructionType.DecVarGlobal):
 							case (Instruction.InstructionType.DecVarByGlobal):
-								if (code[i].Arg.String == name)
+								if (code[i].Arg.StringDirect == name)
 									return i;
 								break;
 							case (Instruction.InstructionType.Jump):
@@ -219,7 +219,7 @@ namespace DrakeScript
 			var num = 0;
 			for (var i = pos; i < end; i++)
 			{
-				if (code[i].Type ==Instruction.InstructionType.PushVarGlobal && code[i].Arg.String == name)
+				if (code[i].Type == Instruction.InstructionType.PushVarGlobal && code[i].Arg.StringDirect == name)
 					num++;
 			}
 			return num;

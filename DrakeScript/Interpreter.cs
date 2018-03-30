@@ -72,7 +72,7 @@ namespace DrakeScript
 					switch (instruction.Type)
 					{
 						case (Instruction.InstructionType.PushVarGlobal):
-							Stack.Push(GetGlobalVar(instruction.Arg.String));
+							Stack.Push(GetGlobalVar(instruction.Arg.StringDirect));
 							break;
 						case (Instruction.InstructionType.PushVarLocal):
 							Stack.Push(locals[instruction.Arg.IntNumber]);
@@ -101,7 +101,7 @@ namespace DrakeScript
 							Stack.Push(Value.Create(new List<Value>(aa)));
 							break;
                         case (Instruction.InstructionType.PushArrayI):
-                            var la = instruction.Arg.Array;
+                            var la = instruction.Arg.ArrayDirect;
                             var lb = new List<Value>(la.Count);
                             for (var i = 0; i < la.Count; i++)
                             {
@@ -119,7 +119,7 @@ namespace DrakeScript
 							Stack.Pop();
 							break;
 						case (Instruction.InstructionType.PopVarGlobal):
-							SetGlobalVar(instruction.Arg.String, Stack.Pop());
+							SetGlobalVar(instruction.Arg.StringDirect, Stack.Pop());
 							break;
 						case (Instruction.InstructionType.PopVarLocal):
 							locals[instruction.Arg.IntNumber] = Stack.Pop();
@@ -141,11 +141,11 @@ namespace DrakeScript
 							{
 								case (Value.ValueType.Function):
 									CallLocation = instruction.Location;
-									callFunc.Function.InvokePushInsteadOfReturn(this);
+									callFunc.FunctionDirect.InvokePushInsteadOfReturn(this);
 									break;
 								case (Value.ValueType.Coroutine):
 									CallLocation = instruction.Location;
-									Stack.Push(callFunc.Coroutine.Resume(ArgList, ArgListCount));
+									Stack.Push(callFunc.CoroutineDirect.Resume(ArgList, ArgListCount));
 									break;
 								default:
 									throw new CannotCallTypeException(callFunc.Type, instruction.Location);
@@ -161,7 +161,7 @@ namespace DrakeScript
 								if (Context.Methods.TryGetValue(va.ActualType, out typeMethods))
 								{
 									Function method;
-									if (typeMethods.TryGetValue(vb.String, out method))
+									if (typeMethods.TryGetValue(vb.StringDirect, out method))
 									{
 										Stack.Push(Value.Create(method));
 										break;
@@ -175,21 +175,21 @@ namespace DrakeScript
 									if (vb.Type != Value.ValueType.Number)
 										throw new InvalidIndexTypeException("Array", vb.Type, instruction.Location);
 									ia = (int)vb.Number;
-									if (ia < 0 || ia >= va.Array.Count)
+									if (ia < 0 || ia >= va.ArrayDirect.Count)
 										throw new InvalidIndexValueException("Array", ia, instruction.Location);
-									Stack.Push(va.Array[ia]);
+									Stack.Push(va.ArrayDirect[ia]);
 									break;
 								case (Value.ValueType.String):
 									if (vb.Type != Value.ValueType.Number)
 										throw new InvalidIndexTypeException("String", vb.Type, instruction.Location);
 									ia = (int)vb.Number;
-									if (ia < 0 || ia >= va.String.Length)
+									if (ia < 0 || ia >= va.StringDirect.Length)
 										throw new InvalidIndexValueException("String", ia, instruction.Location);
-									Stack.Push(va.String[ia]);
+									Stack.Push(va.StringDirect[ia]);
 									break;
 								case (Value.ValueType.Table):
 									Value outValue;
-									if (va.Table.TryGetValue(vb.DynamicValue, out outValue))
+									if (va.TableDirect.TryGetValue(vb.DynamicValue, out outValue))
 										Stack.Push(outValue);
 									else
 										Stack.Push(Value.Nil);
@@ -210,7 +210,7 @@ namespace DrakeScript
 									ia = (int)vb.Number;
 									if (ia < 0)
 										throw new BelowZeroIndexValueException("Array", ia, instruction.Location);
-									var tempArray = va.Array;
+									var tempArray = va.ArrayDirect;
 									if (tempArray.Count <= ia)
 									{
 										for (var i = tempArray.Count; i < ia; i++)
@@ -221,7 +221,7 @@ namespace DrakeScript
 										tempArray[ia] = vc;
 									break;
 								case (Value.ValueType.Table):
-									va.Table[vb.DynamicValue] = vc;
+									va.TableDirect[vb.DynamicValue] = vc;
 									break;
 								case (Value.ValueType.Object):
 									if (va.Is<Type>())
@@ -231,14 +231,14 @@ namespace DrakeScript
 										if (vc.Type != Value.ValueType.Function)
 											throw new UnexpectedTypeException(vc.Type, instruction.Location);
 										var type = va.ObjectAs<Type>();
-										var methodName = vb.String;
+										var methodName = vb.StringDirect;
 										Dictionary<string, Function> methodDict;
 										if (!Context.Methods.TryGetValue(type, out methodDict))
 										{
 											methodDict = new Dictionary<string, Function>();
 											Context.Methods.Add(type, methodDict);
 										}
-										methodDict[methodName] = vc.Function;
+										methodDict[methodName] = vc.FunctionDirect;
 									}
 
 									break;
@@ -298,15 +298,15 @@ namespace DrakeScript
 							switch (va.Type)
 							{
 								case (Value.ValueType.String):
-									va.String += vb.ToString();
+									va.StringDirect += vb.ToString();
 									break;
 								case (Value.ValueType.Array):
 									if (vb.Type == Value.ValueType.Array)
 									{
-										var ret = new List<Value>(va.Array.Count + vb.Array.Count);
-										ret.AddRange(va.Array);
-										ret.AddRange(vb.Array);
-										va.Array = ret;
+										var ret = new List<Value>(va.ArrayDirect.Count + vb.ArrayDirect.Count);
+										ret.AddRange(va.ArrayDirect);
+										ret.AddRange(vb.ArrayDirect);
+										va.ArrayDirect = ret;
 									}
 									else
 										throw new UnexpectedRightTypeException(vb.Type, instruction.Location);
@@ -314,12 +314,12 @@ namespace DrakeScript
 								case (Value.ValueType.Table):
 									if (vb.Type == Value.ValueType.Table)
 									{
-										var ret = new Table(va.Table.InternalDictionary);
-										foreach (var kvp in vb.Table.InternalDictionary)
+										var ret = new Table(va.TableDirect.InternalDictionary);
+										foreach (var kvp in vb.TableDirect.InternalDictionary)
 										{
 											ret[kvp.Key] = kvp.Value;
 										}
-										va.Table = ret;
+										va.TableDirect = ret;
 									}
 									else
 										throw new UnexpectedRightTypeException(vb.Type, instruction.Location);
@@ -399,7 +399,7 @@ namespace DrakeScript
 							break;
 
 						case (Instruction.InstructionType.IncVarGlobal):
-							IncGlobalVar(instruction.Arg.String, 1);
+							IncGlobalVar(instruction.Arg.StringDirect, 1);
 							break;
 
 						case (Instruction.InstructionType.IncVarLocal):
@@ -410,7 +410,7 @@ namespace DrakeScript
 							break;
 
 						case (Instruction.InstructionType.DecVarGlobal):
-							IncGlobalVar(instruction.Arg.String, -1);
+							IncGlobalVar(instruction.Arg.StringDirect, -1);
 							break;
 
 						case (Instruction.InstructionType.DecVarLocal):
@@ -421,7 +421,7 @@ namespace DrakeScript
 							break;
 
 						case (Instruction.InstructionType.IncVarByGlobal):
-							IncGlobalVar(instruction.Arg.String, Stack.Pop().Number);
+							IncGlobalVar(instruction.Arg.StringDirect, Stack.Pop().Number);
 							break;
 
 						case (Instruction.InstructionType.IncVarByLocal):
@@ -432,7 +432,7 @@ namespace DrakeScript
 							break;
 
 						case (Instruction.InstructionType.DecVarByGlobal):
-							IncGlobalVar(instruction.Arg.String, -Stack.Pop().Number);
+							IncGlobalVar(instruction.Arg.StringDirect, -Stack.Pop().Number);
 							break;
 
 						case (Instruction.InstructionType.DecVarByLocal):
@@ -504,7 +504,7 @@ namespace DrakeScript
 							switch (va.Type)
 							{
 								case (Value.ValueType.Array):
-									foreach (var v in va.Array)
+									foreach (var v in va.ArrayDirect)
 									{
 										if (v.Equals(vb))
 										{
@@ -515,7 +515,7 @@ namespace DrakeScript
 									Stack.Push(found);
 									break;
 								case (Value.ValueType.Table):
-									foreach (var v in va.Table.InternalDictionary.Keys)
+									foreach (var v in va.TableDirect.InternalDictionary.Keys)
 									{
 										if (v.Equals(vb.DynamicValue))
 										{
@@ -535,13 +535,13 @@ namespace DrakeScript
 							switch (va.Type)
 							{
 								case (Value.ValueType.Array):
-									Stack.Push(va.Array.Count);
+									Stack.Push(va.ArrayDirect.Count);
 									break;
 								case (Value.ValueType.Table):
-									Stack.Push(va.Table.Count);
+									Stack.Push(va.TableDirect.Count);
 									break;
 								case (Value.ValueType.String):
-									Stack.Push(va.String.Length);
+									Stack.Push(va.StringDirect.Length);
 									break;
 								default:
 									throw new CannotIndexTypeException(va.Type, instruction.Location);

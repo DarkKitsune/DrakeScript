@@ -90,9 +90,9 @@ namespace DrakeScript
 				switch (args[0].Type)
 				{
 					case (Value.ValueType.Array):
-						return args[0].Array.Count;
+						return args[0].ArrayDirect.Count;
 					case (Value.ValueType.String):
-						return args[0].String.Length;
+						return args[0].StringDirect.Length;
 					default:
 						throw new UnexpectedTypeException(args[0].Type,location);
 				}
@@ -105,9 +105,9 @@ namespace DrakeScript
 				switch (args[0].Type)
 				{
 					case (Value.ValueType.Array):
-						return args[0].Array.Skip(skip).Take(take).ToList();
+						return args[0].ArrayDirect.Skip(skip).Take(take).ToList();
 					case (Value.ValueType.String):
-						return new String(args[0].String.Skip(skip).Take(take).ToArray());
+						return new String(args[0].StringDirect.Skip(skip).Take(take).ToArray());
 					default:
 						throw new UnexpectedTypeException(args[0].Type,location);
 				}
@@ -123,7 +123,7 @@ namespace DrakeScript
 
 			public static Value Count(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
-				return args[0].VerifyType(Value.ValueType.Table, location).Table.Count;
+				return args[0].VerifyType(Value.ValueType.Table, location).TableDirect.Count;
 			}
 		}
 
