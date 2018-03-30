@@ -89,6 +89,16 @@ namespace DrakeScript
 				return ASTNode.Invalid;
 			return list[n];
 		}
-	}
+
+        public static bool EqualsZeroSafe(this double a)
+        {
+            return a > -0.00000001 && a < 0.00000001;
+        }
+
+        public static bool DoesNotEqualZeroSafe(this double a)
+        {
+            return a <= -0.00000001 || a >= 0.00000001;
+        }
+    }
 }
 

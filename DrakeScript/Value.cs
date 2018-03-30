@@ -43,18 +43,6 @@ namespace DrakeScript
 			}
 		}
 
-		public bool BoolDirect
-		{
-			get
-			{
-				return Number != 0.0;
-			}
-			set
-			{
-				Number = (value ? 1.0 : 0.0);
-			}
-		}
-
 		public string String
 		{
 			get

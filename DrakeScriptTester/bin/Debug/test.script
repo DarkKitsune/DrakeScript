@@ -1,12 +1,10 @@
-
-function test_nest(x)
+function test_power(x,n)
 {
-	local function test_square(x)
-	{
-		return x+1;
-	}
-	x = test_square(x);
-	return x;
+	if(n <= 0){return 1;}
+	if(n == 1){return x;}
+	x = x*x;
+	n = n-1;
+	return test_power(x,n);
 }
-
-println(test_nest(2));
+a = test_power(2,4);
+println("16 = " ~ a);
