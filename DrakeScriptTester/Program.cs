@@ -530,12 +530,56 @@ namespace DrakeScriptTester
 				"method 2",
 				Value.Create(35),
 				"number.add = function(num, amount) {return num + amount;}; return 34:add(1);"
-			)
-            ,
+			),
             new Test(
                 "nested functions and writing to own argument",
                 Value.Create(3),
                 "local function test_nest(x) { local function test_square(x) { return x+1; } x = test_square(x); return x; } return test_nest(2);"
+            ),
+            new Test(
+                "sequence equals 1",
+                Value.Create(1),
+                "return [1, 2, 5, 7] === [1, 2, 5, 7];"
+            ),
+            new Test(
+                "sequence equals 2",
+                Value.Create(0),
+                "return [1, 2, 5, 7] === [1, 2, 5, 7, 0];"
+            ),
+            new Test(
+                "sequence equals 3",
+                Value.Create(0),
+                "return [1, 2, nil, 7] === [1, 2, 5, 7];"
+            ),
+            new Test(
+                "sequence equals 4",
+                Value.Create(1),
+                "return [] === [];"
+            ),
+            new Test(
+                "sequence equals 5",
+                Value.Create(1),
+                "return {\"cat\": 1, \"mouse\": 2} === {\"mouse\": 2, \"cat\": 1};"
+            ),
+            new Test(
+                "sequence equals 6",
+                Value.Create(0),
+                "return {\"cat\": 2, \"mouse\": 2} === {\"mouse\": 2, \"cat\": 1};"
+            ),
+            new Test(
+                "sequence equals 7",
+                Value.Create(1),
+                "return {\"cat\": nil, \"mouse\": 2} === {\"mouse\": 2, \"cat\": nil};"
+            ),
+            new Test(
+                "sequence equals 8",
+                Value.Create(0),
+                "return {\"cat\": nil, \"mouse\": 2, 3: 5} === {\"mouse\": 2, \"cat\": nil};"
+            ),
+            new Test(
+                "sequence equals 9",
+                Value.Create(1),
+                "return {} === {};"
             )
         };
 
