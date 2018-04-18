@@ -195,7 +195,28 @@ namespace DrakeScript
 									else
 										Stack.Push(Value.Nil);
 									break;
-								default:
+                                case (Value.ValueType.Object):
+                                    if (va.Is<Type>())
+                                    {
+                                        if (vb.Type != Value.ValueType.String)
+                                            throw new InvalidIndexTypeException("Type", vb.Type, instruction.Location);
+                                        var type = va.ObjectAs<Type>();
+                                        var methodName = vb.StringDirect;
+                                        Dictionary<string, Function> methodDict;
+                                        if (!Context.Methods.TryGetValue(type, out methodDict))
+                                            Stack.Push(Value.Nil);
+                                        else
+                                            Stack.Push(methodDict[methodName]);
+                                    }
+                                    else
+                                    {
+                                        if (va.Is<IIndexable>())
+                                            Stack.Push(((IIndexable)va.Object).GetValue(vb.DynamicValue));
+                                        else
+                                            throw new CannotIndexTypeException(va.ActualType, instruction.Location);
+                                    }
+                                    break;
+                                default:
 									throw new CannotIndexTypeException(va.Type, instruction.Location);
 							}
 							break;
@@ -241,7 +262,13 @@ namespace DrakeScript
 										}
 										methodDict[methodName] = vc.FunctionDirect;
 									}
-
+                                    else
+                                    {
+                                        if (va.Is<IIndexable>())
+                                            ((IIndexable)va.Object).SetValue(vb.DynamicValue, vc);
+                                        else
+                                            throw new CannotIndexTypeException(va.ActualType, instruction.Location);
+                                    }
 									break;
 								default:
 									throw new CannotIndexTypeException(va.Type, instruction.Location);

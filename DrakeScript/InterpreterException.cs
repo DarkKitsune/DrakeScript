@@ -95,7 +95,15 @@ namespace DrakeScript
 		{
 
 		}
-	}
+
+        public CannotIndexTypeException(
+            Type type,
+            SourceRef location
+        ) : base("Cannot index type \"" + type + "\"", location)
+        {
+
+        }
+    }
 
 	public class UnexpectedTypeException : InterpreterException
 	{

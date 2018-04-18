@@ -9,12 +9,14 @@ namespace DrakeScriptTester
 		string Name;
 		Value SuccessReturn;
 		string Code;
+        Action<Context> RunBefore;
 
-		public Test(string name, Value successReturn, string code)
+		public Test(string name, Value successReturn, string code, Action<Context> runBefore = null)
 		{
 			Name = name;
 			SuccessReturn = successReturn;
 			Code = code;
+            RunBefore = runBefore;
 		}
 
 		public bool Run()
@@ -36,6 +38,8 @@ namespace DrakeScriptTester
 			}
 			try
 			{
+                if (RunBefore != null)
+                    RunBefore(context);
 				var ret = func.Invoke();
 				var success = false;
 				if (ret.Type == SuccessReturn.Type)

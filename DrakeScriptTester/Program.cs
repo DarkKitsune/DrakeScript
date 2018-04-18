@@ -99,6 +99,20 @@ namespace DrakeScriptTester
 
 
 
+        class IndexableTest : IIndexable
+        {
+            Table InternalTable = new Table();
+
+            public Value GetValue(object key)
+            {
+                return InternalTable[key];
+            }
+
+            public void SetValue(object key, Value value)
+            {
+                InternalTable[key] = value;
+            }
+        }
 		public static Test[] Tests = new Test[]
 		{
 			new Test(
@@ -173,7 +187,7 @@ namespace DrakeScriptTester
 			),
 			new Test(
 				"concat 5",
-				Value.Create("hello, Function at codestring(Test.cs:27):1:28!"),
+				Value.Create("hello, Function at codestring(Test.cs:29):1:28!"),
 				"local a = \"hello, \"; local function b(){}; return a ~ b ~ \"!\";"
 			),
 			new Test(
@@ -580,6 +594,18 @@ namespace DrakeScriptTester
                 "sequence equals 9",
                 Value.Create(1),
                 "return {} === {};"
+            ),
+            new Test(
+                "indexable 1",
+                Value.Create(2),
+                "indexableTest.foo = 1; indexableTest.bar = 2; return indexableTest.bar;",
+                (c) => { c.SetGlobal("indexableTest", new IndexableTest()); }
+            ),
+            new Test(
+                "indexable 2",
+                Value.Create("hello"),
+                "indexableTest.foo = 1; indexableTest.bar = 2; indexableTest[2] = \"hello\"; return indexableTest[2];",
+                (c) => { c.SetGlobal("indexableTest", new IndexableTest()); }
             )
         };
 
