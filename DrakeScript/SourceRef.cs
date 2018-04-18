@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace DrakeScript
 {
@@ -21,7 +22,17 @@ namespace DrakeScript
 			Column = column;
 		}
 
-		public override string ToString()
+
+        public static SourceRef InHost(
+            [CallerMemberName] string caller = null,
+            [CallerFilePath] string file = null,
+            [CallerLineNumber] int lineNumber = 0
+        )
+        {
+            return new SourceRef(new Source($"{file}({caller})", ""), lineNumber - 1, 0);
+        }
+
+        public override string ToString()
 		{
 			return string.Format("{0}:{1}:{2}", Source, Line + 1, Column + 1);
 		}
