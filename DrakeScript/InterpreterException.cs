@@ -60,7 +60,16 @@ namespace DrakeScript
 		{
 			
 		}
-	}
+
+        public InvalidIndexTypeException(
+            string arrayOrTableType,
+            Type type,
+            SourceRef location
+        ) : base(arrayOrTableType + " cannot be indexed with type \"" + type + "\"", location)
+        {
+
+        }
+    }
 
 	public class InvalidIndexValueException : InterpreterException
 	{

@@ -519,7 +519,7 @@ namespace DrakeScript
 							writer.Write(FunctionDirect.GetBytecode());
 							break;
 						case (ValueType.Number):
-							writer.Write((float)Number);
+							writer.Write(Number);
 							break;
 						case (ValueType.Int):
 							writer.Write(IntNumber);
@@ -558,7 +558,7 @@ namespace DrakeScript
 				case (ValueType.Function):
 					return Value.Create(Function.FromReader(context, reader));
 				case (ValueType.Number):
-					return Value.Create((double)reader.ReadSingle());
+					return Value.Create(reader.ReadDouble());
 				case (ValueType.Int):
 					return Value.CreateInt(reader.ReadInt32());
                 case (ValueType.Array):

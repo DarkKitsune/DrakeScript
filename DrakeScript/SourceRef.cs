@@ -23,7 +23,7 @@ namespace DrakeScript
 		}
 
 
-        public static SourceRef InHost(
+        public static SourceRef Here(
             [CallerMemberName] string caller = null,
             [CallerFilePath] string file = null,
             [CallerLineNumber] int lineNumber = 0
