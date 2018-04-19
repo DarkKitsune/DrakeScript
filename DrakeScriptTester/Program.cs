@@ -103,12 +103,12 @@ namespace DrakeScriptTester
         {
             Table InternalTable = new Table();
 
-            public Value GetValue(object key)
+            public Value GetValue(object key, SourceRef location)
             {
                 return InternalTable[key];
             }
 
-            public void SetValue(object key, Value value)
+            public void SetValue(object key, Value value, SourceRef location)
             {
                 InternalTable[key] = value;
             }

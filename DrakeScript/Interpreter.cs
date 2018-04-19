@@ -211,7 +211,7 @@ namespace DrakeScript
                                     else
                                     {
                                         if (va.Is<IIndexable>())
-                                            Stack.Push(((IIndexable)va.Object).GetValue(vb.DynamicValue));
+                                            Stack.Push(((IIndexable)va.Object).GetValue(vb.DynamicValue, instruction.Location));
                                         else
                                             throw new CannotIndexTypeException(va.ActualType, instruction.Location);
                                     }
@@ -265,7 +265,7 @@ namespace DrakeScript
                                     else
                                     {
                                         if (va.Is<IIndexable>())
-                                            ((IIndexable)va.Object).SetValue(vb.DynamicValue, vc);
+                                            ((IIndexable)va.Object).SetValue(vb.DynamicValue, vc, instruction.Location);
                                         else
                                             throw new CannotIndexTypeException(va.ActualType, instruction.Location);
                                     }

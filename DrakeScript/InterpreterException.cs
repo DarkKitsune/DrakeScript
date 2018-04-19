@@ -114,7 +114,45 @@ namespace DrakeScript
         }
     }
 
-	public class UnexpectedTypeException : InterpreterException
+    public class CannotSetIndexInTypeException : InterpreterException
+    {
+        public CannotSetIndexInTypeException(
+            Value.ValueType type,
+            SourceRef location
+        ) : base("Cannot set a value for an index in type \"" + type + "\"", location)
+        {
+
+        }
+
+        public CannotSetIndexInTypeException(
+            Type type,
+            SourceRef location
+        ) : base("Cannot set a value for an index in type \"" + type + "\"", location)
+        {
+
+        }
+    }
+
+    public class CannotGetIndexInTypeException : InterpreterException
+    {
+        public CannotGetIndexInTypeException(
+            Value.ValueType type,
+            SourceRef location
+        ) : base("Cannot get a value from an index in type \"" + type + "\"", location)
+        {
+
+        }
+
+        public CannotGetIndexInTypeException(
+            Type type,
+            SourceRef location
+        ) : base("Cannot get a value from an index in type \"" + type + "\"", location)
+        {
+
+        }
+    }
+
+    public class UnexpectedTypeException : InterpreterException
 	{
 		public UnexpectedTypeException(
 			Value.ValueType type,
