@@ -454,8 +454,62 @@ namespace DrakeScript
 			return this;
 		}
 
+        public bool BoolOr(bool alt)
+        {
+            if (Type == ValueType.Number)
+                return Bool;
+            return alt;
+        }
+        public double NumberOr(double alt)
+        {
+            if (Type == ValueType.Number)
+                return Number;
+            return alt;
+        }
+        public string StringOr(string alt)
+        {
+            if (Type == ValueType.String)
+                return StringDirect;
+            return alt;
+        }
+        public Function FunctionOr(Function alt)
+        {
+            if (Type == ValueType.Function)
+                return FunctionDirect;
+            return alt;
+        }
+        public Coroutine CoroutineOr(Coroutine alt)
+        {
+            if (Type == ValueType.Coroutine)
+                return CoroutineDirect;
+            return alt;
+        }
+        public List<Value> ArrayOr(List<Value> alt)
+        {
+            if (Type == ValueType.Array)
+                return ArrayDirect;
+            return alt;
+        }
+        public Table TableOr(Table alt)
+        {
+            if (Type == ValueType.Table)
+                return TableDirect;
+            return alt;
+        }
+        public object ObjectOr(object alt)
+        {
+            if (Type == ValueType.Object)
+                return Object;
+            return alt;
+        }
+        public T ObjectOr<T>(T alt)
+        {
+            if (Type == ValueType.Object && Object is T)
+                return (T)Object;
+            return alt;
+        }
 
-		public override string ToString()
+        public override string ToString()
 		{
 			switch (Type)
 			{
