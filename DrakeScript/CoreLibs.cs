@@ -91,9 +91,12 @@ namespace DrakeScript
                 var count = (int)args[0].Number;
                 if (count < 0)
                     count = 0;
+                var val = Value.Nil;
+                if (argCount > 1)
+                    val = args[1];
                 var arr = new List<Value>(count);
                 for (var i = 0; i < count; i++)
-                    arr.Add(Value.Nil);
+                    arr.Add(val);
                 return arr;
             }
 

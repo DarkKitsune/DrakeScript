@@ -442,11 +442,16 @@ namespace DrakeScriptTester
             ),
             new Test(
                 "new array with length 2",
+                Value.Create(new List<Value> {1.0, 1.0, 1.0, 1.0}),
+                "return arrayOfLength(4, 1);"
+            ),
+            new Test(
+                "new array with length 3",
                 Value.Create(new List<Value> {}),
                 "return arrayOfLength(0);"
             ),
             new Test(
-                "new array with length 3",
+                "new array with length 4",
                 Value.Create(new List<Value> {}),
                 "return arrayOfLength(-1);"
             ),
