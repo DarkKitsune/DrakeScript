@@ -159,16 +159,18 @@ namespace DrakeScript
 							if (vb.Type == Value.ValueType.String)
 							{
 								Dictionary<string, Function> typeMethods;
-								if (Context.Methods.TryGetValue(va.ActualType, out typeMethods))
-								{
-									Function method;
-									if (typeMethods.TryGetValue(vb.StringDirect, out method))
-									{
-										Stack.Push(Value.Create(method));
-										break;
-									}
-								}
-							}
+                                var vaType = va.ActualType;
+                                if (vaType != null)
+                                    if (Context.Methods.TryGetValue(vaType, out typeMethods))
+								    {
+									    Function method;
+									    if (typeMethods.TryGetValue(vb.StringDirect, out method))
+									    {
+										    Stack.Push(Value.Create(method));
+										    break;
+									    }
+								    }
+                            }
 
 							switch (va.Type)
 							{

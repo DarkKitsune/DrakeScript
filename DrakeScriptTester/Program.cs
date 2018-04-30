@@ -358,23 +358,23 @@ namespace DrakeScriptTester
 			new Test(
 				"table get 1",
 				Value.Create(1),
-				"local a = {\"a\": 1, \"b\": 2.34}; return a[\"a\"];"
-			),
+                "local a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a[\"a\"];"
+            ),
 			new Test(
 				"table get 2",
 				Value.Create(2.34),
-				"local a = {\"a\": 1, \"b\": 2.34}; return a[\"b\"];"
-			),
+                "local a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a[\"b\"];"
+            ),
 			new Test(
 				"table get dot 1",
 				Value.Create(1),
-				"local a = {\"a\": 1, \"b\": 2.34}; return a.a;"
-			),
+                "local a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a.a;"
+            ),
 			new Test(
 				"table get dot 2",
 				Value.Create(2.34),
-				"local a = {\"a\": 1, \"b\": 2.34}; return a.b;"
-			),
+                "local a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a.b;"
+            ),
 			new Test(
 				"table key math and concatenation",
 				Value.Create(new Table(new Dictionary<object, Value>{{50.0, "Yellow"}, {"Test Key", 5.0}})),
@@ -435,7 +435,22 @@ namespace DrakeScriptTester
 				Value.Create(new List<Value> {3, 4}),
 				"return slice([1, 2, 3, 4, 5], 2, 2);"
 			),
-			new Test(
+            new Test(
+                "new array with length 1",
+                Value.Create(new List<Value> {Value.Nil, Value.Nil, Value.Nil, Value.Nil}),
+                "return arrayOfLength(4);"
+            ),
+            new Test(
+                "new array with length 2",
+                Value.Create(new List<Value> {}),
+                "return arrayOfLength(0);"
+            ),
+            new Test(
+                "new array with length 3",
+                Value.Create(new List<Value> {}),
+                "return arrayOfLength(-1);"
+            ),
+            new Test(
 				"type check number 1",
 				Value.Create(true),
 				"return 1 is number;"

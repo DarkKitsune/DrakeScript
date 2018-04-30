@@ -81,11 +81,23 @@ namespace DrakeScript
 		{
 			public static void Register(Context context)
 			{
-				context.SetGlobal("length", context.CreateFunction(Length, 1));
+                context.SetGlobal("arrayOfLength", context.CreateFunction(ArrayOfLength, 1));
+                context.SetGlobal("length", context.CreateFunction(Length, 1));
 				context.SetGlobal("slice", context.CreateFunction(Slice, 3));
 			}
 
-			public static Value Length(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            public static Value ArrayOfLength(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                var count = (int)args[0].Number;
+                if (count < 0)
+                    count = 0;
+                var arr = new List<Value>(count);
+                for (var i = 0; i < count; i++)
+                    arr.Add(Value.Nil);
+                return arr;
+            }
+
+            public static Value Length(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
 				switch (args[0].Type)
 				{
