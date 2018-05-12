@@ -10,27 +10,27 @@ namespace DrakeScript
 		{
 			public static void Register(Context context)
 			{
-				context.SetGlobal("array", typeof(List<Value>));
-				context.SetGlobal("coroutine", typeof(Coroutine));
-				context.SetGlobal("function", typeof(Function));
-				context.SetGlobal("int", typeof(double));
-				context.SetGlobal("number", typeof(double));
-				context.SetGlobal("string", typeof(string));
-				context.SetGlobal("table", typeof(Table));
+				context.SetGlobal("Array", typeof(List<Value>));
+				context.SetGlobal("Coroutine", typeof(Coroutine));
+				context.SetGlobal("Function", typeof(Function));
+				context.SetGlobal("Int", typeof(double));
+				context.SetGlobal("Number", typeof(double));
+				context.SetGlobal("String", typeof(string));
+				context.SetGlobal("Table", typeof(Table));
 
-				context.SetGlobal("print", context.CreateFunction(Print, 0));
-				context.SetGlobal("println", context.CreateFunction(PrintLn, 0));
-				context.SetGlobal("time", context.CreateFunction(Time, 0));
-				context.SetGlobal("toString", context.CreateFunction(ConvToString, 1));
-				context.SetGlobal("type", context.CreateFunction(GetValueType, 1));
+				context.SetGlobal("Print", context.CreateFunction(Print, 0));
+				context.SetGlobal("PrintLn", context.CreateFunction(PrintLn, 0));
+				context.SetGlobal("Time", context.CreateFunction(Time, 0));
+				context.SetGlobal("ToString", context.CreateFunction(ConvToString, 1));
+				context.SetGlobal("Type", context.CreateFunction(GetValueType, 1));
 
-				context.SetGlobal("inf", double.PositiveInfinity);
-				context.SetGlobal("maxNumber", double.MaxValue);
-				context.SetGlobal("minNumber", double.MinValue);
+				context.SetGlobal("Inf", double.PositiveInfinity);
+				context.SetGlobal("MaxNumber", double.MaxValue);
+				context.SetGlobal("MinNumber", double.MinValue);
 				context.SetGlobal("NaN", double.NaN);
-				context.SetGlobal("epsilon", double.Epsilon);
-				context.SetGlobal("pi", Math.PI);
-				context.SetGlobal("e", Math.E);
+				context.SetGlobal("Epsilon", double.Epsilon);
+				context.SetGlobal("Pi", Math.PI);
+				context.SetGlobal("E", Math.E);
 			}
 
 			public static Value Print(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -68,7 +68,7 @@ namespace DrakeScript
 		{
 			public static void Register(Context context)
 			{
-				context.SetGlobal("coroutine", context.CreateFunction(Create, 1));
+				context.SetGlobal("CreateCoroutine", context.CreateFunction(Create, 1));
 			}
 
 			public static Value Create(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -81,9 +81,9 @@ namespace DrakeScript
 		{
 			public static void Register(Context context)
 			{
-                context.SetGlobal("arrayOfLength", context.CreateFunction(ArrayOfLength, 1));
-                context.SetGlobal("length", context.CreateFunction(Length, 1));
-				context.SetGlobal("slice", context.CreateFunction(Slice, 3));
+                context.SetGlobal("ArrayOfLength", context.CreateFunction(ArrayOfLength, 1));
+                context.SetGlobal("Length", context.CreateFunction(Length, 1));
+				context.SetGlobal("Slice", context.CreateFunction(Slice, 3));
 			}
 
             public static Value ArrayOfLength(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -133,7 +133,7 @@ namespace DrakeScript
 		{
 			public static void Register(Context context)
 			{
-				context.SetGlobal("count", context.CreateFunction(Count, 1));
+				context.SetGlobal("Count", context.CreateFunction(Count, 1));
 			}
 
 			public static Value Count(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -147,20 +147,20 @@ namespace DrakeScript
 		{
 			public static void Register(Context context)
 			{
-				context.SetGlobal("cos", context.CreateFunction(Cos, 1));
-				context.SetGlobal("sin", context.CreateFunction(Sin, 1));
-				context.SetGlobal("dcos", context.CreateFunction(DCos, 1));
-				context.SetGlobal("dsin", context.CreateFunction(DSin, 1));
-				context.SetGlobal("degtorad", context.CreateFunction(Rad, 1));
-				context.SetGlobal("radtodeg", context.CreateFunction(Deg, 1));
-				context.SetGlobal("round", context.CreateFunction(Round, 1));
-				context.SetGlobal("floor", context.CreateFunction(Floor, 1));
-				context.SetGlobal("ceil", context.CreateFunction(Ceil, 1));
-				context.SetGlobal("sqrt", context.CreateFunction(Sqrt, 1));
-				context.SetGlobal("sqr", context.CreateFunction(Sqr, 1));
-                context.SetGlobal("root", context.CreateFunction(Root, 2));
-				context.SetGlobal("pow", context.CreateFunction(Pow, 2));
-				context.SetGlobal("rand", context.CreateFunction(Rand, 2));
+				context.SetGlobal("Cos", context.CreateFunction(Cos, 1));
+				context.SetGlobal("Sin", context.CreateFunction(Sin, 1));
+				context.SetGlobal("DCos", context.CreateFunction(DCos, 1));
+				context.SetGlobal("DSin", context.CreateFunction(DSin, 1));
+				context.SetGlobal("DegToRad", context.CreateFunction(Rad, 1));
+				context.SetGlobal("RadToDeg", context.CreateFunction(Deg, 1));
+				context.SetGlobal("Round", context.CreateFunction(Round, 1));
+				context.SetGlobal("Floor", context.CreateFunction(Floor, 1));
+				context.SetGlobal("Ceil", context.CreateFunction(Ceil, 1));
+				context.SetGlobal("Sqrt", context.CreateFunction(Sqrt, 1));
+				context.SetGlobal("Sqr", context.CreateFunction(Sqr, 1));
+                context.SetGlobal("Root", context.CreateFunction(Root, 2));
+				context.SetGlobal("Pow", context.CreateFunction(Pow, 2));
+				context.SetGlobal("Rand", context.CreateFunction(Rand, 2));
 			}
 
 			public static Value Cos(Interpreter interpreter, SourceRef location, Value[] args, int argCount)

@@ -403,17 +403,17 @@ namespace DrakeScriptTester
 			new Test(
 				"coroutine 1",
 				Value.Create(new List<Value> {1.0, 2.0, 3.0}),
-				"local cr = coroutine(function() {yield 1.0; yield 2.0; return 3.0;}); return [cr(), cr(), cr()];"
+				"local cr = CreateCoroutine(function() {yield 1.0; yield 2.0; return 3.0;}); return [cr(), cr(), cr()];"
 			),
 			new Test(
 				"coroutine 2",
 				Value.Create(new List<Value> {3.0, 7.0, 9.0, 4.5, 8.5, 10.5}),
-				"local cr = coroutine(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0), cr(), cr(), cr(2.5), cr(), cr()];"
+				"local cr = CreateCoroutine(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0), cr(), cr(), cr(2.5), cr(), cr()];"
 			),
 			new Test(
 				"coroutine 3",
 				Value.Create(new List<Value> {3.0, 7.0, 9.0, 4.5, 8.5, 10.5}),
-				"local cr = coroutine(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0 + 2.5 - 2.5), cr(2.0), cr(), cr(2.5), cr(), cr()];"
+				"local cr = CreateCoroutine(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0 + 2.5 - 2.5), cr(2.0), cr(), cr(2.5), cr(), cr()];"
 			),
 			new Test(
 				"string char get 1",
@@ -428,67 +428,67 @@ namespace DrakeScriptTester
 			new Test(
 				"string slice",
 				Value.Create("es"),
-				"return slice(\"test\", 1, 2);"
+				"return Slice(\"test\", 1, 2);"
 			),
 			new Test(
 				"array slice",
 				Value.Create(new List<Value> {3, 4}),
-				"return slice([1, 2, 3, 4, 5], 2, 2);"
+				"return Slice([1, 2, 3, 4, 5], 2, 2);"
 			),
             new Test(
                 "new array with length 1",
                 Value.Create(new List<Value> {Value.Nil, Value.Nil, Value.Nil, Value.Nil}),
-                "return arrayOfLength(4);"
+                "return ArrayOfLength(4);"
             ),
             new Test(
                 "new array with length 2",
                 Value.Create(new List<Value> {1.0, 1.0, 1.0, 1.0}),
-                "return arrayOfLength(4, 1);"
+                "return ArrayOfLength(4, 1);"
             ),
             new Test(
                 "new array with length 3",
                 Value.Create(new List<Value> {}),
-                "return arrayOfLength(0);"
+                "return ArrayOfLength(0);"
             ),
             new Test(
                 "new array with length 4",
                 Value.Create(new List<Value> {}),
-                "return arrayOfLength(-1);"
+                "return ArrayOfLength(-1);"
             ),
             new Test(
 				"type check number 1",
 				Value.Create(true),
-				"return 1 is number;"
+				"return 1 is Number;"
 			),
 			new Test(
 				"type check number 2",
 				Value.Create(false),
-				"return \"Test\" is number;"
+				"return \"Test\" is Number;"
 			),
 			new Test(
 				"type check number 3",
 				Value.Create(true),
-				"return 4 + 1 is number;"
+				"return 4 + 1 is Number;"
 			),
 			new Test(
 				"type check array 1",
 				Value.Create(true),
-				"return [1, 2, 3, 4] is array;"
+				"return [1, 2, 3, 4] is Array;"
 			),
 			new Test(
 				"type check array 2",
 				Value.Create(false),
-				"return 9 is array;"
+				"return 9 is Array;"
 			),
 			new Test(
 				"type check array 3",
 				Value.Create(false),
-				"return \"Test\" is array;"
+				"return \"Test\" is Array;"
 			),
 			new Test(
 				"type check array 4",
 				Value.Create(true),
-				"return [1, 2] ~ [3, 4] is array;"
+				"return [1, 2] ~ [3, 4] is Array;"
 			),
 			new Test(
 				"then 1",
@@ -523,12 +523,12 @@ namespace DrakeScriptTester
 			new Test(
 				"then otherwise 3",
 				Value.Create(""),
-				"local var = 5; return var is string then var otherwise \"\";"
+				"local var = 5; return var is String then var otherwise \"\";"
 			),
 			new Test(
 				"then otherwise 4",
 				Value.Create("Hello"),
-				"local var = \"Hello\"; return var is string then var otherwise \"\";"
+				"local var = \"Hello\"; return var is String then var otherwise \"\";"
 			),
 			new Test(
 				"lengthof 1",
@@ -563,7 +563,7 @@ namespace DrakeScriptTester
 			new Test(
 				"method 2",
 				Value.Create(35),
-				"number.add = function(num, amount) {return num + amount;}; return 34:add(1);"
+				"Number.add = function(num, amount) {return num + amount;}; return 34:add(1);"
 			),
             new Test(
                 "nested functions and writing to own argument",
