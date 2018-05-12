@@ -70,7 +70,8 @@ namespace DrakeScript
             Return0 = 57,
             Return1 = 58,
             Inc = 59,
-            SEq = 60
+            SEq = 60,
+            NewThread
         }
 
 

@@ -199,7 +199,11 @@ namespace DrakeScript
 						token = new Token(Location(), Token.TokenType.Tilde);
 						Advance(1);
 						break;
-					case ('#'):
+                    case ('$'):
+                        token = new Token(Location(), Token.TokenType.DollarSign);
+                        Advance(1);
+                        break;
+                    case ('#'):
 						var loc = Location();
 						wasComment = true;
 						var directiveString = GetUntilLineBreak().Trim();

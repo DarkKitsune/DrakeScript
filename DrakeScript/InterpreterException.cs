@@ -28,7 +28,18 @@ namespace DrakeScript
 		}
 	}
 
-	public class NotEnoughArgumentsException : InterpreterException
+    public class CannotThreadTypeException : InterpreterException
+    {
+        public CannotThreadTypeException(
+            Value.ValueType type,
+            SourceRef location
+        ) : base("Cannot start a thread with a value of type " + type, location)
+        {
+
+        }
+    }
+
+    public class NotEnoughArgumentsException : InterpreterException
 	{
 		public NotEnoughArgumentsException(
 			int expected, int got,

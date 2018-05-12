@@ -23,7 +23,9 @@ namespace DrakeScript
 			Int = 5,
 			Table = 6,
 			Coroutine = 7,
-			Object = 8
+            Thread = 8,
+            Mutex = 9,
+            Object = 10
 		}
 
 		public ValueType Type;
@@ -114,6 +116,58 @@ namespace DrakeScript
             get
             {
                 return (Coroutine)Object;
+            }
+            set
+            {
+                Object = value;
+            }
+        }
+
+        public System.Threading.Thread Thread
+        {
+            get
+            {
+                if (Object is System.Threading.Thread)
+                    return (System.Threading.Thread)Object;
+                return null;
+            }
+            set
+            {
+                Object = value;
+            }
+        }
+
+        public System.Threading.Thread ThreadDirect
+        {
+            get
+            {
+                return (System.Threading.Thread)Object;
+            }
+            set
+            {
+                Object = value;
+            }
+        }
+
+        public System.Threading.Mutex Mutex
+        {
+            get
+            {
+                if (Object is System.Threading.Mutex)
+                    return (System.Threading.Mutex)Object;
+                return null;
+            }
+            set
+            {
+                Object = value;
+            }
+        }
+
+        public System.Threading.Mutex MutexDirect
+        {
+            get
+            {
+                return (System.Threading.Mutex)Object;
             }
             set
             {
@@ -228,7 +282,11 @@ namespace DrakeScript
 						return typeof(List<Value>);
 					case (ValueType.Coroutine):
 						return typeof(Coroutine);
-					case (ValueType.Function):
+                    case (ValueType.Thread):
+                        return typeof(System.Threading.Thread);
+                    case (ValueType.Mutex):
+                        return typeof(System.Threading.Mutex);
+                    case (ValueType.Function):
 						return typeof(Function);
 					case (ValueType.Int):
 					case (ValueType.Number):
@@ -361,7 +419,39 @@ namespace DrakeScript
 			return Value.Create(v);
 		}
 
-		public static Value Create(List<Value> v)
+        public static Value Create(System.Threading.Thread v)
+        {
+            var val = new Value();
+            val.Type = ValueType.Thread;
+            val.Object = v;
+            return val;
+        }
+        public static implicit operator System.Threading.Thread(Value v)
+        {
+            return v.Thread;
+        }
+        public static implicit operator Value(System.Threading.Thread v)
+        {
+            return Value.Create(v);
+        }
+
+        public static Value Create(System.Threading.Mutex v)
+        {
+            var val = new Value();
+            val.Type = ValueType.Mutex;
+            val.Object = v;
+            return val;
+        }
+        public static implicit operator System.Threading.Mutex(Value v)
+        {
+            return v.Mutex;
+        }
+        public static implicit operator Value(System.Threading.Mutex v)
+        {
+            return Value.Create(v);
+        }
+
+        public static Value Create(List<Value> v)
 		{
 			var val = new Value();
 			val.Type = ValueType.Array;
@@ -482,6 +572,18 @@ namespace DrakeScript
         {
             if (Type == ValueType.Coroutine)
                 return CoroutineDirect;
+            return alt;
+        }
+        public System.Threading.Thread ThreadOr(System.Threading.Thread alt)
+        {
+            if (Type == ValueType.Thread)
+                return ThreadDirect;
+            return alt;
+        }
+        public System.Threading.Mutex MutexOr(System.Threading.Mutex alt)
+        {
+            if (Type == ValueType.Mutex)
+                return MutexDirect;
             return alt;
         }
         public List<Value> ArrayOr(List<Value> alt)

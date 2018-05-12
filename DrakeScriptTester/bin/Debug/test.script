@@ -1,14 +1,30 @@
-local t = time();
+// Function that threads will use
+local mut = CreateMutex();
 
-local a = [1, 2, 3];
-local b = [1, 2, 3];
-local c = [1, 2, 3, 4];
-local d = {0: 1, 1: 2, 2: 3};
-local e = {1: 1, 0: 2, 2: 3};
-local f = {0: 2, 1: 2, "test": 3};
+local function threadA(mut)
+{
+	while (true)
+	{
+		mut:Lock();
+		Sleep(1000);
+		PrintLn("A");
+		mut:Unlock();
+	}
+}
 
-print(d === e);
-print(d === f);
-print(a === a);
+local function threadB(mut)
+{
+	while (true)
+	{
+		mut:Lock();
+		Sleep(1000);
+		PrintLn("B");
+		mut:Unlock();
+	}
+}
 
-print("Time taken: ", (time() - t) * 1000, " ms");
+local ta = $threadA(mut);
+local tb = $threadB(mut);
+
+ta:WaitOn();
+tb:WaitOn();

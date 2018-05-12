@@ -271,7 +271,7 @@ namespace DrakeScript
 						break;
 					left = node.Branches["left"];
 					right = node.Branches["right"];
-					if (right.Type == ASTNode.NodeType.Call && right.Branches["function"].Type == ASTNode.NodeType.Ident)
+                    if (right.Type == ASTNode.NodeType.Call && right.Branches["function"].Type == ASTNode.NodeType.Ident)
 					{
 						node = new ASTNode(ASTNode.NodeType.MethodCall, node.Location, right.Value);
 						node.Branches.Add("arrayOrTable", left);
@@ -282,7 +282,18 @@ namespace DrakeScript
 					else
 						throw new ExpectedNodeException(ASTNode.NodeType.Ident, right.Type, right.Location);
 					break;
-				case (ASTNode.NodeType.DotIndex):
+                case (ASTNode.NodeType.Thread):
+                    right = node.Branches["right"];
+                    if (right.Type == ASTNode.NodeType.Call)
+                    {
+                        node.Branches["function"] = right.Branches["function"];
+                        node.Branches["args"] = right.Branches["args"];
+                        node.Branches.Remove("right");
+                    }
+                    else
+                        throw new ExpectedNodeException(ASTNode.NodeType.Call, right.Type, right.Location);
+                    break;
+                case (ASTNode.NodeType.DotIndex):
 					left = node.Branches["left"];
 					right = node.Branches["right"];
 					if (right.Type == ASTNode.NodeType.Ident)

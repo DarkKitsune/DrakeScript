@@ -316,7 +316,19 @@ namespace DrakeScript
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Not));
 					break;
-				case (ASTNode.NodeType.Negative):
+                case (ASTNode.NodeType.Thread):
+                    instructions.AddRange(Generate(node.Branches["function"], true));
+                    var cargs = (List<ASTNode>)(node.Branches["args"].Value);
+                    foreach (var child in cargs)
+                    {
+                        range = Generate(child, true);
+                        instructions.AddRange(range);
+                    }
+                    instructions.Add(new Instruction(node.Location, Instruction.InstructionType.NewThread, Value.CreateInt(cargs.Count)));
+                    if (!requirePush)
+                        instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
+                    break;
+                case (ASTNode.NodeType.Negative):
 					if (!requirePush)
 						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["right"], true));
@@ -480,7 +492,7 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Call):
 					instructions.AddRange(Generate(node.Branches["function"], true));
-					var cargs = (List<ASTNode>)(node.Branches["args"].Value);
+					cargs = (List<ASTNode>)(node.Branches["args"].Value);
 					foreach (var child in cargs)
 					{
 						range = Generate(child, true);

@@ -21,6 +21,7 @@ namespace DrakeScript
 			CoreLibs.LibArray.Register(this);
 			CoreLibs.LibTable.Register(this);
 			CoreLibs.LibMath.Register(this);
+            CoreLibs.LibThread.Register(this);
 		}
 
 		public void SetBinaryConversionMethods(Type type, Func<System.IO.BinaryReader, Value> fromBin, Action<System.IO.BinaryWriter, Value> toBin)

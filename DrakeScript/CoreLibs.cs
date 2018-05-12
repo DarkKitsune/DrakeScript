@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace DrakeScript
 {
@@ -12,7 +13,9 @@ namespace DrakeScript
 			{
 				context.SetGlobal("Array", typeof(List<Value>));
 				context.SetGlobal("Coroutine", typeof(Coroutine));
-				context.SetGlobal("Function", typeof(Function));
+                context.SetGlobal("Thread", typeof(Thread));
+                context.SetGlobal("Mutex", typeof(Mutex));
+                context.SetGlobal("Function", typeof(Function));
 				context.SetGlobal("Int", typeof(double));
 				context.SetGlobal("Number", typeof(double));
 				context.SetGlobal("String", typeof(string));
@@ -77,7 +80,69 @@ namespace DrakeScript
 			}
 		}
 
-		public static class LibArray
+        public static class LibThread
+        {
+            public static void Register(Context context)
+            {
+                context.SetGlobal("CreateThread", context.CreateFunction(Create, 1));
+                context.SetGlobal("Sleep", context.CreateFunction(Sleep, 1));
+                context.AddMethod(typeof(Thread), "WaitOn", context.CreateFunction(WaitOn, 0));
+                context.SetGlobal("CreateMutex", context.CreateFunction(CreateMutex, 0));
+                context.AddMethod(typeof(Mutex), "Lock", context.CreateFunction(Lock, 0));
+                context.AddMethod(typeof(Mutex), "Unlock", context.CreateFunction(Unlock, 0));
+            }
+
+            public static Value Create(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                var func = args[0].VerifyType(Value.ValueType.Function, location);
+                var targs = args.Skip(1).ToArray();
+                var thread = new Thread(
+                    () =>
+                    {
+                        func.FunctionDirect.Invoke(targs);
+                    }
+                );
+                thread.Start();
+                return Value.Create(thread);
+            }
+
+            public static Value Sleep(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                Thread.Sleep((int)args[0].VerifyType(Value.ValueType.Number, location).Number);
+                return Value.Nil;
+            }
+
+            public static Value WaitOn(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                if (argCount > 1)
+                    args[0].VerifyType(Value.ValueType.Thread, location).ThreadDirect.Join((int)args[1].VerifyType(Value.ValueType.Number, location).Number);
+                else
+                    args[0].VerifyType(Value.ValueType.Thread, location).ThreadDirect.Join();
+                return Value.Nil;
+            }
+
+            public static Value CreateMutex(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return Value.Create(new Mutex());
+            }
+
+            public static Value Lock(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                if (argCount > 1)
+                    args[0].VerifyType(Value.ValueType.Mutex, location).MutexDirect.WaitOne((int)args[0].VerifyType(Value.ValueType.Number).Number);
+                else
+                    args[0].VerifyType(Value.ValueType.Mutex, location).MutexDirect.WaitOne();
+                return Value.Nil;
+            }
+
+            public static Value Unlock(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                args[0].VerifyType(Value.ValueType.Mutex, location).MutexDirect.ReleaseMutex();
+                return Value.Nil;
+            }
+        }
+
+        public static class LibArray
 		{
 			public static void Register(Context context)
 			{

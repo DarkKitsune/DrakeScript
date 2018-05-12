@@ -152,7 +152,37 @@ namespace DrakeScript
 									throw new CannotCallTypeException(callFunc.Type, instruction.Location);
 							}
 							break;
-						case (Instruction.InstructionType.PushIndex):
+                        case (Instruction.InstructionType.NewThread):
+                            ia = instruction.Arg.IntNumber;
+                            if (ArgList.Length < ia)
+                                Array.Resize(ref ArgList, ia);
+                            for (var i = ia - 1; i >= 0; i--)
+                            {
+                                ArgList[i] = Stack.Pop();
+                            }
+                            callFunc = Stack.Pop();
+                            ArgListCount = ia;
+                            switch (callFunc.Type)
+                            {
+                                case (Value.ValueType.Function):
+                                    var threadInt = new Interpreter(Context);
+                                    threadInt.ArgList = (Value[])ArgList.Clone();
+                                    threadInt.ArgListCount = ArgListCount;
+                                    threadInt.CallLocation = instruction.Location;
+                                    var nthread = new System.Threading.Thread(
+                                        () =>
+                                        {
+                                            callFunc.FunctionDirect.Invoke(threadInt);
+                                        }
+                                    );
+                                    nthread.Start();
+                                    Stack.Push(Value.Create(nthread));
+                                    break;
+                                default:
+                                    throw new CannotThreadTypeException(callFunc.Type, instruction.Location);
+                            }
+                            break;
+                        case (Instruction.InstructionType.PushIndex):
 							vb = Stack.Pop();
 							va = Stack.Pop();
 

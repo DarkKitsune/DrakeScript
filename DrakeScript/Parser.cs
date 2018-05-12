@@ -260,7 +260,11 @@ namespace DrakeScript
 						Stack.Push(new ASTNode(ASTNode.NodeType.NotOperator, current.Location));
 						Advance(1);
 						break;
-					case (Token.TokenType.Eq):
+                    case (Token.TokenType.DollarSign):
+                        Stack.Push(new ASTNode(ASTNode.NodeType.ThreadOperator, current.Location));
+                        Advance(1);
+                        break;
+                    case (Token.TokenType.Eq):
 						Stack.Push(new ASTNode(ASTNode.NodeType.EqualsOperator, current.Location));
 						Advance(1);
 						break;
