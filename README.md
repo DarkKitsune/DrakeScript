@@ -12,7 +12,8 @@ var context = new Context();
 var testScript = context.LoadString(
     @"PrintLn(""Hello, world!"");"
 );
-testScript.Invoke();```
+testScript.Invoke();
+```
 
 Simple function
 ```csharp
