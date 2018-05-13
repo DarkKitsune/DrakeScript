@@ -26,7 +26,8 @@ var testScript = context.LoadString(
     return add3(1, 2, 6);"
 );
 var result = testScript.Invoke();
-Console.WriteLine(result);```
+Console.WriteLine(result);
+```
 
 Sum of array elements that are numbers
 ```csharp
@@ -51,7 +52,8 @@ var testScript = context.LoadString(
     return arraySum([24, 53, 1, 9, ""foo"", nil]);"
 );
 var result = testScript.Invoke();
-Console.WriteLine(result);```
+Console.WriteLine(result);
+```
 
 Sum of array elements that are numbers (then-otherwise version)
 ```csharp
@@ -73,7 +75,8 @@ var testScript = context.LoadString(
     return arraySum([24, 53, 1, 9, ""foo"", nil]);"
 );
 var result = testScript.Invoke();
-Console.WriteLine(result);```
+Console.WriteLine(result);
+```
 
 Setting global variable from host application
 ```csharp
@@ -82,7 +85,8 @@ context.SetGlobal("Foo", 5.1);
 var testScript = context.LoadString(
     @"PrintLn2(Foo);"
 );
-testScript.Invoke();```
+testScript.Invoke();
+```
 
 Registering global function from host application
 ```csharp
@@ -104,7 +108,8 @@ context.SetGlobal(
 var testScript = context.LoadString(
     @"PrintLn2(1, 2, 3);"
 );
-testScript.Invoke();```
+testScript.Invoke();
+```
 
 Creating table
 ```csharp
@@ -120,4 +125,5 @@ var testScript = context.LoadString(
 		}
 	);"
 );
-testScript.Invoke();```
+testScript.Invoke();
+```
