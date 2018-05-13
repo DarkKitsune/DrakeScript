@@ -36,16 +36,16 @@ var context = new Context();
 var testScript = context.LoadString(
     @"local function arraySum(array)
     {
-    	local sum = 0;
-    	local i = 0;
+        local sum = 0;
+        local i = 0;
         loop (lengthof array)
         {
-        	local e = array[i];
-        	if (e is Number)
-        	{
-        		sum += e;
-        	}
-        	i += 1;
+            local e = array[i];
+            if (e is Number)
+            {
+                sum += e;
+            }
+            i += 1;
         }
         return sum;
     }
@@ -62,13 +62,13 @@ var context = new Context();
 var testScript = context.LoadString(
     @"local function arraySum(array)
     {
-    	local sum = 0;
-    	local i = 0;
+        local sum = 0;
+        local i = 0;
         loop (lengthof array)
         {
-        	local e = array[i];
-    		sum += e is Number then e otherwise 0;
-        	i += 1;
+            local e = array[i];
+            sum += e is Number then e otherwise 0;
+            i += 1;
         }
         return sum;
     }
@@ -97,11 +97,11 @@ context.SetGlobal(
         (interpreter, location, args, argCount) =>
         {
             for (var i = 0; i < argCount; i++)
-			{
-				Console.Write(args[i].ToString());
-			}
-			Console.WriteLine();
-			return Value.Nil;
+            {
+                Console.Write(args[i].ToString());
+            }
+            Console.WriteLine();
+            return Value.Nil;
         },
         1 // *MINUMUM* argument count required
     )
@@ -117,14 +117,14 @@ Creating table
 var context = new Context();
 var testScript = context.LoadString(
     @"local tableKey = { 1: [2, 4] };
-	PrintLn(
-		{
-			""foo"": ""bar"",
-			""hello"": 4,
-			89.2: 2,
-			tableKey: 2
-		}
-	);"
+    PrintLn(
+        {
+            ""foo"": ""bar"",
+            ""hello"": 4,
+            89.2: 2,
+            tableKey: 2
+        }
+    );"
 );
 testScript.Invoke();
 ```
