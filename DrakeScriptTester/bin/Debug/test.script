@@ -1,30 +1,9 @@
-// Function that threads will use
-local mut = CreateMutex();
-
-local function threadA(mut)
-{
-	while (true)
-	{
-		mut:Lock();
-		Sleep(1000);
-		PrintLn("A");
-		mut:Unlock();
-	}
-}
-
-local function threadB(mut)
-{
-	while (true)
-	{
-		mut:Lock();
-		Sleep(1000);
-		PrintLn("B");
-		mut:Unlock();
-	}
-}
-
-local ta = $threadA(mut);
-local tb = $threadB(mut);
-
-ta:WaitOn();
-tb:WaitOn();
+tableKey = { 1: [2, 4] };
+PrintLn(
+    	{
+    		"foo": "bar",
+    		"hello": 4,
+    		89.2: 2,
+    		tableKey: 2
+    	}[tableKey]
+	);
