@@ -216,7 +216,11 @@ namespace DrakeScript
 				context.SetGlobal("Sin", context.CreateFunction(Sin, 1));
 				context.SetGlobal("DCos", context.CreateFunction(DCos, 1));
 				context.SetGlobal("DSin", context.CreateFunction(DSin, 1));
-				context.SetGlobal("DegToRad", context.CreateFunction(Rad, 1));
+                context.SetGlobal("Atan", context.CreateFunction(Atan, 1));
+                context.SetGlobal("DAtan", context.CreateFunction(DAtan, 1));
+                context.SetGlobal("Atan2", context.CreateFunction(Atan2, 1));
+                context.SetGlobal("DAtan2", context.CreateFunction(DAtan2, 1));
+                context.SetGlobal("DegToRad", context.CreateFunction(Rad, 1));
 				context.SetGlobal("RadToDeg", context.CreateFunction(Deg, 1));
 				context.SetGlobal("Round", context.CreateFunction(Round, 1));
 				context.SetGlobal("Floor", context.CreateFunction(Floor, 1));
@@ -248,7 +252,27 @@ namespace DrakeScript
 				return Math.Sin(args[0].Number / 57.295779515);
 			}
 
-			public static Value Rad(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            public static Value Atan(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return Math.Atan(args[0].Number);
+            }
+
+            public static Value DAtan(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return Math.Atan(args[0].Number) * 57.295779515;
+            }
+
+            public static Value Atan2(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return Math.Atan2(args[0].Number, args[1].Number);
+            }
+
+            public static Value DAtan2(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return Math.Atan2(args[0].Number, args[1].Number) * 57.295779515;
+            }
+
+            public static Value Rad(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
 				return args[0].Number / 57.295779515;
 			}
