@@ -1,9 +1,10 @@
-tableKey = { 1: [2, 4] };
-PrintLn(
-    	{
-    		"foo": "bar",
-    		"hello": 4,
-    		89.2: 2,
-    		tableKey: 2
-    	}[tableKey]
-	);
+testTable = {
+ 2: 1,
+ 7: 5,
+ 12: 19,
+ 15: 9,
+ 10: 8
+};
+
+
+PrintLn(nil.four)};

@@ -16,9 +16,10 @@ namespace DrakeScript
 
 			while (!EndOf())
 			{
-				var c = At();
+                var c = At();
 
-				if (c <= ' ')
+                
+                if (c <= ' ')
 				{
 					Advance(1);
 					continue;

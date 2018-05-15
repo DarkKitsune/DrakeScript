@@ -12,21 +12,21 @@ namespace DrakeScript
 		{
 			Name = name;
 			Code = code.Replace("\r", "");
-			SourceRefs = new SourceRef[code.Length];
+			SourceRefs = new SourceRef[Code.Length];
 
 			int line = 0;
 			int column = 0;
-			for (var i = 0; i < code.Length; i++)
+			for (var i = 0; i < Code.Length; i++)
 			{
 				SourceRefs[i] = new SourceRef(this, line, column);
-				if (code[i] == '\n')
+				if (Code[i] == '\n')
 				{
 					line++;
 					column = 0;
 				}
 				else
 					column++;
-			}
+            }
 		}
 
 		public override string ToString()
