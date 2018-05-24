@@ -147,9 +147,13 @@ namespace DrakeScript
 			public static void Register(Context context)
 			{
                 context.SetGlobal("ArrayOfLength", context.CreateFunction(ArrayOfLength, 1));
-                context.SetGlobal("Length", context.CreateFunction(Length, 1));
-				context.SetGlobal("Slice", context.CreateFunction(Slice, 3));
-			}
+                context.AddMethod(typeof(List<Value>), "Length", context.CreateFunction(ArrayLength, 0));
+                context.AddMethod(typeof(string), "Length", context.CreateFunction(StringLength, 0));
+                context.AddMethod(typeof(List<Value>), "Slice", context.CreateFunction(ArraySlice, 2));
+                context.AddMethod(typeof(string), "Slice", context.CreateFunction(StringSlice, 2));
+                context.AddMethod(typeof(List<Value>), "RemoveAt", context.CreateFunction(ArrayRemove, 1));
+                context.AddMethod(typeof(List<Value>), "Clear", context.CreateFunction(ArrayClear, 0));
+            }
 
             public static Value ArrayOfLength(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
             {
@@ -165,45 +169,53 @@ namespace DrakeScript
                 return arr;
             }
 
-            public static Value Length(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            public static Value ArrayLength(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
-				switch (args[0].Type)
-				{
-					case (Value.ValueType.Array):
-						return args[0].ArrayDirect.Count;
-					case (Value.ValueType.String):
-						return args[0].StringDirect.Length;
-					default:
-						throw new UnexpectedTypeException(args[0].Type,location);
-				}
-			}
+                return args[0].ArrayDirect.Count;
+            }
 
-			public static Value Slice(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            public static Value StringLength(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return args[0].StringDirect.Length;
+            }
+
+            public static Value ArraySlice(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
 				var skip = (int)args[1].VerifyType(Value.ValueType.Number, location).Number;
 				var take = (int)args[2].VerifyType(Value.ValueType.Number, location).Number;
-				switch (args[0].Type)
-				{
-					case (Value.ValueType.Array):
-						return args[0].ArrayDirect.Skip(skip).Take(take).ToList();
-					case (Value.ValueType.String):
-						return new String(args[0].StringDirect.Skip(skip).Take(take).ToArray());
-					default:
-						throw new UnexpectedTypeException(args[0].Type,location);
-				}
-			}
-		}
+                return args[0].ArrayDirect.Skip(skip).Take(take).ToList();
+            }
+
+            public static Value StringSlice(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                var skip = (int)args[1].VerifyType(Value.ValueType.Number, location).Number;
+                var take = (int)args[2].VerifyType(Value.ValueType.Number, location).Number;
+                return new string(args[0].StringDirect.Skip(skip).Take(take).ToArray());
+            }
+
+            public static Value ArrayRemove(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                args[0].ArrayDirect.RemoveAt(args[0].VerifyType(Value.ValueType.Number, location));
+                return Value.Nil;
+            }
+
+            public static Value ArrayClear(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                args[0].ArrayDirect.Clear();
+                return Value.Nil;
+            }
+        }
 
 		public static class LibTable
 		{
 			public static void Register(Context context)
 			{
-				context.SetGlobal("Count", context.CreateFunction(Count, 1));
+				context.AddMethod(typeof(Table), "Count", context.CreateFunction(Count, 0));
 			}
 
 			public static Value Count(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
-				return args[0].VerifyType(Value.ValueType.Table, location).TableDirect.Count;
+				return args[0].TableDirect.Count;
 			}
 		}
 

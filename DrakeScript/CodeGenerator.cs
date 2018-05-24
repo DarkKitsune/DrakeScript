@@ -395,7 +395,8 @@ namespace DrakeScript
 					var orJumpStart = instructions.Count;
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					var orJumpAmount = instructions.Count - orJumpStart + 1;
-					instructions.Insert(orJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpNZ, Value.CreateInt(orJumpAmount - 1)));
+                    instructions.Insert(orJumpStart, new Instruction(node.Location, Instruction.InstructionType.Pop));
+                    instructions.Insert(orJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpNZ, Value.CreateInt(orJumpAmount)));
 					instructions.Insert(orJumpStart, new Instruction(node.Location, Instruction.InstructionType.Dup));
 					break;
 				case (ASTNode.NodeType.And):
@@ -405,7 +406,8 @@ namespace DrakeScript
 					var andJumpStart = instructions.Count;
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					var andJumpAmount = instructions.Count - andJumpStart + 1;
-					instructions.Insert(andJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(andJumpAmount - 1)));
+                    instructions.Insert(andJumpStart, new Instruction(node.Location, Instruction.InstructionType.Pop));
+                    instructions.Insert(andJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(andJumpAmount)));
 					instructions.Insert(andJumpStart, new Instruction(node.Location, Instruction.InstructionType.Dup));
 					break;
 				case (ASTNode.NodeType.NewLocal):

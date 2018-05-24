@@ -428,13 +428,13 @@ namespace DrakeScriptTester
 			new Test(
 				"string slice",
 				Value.Create("es"),
-				"return Slice(\"test\", 1, 2);"
-			),
+                "return \"test\":Slice(1, 2);"
+            ),
 			new Test(
 				"array slice",
 				Value.Create(new List<Value> {3, 4}),
-				"return Slice([1, 2, 3, 4, 5], 2, 2);"
-			),
+                "return [1, 2, 3, 4, 5]:Slice(2, 2);"
+            ),
             new Test(
                 "new array with length 1",
                 Value.Create(new List<Value> {Value.Nil, Value.Nil, Value.Nil, Value.Nil}),
