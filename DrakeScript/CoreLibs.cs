@@ -151,7 +151,8 @@ namespace DrakeScript
                 context.AddMethod(typeof(string), "Length", context.CreateFunction(StringLength, 0));
                 context.AddMethod(typeof(List<Value>), "Slice", context.CreateFunction(ArraySlice, 2));
                 context.AddMethod(typeof(string), "Slice", context.CreateFunction(StringSlice, 2));
-                context.AddMethod(typeof(List<Value>), "RemoveAt", context.CreateFunction(ArrayRemove, 1));
+                context.AddMethod(typeof(List<Value>), "RemoveAt", context.CreateFunction(ArrayRemoveAt, 1));
+                context.AddMethod(typeof(List<Value>), "Remove", context.CreateFunction(ArrayRemove, 1));
                 context.AddMethod(typeof(List<Value>), "Clear", context.CreateFunction(ArrayClear, 0));
             }
 
@@ -193,9 +194,15 @@ namespace DrakeScript
                 return new string(args[0].StringDirect.Skip(skip).Take(take).ToArray());
             }
 
+            public static Value ArrayRemoveAt(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                args[0].ArrayDirect.RemoveAt(args[1].VerifyType(Value.ValueType.Number, location));
+                return Value.Nil;
+            }
+
             public static Value ArrayRemove(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
             {
-                args[0].ArrayDirect.RemoveAt(args[0].VerifyType(Value.ValueType.Number, location));
+                args[0].ArrayDirect.Remove(args[1]);
                 return Value.Nil;
             }
 
