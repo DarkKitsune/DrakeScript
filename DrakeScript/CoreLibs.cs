@@ -86,10 +86,10 @@ namespace DrakeScript
             {
                 context.SetGlobal("CreateThread", context.CreateFunction(Create, 1));
                 context.SetGlobal("Sleep", context.CreateFunction(Sleep, 1));
-                context.AddMethod(typeof(Thread), "WaitOn", context.CreateFunction(WaitOn, 0));
+                context.SetMethod(typeof(Thread), "WaitOn", context.CreateFunction(WaitOn, 0));
                 context.SetGlobal("CreateMutex", context.CreateFunction(CreateMutex, 0));
-                context.AddMethod(typeof(Mutex), "Lock", context.CreateFunction(Lock, 0));
-                context.AddMethod(typeof(Mutex), "Unlock", context.CreateFunction(Unlock, 0));
+                context.SetMethod(typeof(Mutex), "Lock", context.CreateFunction(Lock, 0));
+                context.SetMethod(typeof(Mutex), "Unlock", context.CreateFunction(Unlock, 0));
             }
 
             public static Value Create(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -147,13 +147,13 @@ namespace DrakeScript
 			public static void Register(Context context)
 			{
                 context.SetGlobal("ArrayOfLength", context.CreateFunction(ArrayOfLength, 1));
-                context.AddMethod(typeof(List<Value>), "Length", context.CreateFunction(ArrayLength, 0));
-                context.AddMethod(typeof(string), "Length", context.CreateFunction(StringLength, 0));
-                context.AddMethod(typeof(List<Value>), "Slice", context.CreateFunction(ArraySlice, 2));
-                context.AddMethod(typeof(string), "Slice", context.CreateFunction(StringSlice, 2));
-                context.AddMethod(typeof(List<Value>), "RemoveAt", context.CreateFunction(ArrayRemoveAt, 1));
-                context.AddMethod(typeof(List<Value>), "Remove", context.CreateFunction(ArrayRemove, 1));
-                context.AddMethod(typeof(List<Value>), "Clear", context.CreateFunction(ArrayClear, 0));
+                context.SetMethod(typeof(List<Value>), "Length", context.CreateFunction(ArrayLength, 0));
+                context.SetMethod(typeof(string), "Length", context.CreateFunction(StringLength, 0));
+                context.SetMethod(typeof(List<Value>), "Slice", context.CreateFunction(ArraySlice, 2));
+                context.SetMethod(typeof(string), "Slice", context.CreateFunction(StringSlice, 2));
+                context.SetMethod(typeof(List<Value>), "RemoveAt", context.CreateFunction(ArrayRemoveAt, 1));
+                context.SetMethod(typeof(List<Value>), "Remove", context.CreateFunction(ArrayRemove, 1));
+                context.SetMethod(typeof(List<Value>), "Clear", context.CreateFunction(ArrayClear, 0));
             }
 
             public static Value ArrayOfLength(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -202,7 +202,13 @@ namespace DrakeScript
 
             public static Value ArrayRemove(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
             {
-                args[0].ArrayDirect.Remove(args[1]);
+                var array = args[0].ArrayDirect;
+                for (var i = 0; i < array.Count; i++)
+                    if (array[i].DynamicValue == args[1].DynamicValue)
+                    {
+                        array.RemoveAt(i);
+                        return Value.Nil;
+                    }
                 return Value.Nil;
             }
 
@@ -217,7 +223,7 @@ namespace DrakeScript
 		{
 			public static void Register(Context context)
 			{
-				context.AddMethod(typeof(Table), "Count", context.CreateFunction(Count, 0));
+				context.SetMethod(typeof(Table), "Count", context.CreateFunction(Count, 0));
 			}
 
 			public static Value Count(Interpreter interpreter, SourceRef location, Value[] args, int argCount)

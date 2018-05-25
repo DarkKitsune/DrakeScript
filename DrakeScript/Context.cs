@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace DrakeScript
 {
@@ -209,18 +210,52 @@ namespace DrakeScript
 				return null;
 			return ret;
 		}
-		public void AddMethod(Type type, string name, Function func)
-		{
-			Dictionary<string, Function> mtable;
-			if (!Methods.TryGetValue(type, out mtable))
-			{
-				Methods.Add(type, mtable = new Dictionary<string, Function>());
-			}
-			mtable[name] = func;
-		}
+
+        static Dictionary<Type, Type[]> ChildrenTypes = new Dictionary<Type, Type[]>();
+        static Type[] _GetChildrenTypes(Type t, Assembly assembly)
+        {
+            var types = new List<Type>();
+
+            foreach (var asmType in assembly.GetTypes())
+                if (asmType.BaseType == t)
+                {
+                    types.Add(asmType);
+                    types.AddRange(_GetChildrenTypes(asmType, assembly));
+                }
+
+            return types.ToArray();
+        }
+        static Type[] GetChildrenTypes(Type t)
+        {
+            Type[] found;
+            if (ChildrenTypes.TryGetValue(t, out found))
+                return found;
+
+            var types = new List<Type>();
+
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                types.AddRange(_GetChildrenTypes(t, asm));
+
+            ChildrenTypes.Add(t, found = types.ToArray());
+            return found;
+        }
+        void _SetMethod(Type type, string name, Function func)
+        {
+            Dictionary<string, Function> mtable;
+            if (!Methods.TryGetValue(type, out mtable))
+                Methods.Add(type, mtable = new Dictionary<string, Function>());
+            mtable[name] = func;
+        }
+        public void SetMethod(Type type, string name, Function func, bool childrenToo = false)
+        {
+            _SetMethod(type, name, func);
+            if (childrenToo)
+                foreach (var child in GetChildrenTypes(type))
+                    _SetMethod(child, name, func);
+        }
 
 
-		public Coroutine CreateCoroutine(Function func)
+        public Coroutine CreateCoroutine(Function func)
 		{
 			return new Coroutine(this, func);
 		}
