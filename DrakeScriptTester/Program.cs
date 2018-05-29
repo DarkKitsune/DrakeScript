@@ -627,6 +627,12 @@ namespace DrakeScriptTester
                 "indexableTest.foo = 1; indexableTest.bar = 2; indexableTest[2] = \"hello\"; return indexableTest[2];",
                 (c) => { c.SetGlobal("indexableTest", new IndexableTest()); }
             )
+            ,
+            new Test(
+                "variable scope 1",
+                Value.Create(new List<Value> { 4, 5, 6, 7, 8, 9 }),
+                "local ret = []; local a = 4; local function aTest() { ret[lengthof ret] = a; a += 1; if (a < 10) { aTest(); } } aTest(); return ret;"
+            )
         };
 
 		public static void RunTests()

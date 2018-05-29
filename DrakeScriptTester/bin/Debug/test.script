@@ -1,12 +1,13 @@
-test = [1, 2, 3];
-local i = 0;
-loop (lengthof test)
+local ret = [];
+local a = 4;
+function aTest()
 {
-	local t = test[i];
-	if (t > 0 && t < 99)
+	ret[lengthof ret] = a;
+	a += 1;
+	if (a < 10)
 	{
-		
+		aTest();
 	}
-
-	i += 1;
 }
+aTest();
+PrintLn(ret);

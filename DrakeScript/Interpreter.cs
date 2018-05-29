@@ -25,7 +25,7 @@ namespace DrakeScript
 			Context = context;
 		}
 
-		public void Interpret(Function func)
+		public void Interpret(Function func, Value[] parentLocals = null)
 		{
 			//CurrentScope = Scope.Create();
 			//ScopeStack.Push(CurrentScope);
@@ -76,7 +76,7 @@ namespace DrakeScript
 							Stack.Push(GetGlobalVar(instruction.Arg.StringDirect));
 							break;
 						case (Instruction.InstructionType.PushVarLocal):
-							Stack.Push(locals[instruction.Arg.IntNumber]);
+							Stack.Push(GetLocalVar(locals, parentLocals, instruction.Arg.IntNumber));
 							break;
 						case (Instruction.InstructionType.PushArg):
 							Stack.Push(args[instruction.Arg.IntNumber]);
@@ -123,7 +123,7 @@ namespace DrakeScript
 							SetGlobalVar(instruction.Arg.StringDirect, Stack.Pop());
 							break;
 						case (Instruction.InstructionType.PopVarLocal):
-							locals[instruction.Arg.IntNumber] = Stack.Pop();
+                            SetLocalVar(locals, parentLocals, instruction.Arg.IntNumber, Stack.Pop());
 							break;
                         case (Instruction.InstructionType.PopArg):
                             args[instruction.Arg.IntNumber] = Stack.Pop();
@@ -141,13 +141,23 @@ namespace DrakeScript
 							switch (callFunc.Type)
 							{
 								case (Value.ValueType.Function):
-									CallLocation = instruction.Location;
-									callFunc.FunctionDirect.InvokePushInsteadOfReturn(this);
-									break;
+                                    CallLocation = instruction.Location;
+                                    if (callFunc.FunctionDirect.ParentFunction == func)
+                                        callFunc.FunctionDirect.InvokePushInsteadOfReturn(this, locals);
+                                    else if (callFunc.FunctionDirect == func)
+                                        callFunc.FunctionDirect.InvokePushInsteadOfReturn(this, parentLocals);
+                                    else
+                                        callFunc.FunctionDirect.InvokePushInsteadOfReturn(this, null);
+                                    break;
 								case (Value.ValueType.Coroutine):
 									CallLocation = instruction.Location;
-									Stack.Push(callFunc.CoroutineDirect.Resume(ArgList, ArgListCount));
-									break;
+                                    if (callFunc.CoroutineDirect.Function.ParentFunction == func)
+                                        Stack.Push(callFunc.CoroutineDirect.Resume(ArgList, ArgListCount, locals));
+                                    else if (callFunc.CoroutineDirect.Function == func)
+                                        Stack.Push(callFunc.CoroutineDirect.Resume(ArgList, ArgListCount, parentLocals));
+                                    else
+                                        Stack.Push(callFunc.CoroutineDirect.Resume(ArgList, ArgListCount, null));
+                                    break;
 								default:
 									throw new CannotCallTypeException(callFunc.Type, instruction.Location);
 							}
@@ -537,9 +547,9 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.IncVarLocal):
 							ia = instruction.Arg.IntNumber;
-							va = locals[ia];
+							va = GetLocalVar(locals, parentLocals, ia);
 							va.Number++;
-							locals[ia] = va;
+                            SetLocalVar(locals, parentLocals, ia, va);
 							break;
 
 						case (Instruction.InstructionType.DecVarGlobal):
@@ -548,9 +558,9 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.DecVarLocal):
 							ia = instruction.Arg.IntNumber;
-							va = locals[ia];
+							va = GetLocalVar(locals, parentLocals, ia);
 							va.Number--;
-							locals[ia] = va;
+                            SetLocalVar(locals, parentLocals, ia, va);
 							break;
 
 						case (Instruction.InstructionType.IncVarByGlobal):
@@ -559,9 +569,9 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.IncVarByLocal):
 							ia = instruction.Arg.IntNumber;
-							va = locals[ia];
+							va = GetLocalVar(locals, parentLocals, ia);
 							va.Number += Stack.Pop().Number;
-							locals[ia] = va;
+                            SetLocalVar(locals, parentLocals, ia, va);
 							break;
 
 						case (Instruction.InstructionType.DecVarByGlobal):
@@ -570,9 +580,9 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.DecVarByLocal):
 							ia = instruction.Arg.IntNumber;
-							va = locals[ia];
+							va = GetLocalVar(locals, parentLocals, ia);
 							va.Number -= Stack.Pop().Number;
-							locals[ia] = va;
+                            SetLocalVar(locals, parentLocals, ia, va);
 							break;
 
                         case (Instruction.InstructionType.Inc):
@@ -764,8 +774,33 @@ namespace DrakeScript
 			}
 		}
 
+        public Value GetLocalVar(Value[] locals, Value[] parentLocals, int ind)
+        {
+            if (ind >= CodeGenerator.ParentLocalsStart)
+            {
+                if (parentLocals == null)
+                    return Value.Nil;
+                ind -= CodeGenerator.ParentLocalsStart;
+                return parentLocals[ind];
+            }
+            return locals[ind];
+        }
 
-		public void Yield()
+        public void SetLocalVar(Value[] locals, Value[] parentLocals, int ind, Value value)
+        {
+            if (ind >= CodeGenerator.ParentLocalsStart)
+            {
+                if (parentLocals == null)
+                    return;
+                ind -= CodeGenerator.ParentLocalsStart;
+                parentLocals[ind] = value;
+                return;
+            }
+            locals[ind] = value;
+        }
+
+
+        public void Yield()
 		{
 			if (Yielded)
 				return;

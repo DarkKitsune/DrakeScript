@@ -16,9 +16,9 @@ namespace DrakeScript
 			Function = function;
 			Status = CoroutineStatus.Ready;
 		}
-			
 
-		public Value Resume(Value[] args, int count)
+
+        internal Value Resume(Value[] args, int count, Value[] parentLocals)
 		{
 			
 			Value ret = Value.Nil;
@@ -45,7 +45,13 @@ namespace DrakeScript
 			return ret;
 		}
 
-		public Value Resume(params Value[] args)
+        public Value Resume(Value[] args, int count)
+        {
+
+            return Resume(args, count);
+        }
+
+        public Value Resume(params Value[] args)
 		{
 			Status = CoroutineStatus.Ready;
 			return Resume(args, args.Length);

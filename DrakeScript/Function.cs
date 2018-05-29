@@ -15,17 +15,17 @@ namespace DrakeScript
 		public Context Context;
 		public Version Version;
 		public SourceRef Location;
+        public Function ParentFunction;
 
 
-		public Function(SourceRef location, Context context, Instruction[] code, String[] args, String[] locals)
+        public Function(SourceRef location, Context context, String[] args, Function parentFunc)
 		{
 			Location = location;
 			Version = typeof(Context).Assembly.GetName().Version;
 			Context = context;
 			ScriptFunction = true;
-			Code = code;
 			Args = args;
-			Locals = locals;
+            ParentFunction = parentFunc;
 		}
 
 		public Function(Context context, Func<Interpreter, SourceRef, Value[], int, Value> method, int paramCount)
@@ -60,11 +60,11 @@ namespace DrakeScript
 				return Method(interpreter, interpreter.CallLocation, interpreter.ArgList, interpreter.ArgListCount);
 			}
 		}
-		internal void InvokePushInsteadOfReturn(Interpreter interpreter)
+		internal void InvokePushInsteadOfReturn(Interpreter interpreter, Value[] parentLocals)
 		{
 			if (ScriptFunction)
 			{
-				interpreter.Interpret(this);
+				interpreter.Interpret(this, parentLocals);
 			}
 			else
 			{
@@ -178,7 +178,10 @@ namespace DrakeScript
 			{
 				code[i] = Instruction.FromReader(context, reader, location.Source);
 			}
-			return new Function(location, context, code, args, locals);
+			var func = new Function(location, context, args, null);
+            func.Code = code;
+            func.Locals = locals;
+            return func;
 		}
 
 		public override string ToString()
