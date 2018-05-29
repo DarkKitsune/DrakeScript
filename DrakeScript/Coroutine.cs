@@ -48,7 +48,7 @@ namespace DrakeScript
         public Value Resume(Value[] args, int count)
         {
 
-            return Resume(args, count);
+            return Resume(args, count, null);
         }
 
         public Value Resume(params Value[] args)
