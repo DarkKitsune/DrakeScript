@@ -743,14 +743,16 @@ namespace DrakeScript
 
         int GetLocalIndex(string name)
         {
-            if (Parent != null)
+            var lind = Locals.IndexOf(name);
+
+            if (lind < 0 && Parent != null)
             {
                 var ind = Parent.Locals.IndexOf(name);
                 if (ind != -1)
                     return 0x3FFFFFFF + ind;
             }
 
-            return Locals.IndexOf(name);
+            return lind;
         }
 	}
 }
