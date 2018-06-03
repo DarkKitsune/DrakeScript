@@ -524,7 +524,7 @@ namespace DrakeScript
 			[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0
 		)
 		{
-			if (Object == null || !(Object is T))
+			if ((Object == null || !(Object is T)) && Type != ValueType.Nil)
 				throw new UnexpectedTypeException(
 					DynamicValue?.GetType(),
 					typeof(T),
@@ -539,7 +539,7 @@ namespace DrakeScript
 
 		public Value VerifyType<T>(SourceRef location)
 		{
-			if (Object == null || !(Object is T))
+			if ((Object == null || !(Object is T)) && Type != ValueType.Nil)
 				throw new UnexpectedTypeException(DynamicValue?.GetType(), typeof(T), location);
 			return this;
 		}
