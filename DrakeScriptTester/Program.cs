@@ -138,32 +138,32 @@ namespace DrakeScriptTester
 			new Test(
 				"simple math expression 1",
 				Value.Create(100.2 * (241.22 / 5.4) - 2.3 + 9.99),
-				"local a = 241.22; b = 5.4; local c = 9.99; return 100.2 * (a / b) - 2.3 + c;"
+				"let a = 241.22; b = 5.4; let c = 9.99; return 100.2 * (a / b) - 2.3 + c;"
 			),
 			new Test(
 				"simple math expression 2",
 				Value.Create(1.0240251 / 7.35020232 / 35.23235),
-				"local a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c;"
+				"let a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c;"
 			),
 			new Test(
 				"comment 1",
 				Value.Create(1.0240251 / 7.35020232 / 35.23235),
-				"local a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c; //aaaaa"
+				"let a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c; //aaaaa"
 			),
 			new Test(
 				"comment 2",
 				Value.Create(1.0240251 / 7.35020232 / 35.23235),
-				"//aaaaaaaaaa safasf safa asf\nlocal a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c;"
+				"//aaaaaaaaaa safasf safa asf\nlet a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c;"
 			),
 			new Test(
 				"comment 3",
 				Value.Create(1.0240251 / 7.35020232 / 35.23235),
-				"/*test comment*/ local a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c;"
+				"/*test comment*/ let a = 1.0240251; b = 7.35020232; c = 35.23235; return a / b / c;"
 			),
 			new Test(
 				"comment 4",
 				Value.Create(1.0240251 / 7.35020232 / 35.23235),
-				"local a = 1.0240251; b = /*test comment*/7.35020232; c = 35.23235; return a / b / c;"
+				"let a = 1.0240251; b = /*test comment*/7.35020232; c = 35.23235; return a / b / c;"
 			),
 			new Test(
 				"concat 1",
@@ -173,42 +173,37 @@ namespace DrakeScriptTester
 			new Test(
 				"concat 2",
 				Value.Create("hello, world!"),
-				"local a = \"hello, \"; local b = \"world!\"; return a ~ b;"
+				"let a = \"hello, \"; let b = \"world!\"; return a ~ b;"
 			),
 			new Test(
 				"concat 3",
 				Value.Create("hello, 6!"),
-				"local a = \"hello, \"; local b = 6; return a ~ b ~ \"!\";"
+				"let a = \"hello, \"; let b = 6; return a ~ b ~ \"!\";"
 			),
 			new Test(
 				"concat 4",
 				Value.Create("hello, [1, 2, 3]!"),
-				"local a = \"hello, \"; local b = [1, 2, 3]; return a ~ b ~ \"!\";"
-			),
-			new Test(
-				"concat 5",
-				Value.Create("hello, Function at codestring(Test.cs:29):1:28!"),
-				"local a = \"hello, \"; local function b(){}; return a ~ b ~ \"!\";"
+				"let a = \"hello, \"; let b = [1, 2, 3]; return a ~ b ~ \"!\";"
 			),
 			new Test(
 				"concat 6",
 				Value.Create("hello, {1:4, 5:5, \"test\":6}!"),
-				"local a = \"hello, \"; local b = {1: 4, 5: 5, \"test\":6}; return a ~ b ~ \"!\";"
+				"let a = \"hello, \"; let b = {1: 4, 5: 5, \"test\":6}; return a ~ b ~ \"!\";"
 			),
 			new Test(
-				"local noarg function 1",
+				"let noarg function 1",
 				Value.Create("Hello, world!"),
-				"local function a() {return \"Hello, world!\";} return a();"
+				"let function a() {return \"Hello, world!\";} return a();"
 			),
 			new Test(
-				"local noarg function 2",
+				"let noarg function 2",
 				Value.Create("Hello, world!"),
-				"local function a(str) {return str;} return a(\"Hello, world!\");"
+				"let function a(str) {return str;} return a(\"Hello, world!\");"
 			),
 			new Test(
-				"local arg function 1",
+				"let arg function 1",
 				Value.Create(21.4 + 47.0 / 124.0 * 93.2),
-				"local function a(a, b, c, d) {return a + b / c * d;} return a(21.4, 47, 124, 93.2);"
+				"let function a(a, b, c, d) {return a + b / c * d;} return a(21.4, 47, 124, 93.2);"
 			),
 			new Test(
 				"global noarg function 1",
@@ -226,19 +221,19 @@ namespace DrakeScriptTester
 				"function a(a, b, c, d) {return a + b / c * d;} return a(21.4, 47, 124, 93.2);"
 			),
 			new Test(
-				"1000 local increments 1",
+				"1000 let increments 1",
 				Value.Create(1000),
-				"local a = 0; loop (1000) {a += 1;} return a;"
+				"let a = 0; loop (1000) {a += 1;} return a;"
 			),
 			new Test(
-				"1000 local increments 2",
+				"1000 let increments 2",
 				Value.Create(2000),
-				"local a = 0; loop (1000) {a += 2;} return a;"
+				"let a = 0; loop (1000) {a += 2;} return a;"
 			),
 			new Test(
-				"1000 local increments 3",
+				"1000 let increments 3",
 				Value.Create(1000),
-				"local a = 0; local function add(a, b) {return a + b;} loop (1000) {a = add(a, 1);} return a;"
+				"let a = 0; let function add(a, b) {return a + b;} loop (1000) {a = add(a, 1);} return a;"
 			),
 			new Test(
 				"1000 global increments 1",
@@ -253,7 +248,7 @@ namespace DrakeScriptTester
 			new Test(
 				"1000 global increments 3",
 				Value.Create(1000),
-				"a = 0; local function add(a, b) {return a + b;} loop (1000) {a = add(a, 1);} return a;"
+				"a = 0; let function add(a, b) {return a + b;} loop (1000) {a = add(a, 1);} return a;"
 			),
 			new Test(
 				"function as argument",
@@ -268,42 +263,42 @@ namespace DrakeScriptTester
 			new Test(
 				"if statement 1",
 				Value.Create(2),
-				"local b = 5; if (b == 4) {return 1;} return 2;"
+				"let b = 5; if (b == 4) {return 1;} return 2;"
 			),
 			new Test(
 				"if statement 2",
 				Value.Create(1),
-				"local b = 5; if (b == 5) {return 1;} return 2;"
+				"let b = 5; if (b == 5) {return 1;} return 2;"
 			),
 			new Test(
 				"if-else statement 1",
 				Value.Create(2),
-				"local b = 5; if (b == 4) {return 1;}else {return 2;}"
+				"let b = 5; if (b == 4) {return 1;}else {return 2;}"
 			),
 			new Test(
 				"if-else statement 2",
 				Value.Create(1),
-				"local b = 5; if (b == 5) {return 1;}else {return 2;}"
+				"let b = 5; if (b == 5) {return 1;}else {return 2;}"
 			),
 			new Test(
 				"nested if-else 1",
 				Value.Create(1),
-				"local b = 5; if (b == 5) {return 1;}else {if (b == 4) {return 2;}}"
+				"let b = 5; if (b == 5) {return 1;}else {if (b == 4) {return 2;}}"
 			),
 			new Test(
 				"nested if-else 2",
 				Value.Create(2),
-				"local b = 4; if (b == 5) {return 1;}else {if (b == 4) {return 2;}else {return 3;}}"
+				"let b = 4; if (b == 5) {return 1;}else {if (b == 4) {return 2;}else {return 3;}}"
 			),
 			new Test(
 				"nested if-else 3",
 				Value.Create(3),
-				"local b = 3; if (b == 5) {return 1;}else {if (b == 4) {return 2;}else {return 3;}}"
+				"let b = 3; if (b == 5) {return 1;}else {if (b == 4) {return 2;}else {return 3;}}"
 			),
 			new Test(
 				"while loop 1",
 				Value.Create(1.0 + 20.0 * 2.5),
-				"local a = 1; local i = 0; while (i < 20) {a += 2.5; i += 1;} return a;"
+				"let a = 1; let i = 0; while (i < 20) {a += 2.5; i += 1;} return a;"
 			),
 			new Test(
 				"empty array",
@@ -318,22 +313,22 @@ namespace DrakeScriptTester
 			new Test(
 				"array with expressions",
 				Value.Create(new List<Value> {3.2, 235.4, 238.6, 4}),
-				"local a = 3.2; local b = 235.4; return [a, b, a + b, 4];"
+				"let a = 3.2; let b = 235.4; return [a, b, a + b, 4];"
 			),
 			new Test(
 				"array nils",
 				Value.Create(new List<Value> {Value.Nil, 235.4, 238.6, 4}),
-				"local a = 3.2; local b = 235.4; return [c, b, a + b, 4];"
+				"let a = 3.2; let b = 235.4; return [c, b, a + b, 4];"
 			),
 			new Test(
 				"array set",
 				Value.Create(new List<Value> {1, 2, 3}),
-				"local arr = [1]; arr[2] = 3; arr[1] = 2; return arr;"
+				"let arr = [1]; arr[2] = 3; arr[1] = 2; return arr;"
 			),
 			new Test(
 				"array get",
 				Value.Create(new List<Value> {12, 4, 7}),
-				"local arr = [3 * 4, 7, 4]; return [arr[0], arr[2], arr[1]];"
+				"let arr = [3 * 4, 7, 4]; return [arr[0], arr[2], arr[1]];"
 			),
 			new Test(
 				"simple table",
@@ -348,32 +343,32 @@ namespace DrakeScriptTester
 			new Test(
 				"table set",
 				Value.Create(new Table(new Dictionary<object, Value>{{"woof", "meow"}})),
-				"local a = {}; local catSound = \"meow\"; a[\"woof\"] = catSound; return a;"
+				"let a = {}; let catSound = \"meow\"; a[\"woof\"] = catSound; return a;"
 			),
 			new Test(
 				"table set dot",
 				Value.Create(new Table(new Dictionary<object, Value>{{"woof", "meow"}})),
-				"local a = {}; local catSound = \"meow\"; a.woof = catSound; return a;"
+				"let a = {}; let catSound = \"meow\"; a.woof = catSound; return a;"
 			),
 			new Test(
 				"table get 1",
 				Value.Create(1),
-                "local a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a[\"a\"];"
+                "let a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a[\"a\"];"
             ),
 			new Test(
 				"table get 2",
 				Value.Create(2.34),
-                "local a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a[\"b\"];"
+                "let a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a[\"b\"];"
             ),
 			new Test(
 				"table get dot 1",
 				Value.Create(1),
-                "local a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a.a;"
+                "let a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a.a;"
             ),
 			new Test(
 				"table get dot 2",
 				Value.Create(2.34),
-                "local a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a.b;"
+                "let a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a.b;"
             ),
 			new Test(
 				"table key math and concatenation",
@@ -383,17 +378,17 @@ namespace DrakeScriptTester
 			new Test(
 				"table dot call",
 				Value.Create(168.0),
-				"local Vector = {}; Vector.Create = function(x, y) { return {\"x\": x, \"y\": y}; }; return Vector.Create(192, 168).y;"
+				"let Vector = {}; Vector.Create = function(x, y) { return {\"x\": x, \"y\": y}; }; return Vector.Create(192, 168).y;"
 			),
 			new Test(
 				"table dot bracket index",
 				Value.Create(5.0),
-				"local a = {}; a.b = {}; a.b[\"c\"] = 5; return a.b[\"c\"];"
+				"let a = {}; a.b = {}; a.b[\"c\"] = 5; return a.b[\"c\"];"
 			),
 			new Test(
 				"table mixed 1",
 				Value.Create(23.0),
-				"local Vector = {\"Create\": function(x, y) { return {\"x\": x, \"y\": y}; } }; return Vector.Create(23, 212).x;"
+				"let Vector = {\"Create\": function(x, y) { return {\"x\": x, \"y\": y}; } }; return Vector.Create(23, 212).x;"
 			),
 			new Test(
 				"table concat",
@@ -403,22 +398,22 @@ namespace DrakeScriptTester
 			new Test(
 				"coroutine 1",
 				Value.Create(new List<Value> {1.0, 2.0, 3.0}),
-				"local cr = CreateCoroutine(function() {yield 1.0; yield 2.0; return 3.0;}); return [cr(), cr(), cr()];"
+				"let cr = CreateCoroutine(function() {yield 1.0; yield 2.0; return 3.0;}); return [cr(), cr(), cr()];"
 			),
 			new Test(
 				"coroutine 2",
 				Value.Create(new List<Value> {3.0, 7.0, 9.0, 4.5, 8.5, 10.5}),
-				"local cr = CreateCoroutine(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0), cr(), cr(), cr(2.5), cr(), cr()];"
+				"let cr = CreateCoroutine(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0), cr(), cr(), cr(2.5), cr(), cr()];"
 			),
 			new Test(
 				"coroutine 3",
 				Value.Create(new List<Value> {3.0, 7.0, 9.0, 4.5, 8.5, 10.5}),
-				"local cr = CreateCoroutine(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0 + 2.5 - 2.5), cr(2.0), cr(), cr(2.5), cr(), cr()];"
+				"let cr = CreateCoroutine(function(n) {yield n + 2.0; yield n + 6.0; return n + 8.0;}); return [cr(1.0 + 2.5 - 2.5), cr(2.0), cr(), cr(2.5), cr(), cr()];"
 			),
 			new Test(
 				"string char get 1",
 				Value.Create("e"),
-				"local str = \"test\"; return str[1];"
+				"let str = \"test\"; return str[1];"
 			),
 			new Test(
 				"string char get 2",
@@ -523,12 +518,12 @@ namespace DrakeScriptTester
 			new Test(
 				"then otherwise 3",
 				Value.Create(""),
-				"local var = 5; return var is String then var otherwise \"\";"
+				"let var = 5; return var is String then var otherwise \"\";"
 			),
 			new Test(
 				"then otherwise 4",
 				Value.Create("Hello"),
-				"local var = \"Hello\"; return var is String then var otherwise \"\";"
+				"let var = \"Hello\"; return var is String then var otherwise \"\";"
 			),
 			new Test(
 				"lengthof 1",
@@ -548,17 +543,17 @@ namespace DrakeScriptTester
 			new Test(
 				"break 1",
 				Value.Create(6),
-				"local a = 0;loop(30){a += 1; if (a > 5) {break;}}return a;"
+				"let a = 0;loop(30){a += 1; if (a > 5) {break;}}return a;"
 			),
 			new Test(
 				"break 2",
 				Value.Create(new List<Value> {6, 6, 6, 6}),
-				"local a = 0;local b = [];loop(4){a = 0; loop (30) {if (a > 5) {break;} a += 1;} b = b ~ [a];}return b;"
+				"let a = 0;let b = [];loop(4){a = 0; loop (30) {if (a > 5) {break;} a += 1;} b = b ~ [a];}return b;"
 			),
 			new Test(
 				"method 1",
 				Value.Create(new List<Value> {22, 23, 24}),
-				"local t = {\"v\": 21, \"getV\": function(this) { this.v = this.v + 1; return this.v; }}; return [t:getV(), t:getV(), t:getV()];"
+				"let t = {\"v\": 21, \"getV\": function(this) { this.v = this.v + 1; return this.v; }}; return [t:getV(), t:getV(), t:getV()];"
 			),
 			new Test(
 				"method 2",
@@ -568,7 +563,7 @@ namespace DrakeScriptTester
             new Test(
                 "nested functions and writing to own argument",
                 Value.Create(3),
-                "local function test_nest(x) { local function test_square(x) { return x+1; } x = test_square(x); return x; } return test_nest(2);"
+                "let function test_nest(x) { let function test_square(x) { return x+1; } x = test_square(x); return x; } return test_nest(2);"
             ),
             new Test(
                 "sequence equals 1",
@@ -631,7 +626,7 @@ namespace DrakeScriptTester
             new Test(
                 "variable scope 1",
                 Value.Create(new List<Value> { 4, 5, 6, 7, 8, 9 }),
-                "local ret = []; local a = 4; local function aTest() { ret[lengthof ret] = a; a += 1; if (a < 10) { aTest(); } } aTest(); return ret;"
+                "let ret = []; let a = 4; let function aTest() { ret[lengthof ret] = a; a += 1; if (a < 10) { aTest(); } } aTest(); return ret;"
             )
         };
 

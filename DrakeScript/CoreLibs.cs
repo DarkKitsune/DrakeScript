@@ -255,7 +255,8 @@ namespace DrakeScript
                 context.SetGlobal("Root", context.CreateFunction(Root, 2));
 				context.SetGlobal("Pow", context.CreateFunction(Pow, 2));
 				context.SetGlobal("Rand", context.CreateFunction(Rand, 2));
-			}
+                context.SetGlobal("Abs", context.CreateFunction(Abs, 1));
+            }
 
 			public static Value Cos(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
@@ -346,7 +347,12 @@ namespace DrakeScript
 			{
 				return args[0].Number + (args[1].Number - args[0].Number) * Random.NextDouble();
 			}
-		}
+
+            public static Value Abs(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return Math.Abs(args[0].Number);
+            }
+        }
 	}
 }
 

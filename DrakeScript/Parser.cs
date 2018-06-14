@@ -195,7 +195,7 @@ namespace DrakeScript
 								node.Branches["functionName"] = new ASTNode(ASTNode.NodeType.Ident, current.Location, functionName);
 								if (functionName.Length > 0)
 								{
-									if (top.Type == ASTNode.NodeType.Ident && (string)top.Value == "local")
+									if (top.Type == ASTNode.NodeType.Ident && (string)top.Value == "let")
 									{
 										Stack.Pop();
 										root.Add(new ASTNode(ASTNode.NodeType.NewLocal, top.Location, functionName));
@@ -209,7 +209,7 @@ namespace DrakeScript
 								Advance(advanceAmount);
 								break;
 							default:
-								if (top.Type == ASTNode.NodeType.Ident && (string)top.Value == "local")
+								if (top.Type == ASTNode.NodeType.Ident && (string)top.Value == "let")
 								{
 									Stack.Pop();
 									Stack.Push(new ASTNode(ASTNode.NodeType.NewLocal, current.Location, current.Value));
