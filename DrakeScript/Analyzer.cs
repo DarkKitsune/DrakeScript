@@ -34,7 +34,11 @@ namespace DrakeScript
 			{
 				case (ASTNode.NodeType.Negative):
 					newNode = node.Branches["right"];
-					if (newNode.Value is long)
+                    if (
+                        (newNode.Type != ASTNode.NodeType.Dec && newNode.Type != ASTNode.NodeType.Int)
+                    )
+                        break;
+                    if (newNode.Value is long)
 					{
 						newNode.Value = -(long)newNode.Value;
 						node = newNode;
@@ -47,7 +51,12 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Add):
 					left = node.Branches["left"];
-					if (left.Value is long)
+                    if (
+                        (left.Type != ASTNode.NodeType.Dec && left.Type != ASTNode.NodeType.Int) ||
+                        (node.Branches["right"].Type != ASTNode.NodeType.Dec && node.Branches["right"].Type != ASTNode.NodeType.Int)
+                    )
+                        break;
+                    if (left.Value is long)
 					{
 						right = node.Branches["right"];
 						if (right.Value is long)
@@ -78,6 +87,11 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Subtract):
 					left = node.Branches["left"];
+                    if (
+                        (left.Type != ASTNode.NodeType.Dec && left.Type != ASTNode.NodeType.Int) ||
+                        (node.Branches["right"].Type != ASTNode.NodeType.Dec && node.Branches["right"].Type != ASTNode.NodeType.Int)
+                    )
+                        break;
 					if (left.Value is long)
 					{
 						right = node.Branches["right"];
@@ -109,7 +123,12 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Divide):
 					left = node.Branches["left"];
-					if (left.Value is long)
+                    if (
+                        (left.Type != ASTNode.NodeType.Dec && left.Type != ASTNode.NodeType.Int) ||
+                        (node.Branches["right"].Type != ASTNode.NodeType.Dec && node.Branches["right"].Type != ASTNode.NodeType.Int)
+                    )
+                        break;
+                    if (left.Value is long)
 					{
 						right = node.Branches["right"];
 						if (right.Value is long)
@@ -140,7 +159,12 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Multiply):
 					left = node.Branches["left"];
-					if (left.Value is long)
+                    if (
+                        (left.Type != ASTNode.NodeType.Dec && left.Type != ASTNode.NodeType.Int) ||
+                        (node.Branches["right"].Type != ASTNode.NodeType.Dec && node.Branches["right"].Type != ASTNode.NodeType.Int)
+                    )
+                        break;
+                    if (left.Value is long)
 					{
 						right = node.Branches["right"];
 						if (right.Value is long)
@@ -171,7 +195,12 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Modulo):
 					left = node.Branches["left"];
-					if (left.Value is long)
+                    if (
+                        (left.Type != ASTNode.NodeType.Dec && left.Type != ASTNode.NodeType.Int) ||
+                        (node.Branches["right"].Type != ASTNode.NodeType.Dec && node.Branches["right"].Type != ASTNode.NodeType.Int)
+                    )
+                        break;
+                    if (left.Value is long)
 					{
 						right = node.Branches["right"];
 						if (right.Value is long)
@@ -202,7 +231,12 @@ namespace DrakeScript
 					break;
 				case (ASTNode.NodeType.Power):
 					left = node.Branches["left"];
-					if (left.Value is long)
+                    if (
+                        (left.Type != ASTNode.NodeType.Dec && left.Type != ASTNode.NodeType.Int) ||
+                        (node.Branches["right"].Type != ASTNode.NodeType.Dec && node.Branches["right"].Type != ASTNode.NodeType.Int)
+                    )
+                        break;
+                    if (left.Value is long)
 					{
 						right = node.Branches["right"];
 						if (right.Value is long)

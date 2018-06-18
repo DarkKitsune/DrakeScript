@@ -163,7 +163,7 @@ namespace DrakeScript
     						new Instruction(
     							node.Location,
     							Instruction.InstructionType.PushArray,
-    							Value.CreateInt(((List<ASTNode>)node.Value).Count)
+    							((List<ASTNode>)node.Value).Count
     						)
     					);
                     }
@@ -197,7 +197,7 @@ namespace DrakeScript
 							new Instruction(
 								node.Location,
 								Instruction.InstructionType.PushArg,
-								Value.CreateInt(argNum)
+								argNum
 							)
 						);
 					}
@@ -210,7 +210,7 @@ namespace DrakeScript
 								new Instruction(
 									node.Location,
 									Instruction.InstructionType.PushVarLocal,
-									Value.CreateInt(locNum)
+									locNum
 								)
 							);
 						}
@@ -240,8 +240,8 @@ namespace DrakeScript
 					var thenJumpStart = instructions.Count;
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					var thenJumpAmount = instructions.Count - thenJumpStart + 1;
-					instructions.Insert(thenJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(thenJumpAmount)));
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.CreateInt(1)));
+					instructions.Insert(thenJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, thenJumpAmount));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, 1));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushNil));
 					break;
 				case (ASTNode.NodeType.Otherwise):
@@ -255,7 +255,7 @@ namespace DrakeScript
 					instructions.Add(new Instruction(node.Branches["right"].Location, Instruction.InstructionType.Pop));
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					var otherwiseJumpAmount = instructions.Count - otherwiseJumpStart + 1;
-					instructions.Insert(otherwiseJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(otherwiseJumpAmount - 1)));
+					instructions.Insert(otherwiseJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, otherwiseJumpAmount - 1));
 					break;
 				case (ASTNode.NodeType.Contains):
 					if (!requirePush)
@@ -333,7 +333,7 @@ namespace DrakeScript
                         range = Generate(child, true);
                         instructions.AddRange(range);
                     }
-                    instructions.Add(new Instruction(node.Location, Instruction.InstructionType.NewThread, Value.CreateInt(cargs.Count)));
+                    instructions.Add(new Instruction(node.Location, Instruction.InstructionType.NewThread, cargs.Count));
                     if (!requirePush)
                         instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
                     break;
@@ -405,7 +405,7 @@ namespace DrakeScript
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					var orJumpAmount = instructions.Count - orJumpStart + 1;
                     instructions.Insert(orJumpStart, new Instruction(node.Location, Instruction.InstructionType.Pop));
-                    instructions.Insert(orJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpNZ, Value.CreateInt(orJumpAmount)));
+                    instructions.Insert(orJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpNZ, orJumpAmount));
 					instructions.Insert(orJumpStart, new Instruction(node.Location, Instruction.InstructionType.Dup));
 					break;
 				case (ASTNode.NodeType.And):
@@ -416,7 +416,7 @@ namespace DrakeScript
 					instructions.AddRange(Generate(node.Branches["right"], true));
 					var andJumpAmount = instructions.Count - andJumpStart + 1;
                     instructions.Insert(andJumpStart, new Instruction(node.Location, Instruction.InstructionType.Pop));
-                    instructions.Insert(andJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(andJumpAmount)));
+                    instructions.Insert(andJumpStart, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, andJumpAmount));
 					instructions.Insert(andJumpStart, new Instruction(node.Location, Instruction.InstructionType.Dup));
 					break;
 				case (ASTNode.NodeType.NewLocal):
@@ -449,13 +449,13 @@ namespace DrakeScript
 						locNum = GetLocalIndex((string)node.Branches["left"].Value);//Locals.IndexOf((string)node.Branches["left"].Value);
                         if (locNum >= 0)
 						{
-							instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopVarLocal, Value.CreateInt(locNum)));
+							instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopVarLocal, locNum));
 						}
 						else
 						{
                             if (ArgLookup.TryGetValue((string)node.Branches["left"].Value, out argNum))
                             {
-                                instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopArg, Value.CreateInt(argNum)));
+                                instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PopArg, argNum));
                             }
                             else
                             {
@@ -468,8 +468,19 @@ namespace DrakeScript
 					if (!requirePush)
 						throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
 					instructions.AddRange(Generate(node.Branches["arrayOrTable"], true));
-					instructions.AddRange(Generate(node.Branches["index"], true));
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushIndex));
+                    if (node.Branches["index"].Type == ASTNode.NodeType.Str)
+                    {
+                        instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushIndexStr, (string)node.Branches["index"].Value));
+                    }
+                    else if (node.Branches["index"].Type == ASTNode.NodeType.Int)
+                    {
+                        instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushIndexInt, (double)node.Branches["index"].Value));
+                    }
+                    else
+                    {
+                        instructions.AddRange(Generate(node.Branches["index"], true));
+                        instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushIndex));
+                    }
 					break;
 				case (ASTNode.NodeType.PlusEq):
 					if (requirePush)
@@ -479,7 +490,7 @@ namespace DrakeScript
 					locNum = GetLocalIndex((string)node.Branches["left"].Value);//Locals.IndexOf((string)node.Branches["left"].Value);
                     if (locNum >= 0)
 					{
-						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.IncVarByLocal, Value.CreateInt(locNum)));
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.IncVarByLocal, locNum));
 					}
 					else
 					{
@@ -494,7 +505,7 @@ namespace DrakeScript
 					locNum = GetLocalIndex((string)node.Branches["left"].Value);//Locals.IndexOf((string)node.Branches["left"].Value);
                     if (locNum >= 0)
 					{
-						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.DecVarByLocal, Value.CreateInt(locNum)));
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.DecVarByLocal, locNum));
 					}
 					else
 					{
@@ -509,7 +520,7 @@ namespace DrakeScript
 						range = Generate(child, true);
 						instructions.AddRange(range);
 					}
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Call, Value.CreateInt(cargs.Count + (int)node.Branches["additionalArgs"].Value)));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Call, cargs.Count + (int)node.Branches["additionalArgs"].Value));
 					if (!requirePush)
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
 					break;
@@ -525,7 +536,7 @@ namespace DrakeScript
 						range = Generate(child, true);
 						instructions.AddRange(range);
 					}
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Call, Value.CreateInt(cargs.Count + (int)node.Branches["additionalArgs"].Value)));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Call, cargs.Count + (int)node.Branches["additionalArgs"].Value));
 					if (!requirePush)
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
 					break;
@@ -573,15 +584,15 @@ namespace DrakeScript
 							range = Generate(child, false, true);
 							tempInst.AddRange(range);
 						}
-						instructions.Add(new Instruction(node.Branches["else"].Location, Instruction.InstructionType.Jump, Value.CreateInt(tempInst.Count)));
+						instructions.Add(new Instruction(node.Branches["else"].Location, Instruction.InstructionType.Jump, tempInst.Count));
 						var ifJumpDestPos = instructions.Count + 2;
-						instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(ifJumpDestPos - ifJumpInstPos - 2)));
+						instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, ifJumpDestPos - ifJumpInstPos - 2));
 						instructions.AddRange(tempInst);
 					}
 					else
 					{
 						var ifJumpDestPos = instructions.Count + 2;
-						instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(ifJumpDestPos - ifJumpInstPos - 2)));
+						instructions.Insert(ifJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, ifJumpDestPos - ifJumpInstPos - 2));
 					}
 					break;
 				case (ASTNode.NodeType.While):
@@ -600,13 +611,13 @@ namespace DrakeScript
 						range = Generate(child, false, true);
 						instructions.AddRange(range);
 					}
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.CreateInt(whileStart - instructions.Count - 2)));
-					instructions.Insert(whileJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(instructions.Count - whileJumpInstPos)));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, whileStart - instructions.Count - 2));
+					instructions.Insert(whileJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, instructions.Count - whileJumpInstPos));
 					for (var whileBreakInd = whileBreakConvertStart; whileBreakInd < instructions.Count; whileBreakInd++)
 					{
 						if (instructions[whileBreakInd].Type == Instruction.InstructionType._Break)
 						{
-							instructions[whileBreakInd] = new Instruction(instructions[whileBreakInd].Location, Instruction.InstructionType.Jump, Value.CreateInt(instructions.Count - whileBreakInd - 1));
+							instructions[whileBreakInd] = new Instruction(instructions[whileBreakInd].Location, Instruction.InstructionType.Jump, instructions.Count - whileBreakInd - 1);
 						}
 					}
 					//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
@@ -638,7 +649,7 @@ namespace DrakeScript
 							{
 								if (instructions[loopBreakInd].Type == Instruction.InstructionType._Break)
 								{
-									instructions[loopBreakInd] = new Instruction(instructions[loopBreakInd].Location, Instruction.InstructionType.Jump, Value.CreateInt(instructions.Count - loopBreakInd - 1));
+									instructions[loopBreakInd] = new Instruction(instructions[loopBreakInd].Location, Instruction.InstructionType.Jump, instructions.Count - loopBreakInd - 1);
 								}
 							}
 							unrolled = true;
@@ -657,14 +668,14 @@ namespace DrakeScript
 							range = Generate(child, false, true);
 							instructions.AddRange(range);
 						}
-						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, Value.CreateInt(loopStart - instructions.Count - 2)));
-						instructions.Insert(loopJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, Value.CreateInt(instructions.Count - loopJumpInstPos)));
+						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, loopStart - instructions.Count - 2));
+						instructions.Insert(loopJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, instructions.Count - loopJumpInstPos));
 						//instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
 						for (var loopBreakInd = loopBreakConvertStart; loopBreakInd < instructions.Count; loopBreakInd++)
 						{
 							if (instructions[loopBreakInd].Type == Instruction.InstructionType._Break)
 							{
-								instructions[loopBreakInd] = new Instruction(instructions[loopBreakInd].Location, Instruction.InstructionType.Jump, Value.CreateInt(instructions.Count - loopBreakInd - 1));
+								instructions[loopBreakInd] = new Instruction(instructions[loopBreakInd].Location, Instruction.InstructionType.Jump, instructions.Count - loopBreakInd - 1);
 							}
 						}
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
@@ -709,7 +720,7 @@ namespace DrakeScript
 								new Instruction(
 									node.Location,
 									Instruction.InstructionType.PopVarLocal,
-									Value.CreateInt(locNum)
+									locNum
 								)
 							);
 						}

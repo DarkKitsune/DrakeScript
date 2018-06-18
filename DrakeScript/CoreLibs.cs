@@ -154,6 +154,7 @@ namespace DrakeScript
                 context.SetMethod(typeof(List<Value>), "RemoveAt", context.CreateFunction(ArrayRemoveAt, 1));
                 context.SetMethod(typeof(List<Value>), "Remove", context.CreateFunction(ArrayRemove, 1));
                 context.SetMethod(typeof(List<Value>), "Clear", context.CreateFunction(ArrayClear, 0));
+                context.SetMethod(typeof(List<Value>), "Clone", context.CreateFunction(Clone, 0));
             }
 
             public static Value ArrayOfLength(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -217,6 +218,11 @@ namespace DrakeScript
                 args[0].ArrayDirect.Clear();
                 return Value.Nil;
             }
+
+            public static Value Clone(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return new List<Value>(args[0].ArrayDirect);
+            }
         }
 
 		public static class LibTable
@@ -224,13 +230,19 @@ namespace DrakeScript
 			public static void Register(Context context)
 			{
 				context.SetMethod(typeof(Table), "Count", context.CreateFunction(Count, 0));
-			}
+                context.SetMethod(typeof(Table), "Clone", context.CreateFunction(Clone, 0));
+            }
 
 			public static Value Count(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
 				return args[0].TableDirect.Count;
 			}
-		}
+
+            public static Value Clone(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return new Table(args[0].TableDirect.InternalDictionary);
+            }
+        }
 
 		public static Random Random = new Random();
 		public static class LibMath
@@ -256,6 +268,8 @@ namespace DrakeScript
 				context.SetGlobal("Pow", context.CreateFunction(Pow, 2));
 				context.SetGlobal("Rand", context.CreateFunction(Rand, 2));
                 context.SetGlobal("Abs", context.CreateFunction(Abs, 1));
+                context.SetGlobal("Max", context.CreateFunction(Max, 2));
+                context.SetGlobal("Min", context.CreateFunction(Min, 2));
             }
 
 			public static Value Cos(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -351,6 +365,16 @@ namespace DrakeScript
             public static Value Abs(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
             {
                 return Math.Abs(args[0].Number);
+            }
+
+            public static Value Max(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return Math.Max(args[0].Number, args[1].Number);
+            }
+
+            public static Value Min(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return Math.Min(args[0].Number, args[1].Number);
             }
         }
 	}

@@ -165,14 +165,14 @@ namespace DrakeScript
 							code.Insert(i, new Instruction(loca, Instruction.InstructionType.Dup));
 							code.Insert(i, new Instruction(loca, Instruction.InstructionType.PushVarGlobal, name));
 							i += 2;
-							code[i] = new Instruction(loca, Instruction.InstructionType.PopVarLocal, Value.CreateInt(locNum));
+							code[i] = new Instruction(loca, Instruction.InstructionType.PopVarLocal, locNum);
 							end += 2;
 							FixJumps(code, i - 2, 2);
 							for (var j = i; j < end; j++)
 							{
 								if (code[j].Type == Instruction.InstructionType.PushVarGlobal && code[j].Arg.StringDirect == name)
 								{
-									code[j] = new Instruction(code[j].Location, Instruction.InstructionType.PushVarLocal, Value.CreateInt(locNum));
+									code[j] = new Instruction(code[j].Location, Instruction.InstructionType.PushVarLocal, locNum);
 								}
 							}
 						}
@@ -196,16 +196,16 @@ namespace DrakeScript
                     case (Instruction.InstructionType.JumpNZ):
                         if (i < insertpos)
 						{
-							if (i + inst.Arg.IntNumber >= insertpos)
+							if (i + inst.Arg.Number >= insertpos)
 							{
-								inst.Arg.IntNumber += number;
+								inst.Arg.Number += number;
 								code[i] = inst;
 							}
 						}
 						else{
-							if (i + inst.Arg.IntNumber < insertpos)
+							if (i + inst.Arg.Number < insertpos)
 							{
-								inst.Arg.IntNumber -= number;
+								inst.Arg.Number -= number;
 								code[i] = inst;
 							}
 						}
@@ -244,7 +244,7 @@ namespace DrakeScript
 							case (Instruction.InstructionType.Jump):
 							case (Instruction.InstructionType.JumpEZ):
 							case (Instruction.InstructionType.JumpNZ):
-								if (i + code[i].Arg.IntNumber + 1 > i || i + code[i].Arg.IntNumber + 1 < pos)
+								if (i + code[i].Arg.Number + 1 > i || i + code[i].Arg.Number + 1 < pos)
 									return i;
 								break;
 							default:

@@ -20,7 +20,7 @@ namespace DrakeScript
 			String = 2,
 			Function = 3,
 			Array = 4,
-			Int = 5,
+			//Int = 5,
 			Table = 6,
 			Coroutine = 7,
             Thread = 8,
@@ -30,7 +30,7 @@ namespace DrakeScript
 
 		public ValueType Type;
 		public double Number;
-		public int IntNumber;
+		//public int IntNumber;
 		public object Object;
 
 		public bool Bool
@@ -237,8 +237,8 @@ namespace DrakeScript
 						return null;
 					case (ValueType.Number):
 						return Number;
-					case (ValueType.Int):
-						return IntNumber;
+					//case (ValueType.Int):
+						//return IntNumber;
 					case (ValueType.String):
 						return StringDirect;
 					default:
@@ -288,7 +288,7 @@ namespace DrakeScript
                         return typeof(System.Threading.Mutex);
                     case (ValueType.Function):
 						return typeof(Function);
-					case (ValueType.Int):
+					//case (ValueType.Int):
 					case (ValueType.Number):
 						return typeof(double);
 					case (ValueType.Nil):
@@ -305,14 +305,14 @@ namespace DrakeScript
 			}
 		}
 
-		public static Value CreateInt(int v)
+		/*public static Value CreateInt(int v)
 		{
 			var val = new Value();
 			val.Type = ValueType.Int;
 			val.IntNumber = v;
 			val.Object = null;
 			return val;
-		}
+		}*/
 
 		public static Value Create(double v)
 		{
@@ -677,9 +677,9 @@ namespace DrakeScript
 						case (ValueType.Number):
 							writer.Write(Number);
 							break;
-						case (ValueType.Int):
-							writer.Write(IntNumber);
-							break;
+						//case (ValueType.Int):
+							//writer.Write(IntNumber);
+							//break;
                         case (ValueType.Array):
                             writer.Write(ArrayDirect.Count);
                             foreach (var e in ArrayDirect)
@@ -715,8 +715,8 @@ namespace DrakeScript
 					return Value.Create(Function.FromReader(context, reader));
 				case (ValueType.Number):
 					return Value.Create(reader.ReadDouble());
-				case (ValueType.Int):
-					return Value.CreateInt(reader.ReadInt32());
+				//case (ValueType.Int):
+					//return Value.CreateInt(reader.ReadInt32());
                 case (ValueType.Array):
                     var count = reader.ReadInt32();
                     var array = new List<Value>(count);

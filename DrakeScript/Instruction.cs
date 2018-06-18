@@ -71,7 +71,9 @@ namespace DrakeScript
             Return1 = 58,
             Inc = 59,
             SEq = 60,
-            NewThread
+            NewThread = 61,
+            PushIndexInt = 62,
+            PushIndexStr = 63
         }
 
 

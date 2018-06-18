@@ -627,7 +627,17 @@ namespace DrakeScriptTester
                 "variable scope 1",
                 Value.Create(new List<Value> { 4, 5, 6, 7, 8, 9 }),
                 "let ret = []; let a = 4; let function aTest() { ret[lengthof ret] = a; a += 1; if (a < 10) { aTest(); } } aTest(); return ret;"
-            )
+            ),
+            new Test(
+                "array clone",
+                Value.Create(new List<Value> { 1, 2, 3, 4, 10, "orange" }),
+                "return [1, 2, 3, 4, 10, \"orange\"]:Clone();"
+            ),
+            new Test(
+                "table clone",
+                Value.Create(new Table(new Dictionary<object, Value> { { 6.0, 1.0 }, { 2.0, 2.0 }, { "merp", 3.0 }, { 9.0, 4.0 }, { 123.0, "orange" } })),
+                "return {6:1, 2:2, \"merp\":3, 9:4, 123:\"orange\"}:Clone();"
+            ),
         };
 
 		public static void RunTests()

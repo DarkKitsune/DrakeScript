@@ -76,10 +76,10 @@ namespace DrakeScript
 							Stack.Push(GetGlobalVar(instruction.Arg.StringDirect));
 							break;
 						case (Instruction.InstructionType.PushVarLocal):
-							Stack.Push(GetLocalVar(locals, parentLocals, instruction.Arg.IntNumber));
+							Stack.Push(GetLocalVar(locals, parentLocals, (int)instruction.Arg.Number));
 							break;
 						case (Instruction.InstructionType.PushArg):
-							Stack.Push(args[instruction.Arg.IntNumber]);
+							Stack.Push(args[(int)instruction.Arg.Number]);
 							break;
 						case (Instruction.InstructionType.PushNum):
 						case (Instruction.InstructionType.PushStr):
@@ -93,7 +93,7 @@ namespace DrakeScript
 							Stack.Push(Value.One);
 							break;
 						case (Instruction.InstructionType.PushArray):
-							ia = instruction.Arg.IntNumber;
+							ia = (int)instruction.Arg.Number;
 							aa = new Value[ia];
 							for (var i = ia - 1; i >= 0; i--)
 							{
@@ -123,13 +123,13 @@ namespace DrakeScript
 							SetGlobalVar(instruction.Arg.StringDirect, Stack.Pop());
 							break;
 						case (Instruction.InstructionType.PopVarLocal):
-                            SetLocalVar(locals, parentLocals, instruction.Arg.IntNumber, Stack.Pop());
+                            SetLocalVar(locals, parentLocals, (int)instruction.Arg.Number, Stack.Pop());
 							break;
                         case (Instruction.InstructionType.PopArg):
-                            args[instruction.Arg.IntNumber] = Stack.Pop();
+                            args[(int)instruction.Arg.Number] = Stack.Pop();
                             break;
                         case (Instruction.InstructionType.Call):
-							ia = instruction.Arg.IntNumber;
+							ia = (int)instruction.Arg.Number;
 							if (ArgList.Length < ia)
 								Array.Resize(ref ArgList, ia);
 							for (var i = ia - 1; i >= 0; i--)
@@ -163,7 +163,7 @@ namespace DrakeScript
 							}
 							break;
                         case (Instruction.InstructionType.NewThread):
-                            ia = instruction.Arg.IntNumber;
+                            ia = (int)instruction.Arg.Number;
                             if (ArgList.Length < ia)
                                 Array.Resize(ref ArgList, ia);
                             for (var i = ia - 1; i >= 0; i--)
@@ -262,7 +262,102 @@ namespace DrakeScript
 									throw new CannotIndexTypeException(va.Type, instruction.Location);
 							}
 							break;
-						case (Instruction.InstructionType.PopIndex):
+                        case (Instruction.InstructionType.PushIndexInt):
+                            va = Stack.Pop();
+
+                            switch (va.Type)
+                            {
+                                case (Value.ValueType.Array):
+                                    ia = (int)instruction.Arg.Number;
+                                    if (ia < 0 || ia >= va.ArrayDirect.Count)
+                                        throw new InvalidIndexValueException("Array", ia, instruction.Location);
+                                    Stack.Push(va.ArrayDirect[ia]);
+                                    break;
+                                case (Value.ValueType.String):
+                                    ia = (int)instruction.Arg.Number;
+                                    if (ia < 0 || ia >= va.StringDirect.Length)
+                                        throw new InvalidIndexValueException("String", ia, instruction.Location);
+                                    Stack.Push(va.StringDirect[ia]);
+                                    break;
+                                case (Value.ValueType.Table):
+                                    Value outValue;
+                                    if (va.TableDirect.TryGetValue((double)(int)instruction.Arg.Number, out outValue))
+                                        Stack.Push(outValue);
+                                    else
+                                        Stack.Push(Value.Nil);
+                                    break;
+                                case (Value.ValueType.Object):
+                                    if (va.Is<Type>())
+                                    {
+                                        throw new InvalidIndexTypeException("Type", Value.ValueType.Number, instruction.Location);
+                                    }
+                                    else
+                                    {
+                                        if (va.Is<IIndexable>())
+                                            Stack.Push(((IIndexable)va.Object).GetValue((double)(int)instruction.Arg.Number, instruction.Location));
+                                        else
+                                            throw new CannotIndexTypeException(va.ActualType, instruction.Location);
+                                    }
+                                    break;
+                                default:
+                                    throw new CannotIndexTypeException(va.Type, instruction.Location);
+                            }
+                            break;
+                        case (Instruction.InstructionType.PushIndexStr):
+                            va = Stack.Pop();
+
+                            {
+                                Dictionary<string, Function> typeMethods;
+                                var vaType = va.ActualType;
+                                if (vaType != null)
+                                    if (Context.Methods.TryGetValue(vaType, out typeMethods))
+                                    {
+                                        Function method;
+                                        if (typeMethods.TryGetValue(instruction.Arg.StringDirect, out method))
+                                        {
+                                            Stack.Push(Value.Create(method));
+                                            break;
+                                        }
+                                    }
+                            }
+
+                            switch (va.Type)
+                            {
+                                case (Value.ValueType.Array):
+                                    throw new InvalidIndexTypeException("Array", Value.ValueType.String, instruction.Location);
+                                case (Value.ValueType.String):
+                                    throw new InvalidIndexTypeException("String", Value.ValueType.String, instruction.Location);
+                                case (Value.ValueType.Table):
+                                    Value outValue;
+                                    if (va.TableDirect.TryGetValue(instruction.Arg.StringDirect, out outValue))
+                                        Stack.Push(outValue);
+                                    else
+                                        Stack.Push(Value.Nil);
+                                    break;
+                                case (Value.ValueType.Object):
+                                    if (va.Is<Type>())
+                                    {
+                                        var type = va.ObjectAs<Type>();
+                                        var methodName = instruction.Arg.StringDirect;
+                                        Dictionary<string, Function> methodDict;
+                                        if (!Context.Methods.TryGetValue(type, out methodDict))
+                                            Stack.Push(Value.Nil);
+                                        else
+                                            Stack.Push(methodDict[methodName]);
+                                    }
+                                    else
+                                    {
+                                        if (va.Is<IIndexable>())
+                                            Stack.Push(((IIndexable)va.Object).GetValue(instruction.Arg.StringDirect, instruction.Location));
+                                        else
+                                            throw new CannotIndexTypeException(va.ActualType, instruction.Location);
+                                    }
+                                    break;
+                                default:
+                                    throw new CannotIndexTypeException(va.Type, instruction.Location);
+                            }
+                            break;
+                        case (Instruction.InstructionType.PopIndex):
 							vc = Stack.Pop();
 							vb = Stack.Pop();
 							va = Stack.Pop();
@@ -546,7 +641,7 @@ namespace DrakeScript
 							break;
 
 						case (Instruction.InstructionType.IncVarLocal):
-							ia = instruction.Arg.IntNumber;
+							ia = (int)instruction.Arg.Number;
 							va = GetLocalVar(locals, parentLocals, ia);
 							va.Number++;
                             SetLocalVar(locals, parentLocals, ia, va);
@@ -557,7 +652,7 @@ namespace DrakeScript
 							break;
 
 						case (Instruction.InstructionType.DecVarLocal):
-							ia = instruction.Arg.IntNumber;
+							ia = (int)instruction.Arg.Number;
 							va = GetLocalVar(locals, parentLocals, ia);
 							va.Number--;
                             SetLocalVar(locals, parentLocals, ia, va);
@@ -568,7 +663,7 @@ namespace DrakeScript
 							break;
 
 						case (Instruction.InstructionType.IncVarByLocal):
-							ia = instruction.Arg.IntNumber;
+							ia = (int)instruction.Arg.Number;
 							va = GetLocalVar(locals, parentLocals, ia);
 							va.Number += Stack.Pop().Number;
                             SetLocalVar(locals, parentLocals, ia, va);
@@ -579,7 +674,7 @@ namespace DrakeScript
 							break;
 
 						case (Instruction.InstructionType.DecVarByLocal):
-							ia = instruction.Arg.IntNumber;
+							ia = (int)instruction.Arg.Number;
 							va = GetLocalVar(locals, parentLocals, ia);
 							va.Number -= Stack.Pop().Number;
                             SetLocalVar(locals, parentLocals, ia, va);
@@ -612,7 +707,7 @@ namespace DrakeScript
 							va = Stack.Pop();
 							if (va.Number == 0.0)
 							{
-								pos += instruction.Arg.IntNumber;
+								pos += (int)instruction.Arg.Number;
 							}
 							break;
 
@@ -620,12 +715,12 @@ namespace DrakeScript
 							va = Stack.Pop();
 							if (va.Number != 0.0)
 							{
-								pos += instruction.Arg.IntNumber;
+								pos += (int)instruction.Arg.Number;
 							}
 							break;
 
 						case (Instruction.InstructionType.Jump):
-							pos += instruction.Arg.IntNumber;
+							pos += (int)instruction.Arg.Number;
 							break;
 
 						case (Instruction.InstructionType.Return):
