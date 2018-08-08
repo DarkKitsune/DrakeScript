@@ -237,7 +237,28 @@ namespace DrakeScript
 		}
 	}
 
-	public class UnexpectedRightTypeException : InterpreterException
+    public class NoMethodForTypeException : InterpreterException
+    {
+        public NoMethodForTypeException(
+            Value.ValueType type,
+            string methodName,
+            SourceRef location
+        ) : base("No method \"" + methodName + "\" exists for type \"" + type + "\"", location)
+        {
+
+        }
+
+        public NoMethodForTypeException(
+            Type type,
+            string methodName,
+            SourceRef location
+        ) : base("No method \"" + methodName + "\" exists for .NET type \"" + type + "\"", location)
+        {
+
+        }
+    }
+
+    public class UnexpectedRightTypeException : InterpreterException
 	{
 		public UnexpectedRightTypeException(
 			Value.ValueType type,

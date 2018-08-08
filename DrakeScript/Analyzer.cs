@@ -305,17 +305,22 @@ namespace DrakeScript
 						break;
 					left = node.Branches["left"];
 					right = node.Branches["right"];
-                    if (right.Type == ASTNode.NodeType.Call && right.Branches["function"].Type == ASTNode.NodeType.Ident)
+                    if (right.Type == ASTNode.NodeType.Call)
 					{
-						node = new ASTNode(ASTNode.NodeType.MethodCall, node.Location, right.Value);
-						node.Branches.Add("arrayOrTable", left);
-						node.Branches.Add("index", new ASTNode(ASTNode.NodeType.Str, right.Location, right.Branches["function"].Value));
-						node.Branches.Add("args", right.Branches["args"]);
-						node.Branches.Add("additionalArgs", new ASTNode(ASTNode.NodeType.Int, node.Location, 1));
-					}
-					else
-						throw new ExpectedNodeException(ASTNode.NodeType.Ident, right.Type, right.Location);
-					break;
+                        if (right.Branches["function"].Type == ASTNode.NodeType.Ident)
+                        {
+                            node = new ASTNode(ASTNode.NodeType.MethodCall, node.Location, right.Value);
+                            node.Branches.Add("arrayOrTable", left);
+                            node.Branches.Add("index", new ASTNode(ASTNode.NodeType.Str, right.Location, right.Branches["function"].Value));
+                            node.Branches.Add("args", right.Branches["args"]);
+                            node.Branches.Add("additionalArgs", new ASTNode(ASTNode.NodeType.Int, node.Location, 1));
+                        }
+                        else
+                            throw new ExpectedNodeException(ASTNode.NodeType.Ident, right.Branches["function"].Type, right.Location);
+                    }
+                    else
+                        throw new ExpectedNodeException(ASTNode.NodeType.Call, right.Type, right.Location);
+                    break;
                 case (ASTNode.NodeType.Thread):
                     right = node.Branches["right"];
                     if (right.Type == ASTNode.NodeType.Call)

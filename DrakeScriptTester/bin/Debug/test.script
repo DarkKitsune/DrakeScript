@@ -1,13 +1,16 @@
-local ret = [];
-local a = 4;
-function aTest()
+function Vector(x, y, z)
 {
-	ret[lengthof ret] = a;
-	a += 1;
-	if (a < 10)
+	let function addFunc(a, b)
 	{
-		aTest();
+		return Vector(a.x + b.x, a.y + b.y, a.z + b.z);
 	}
+
+	return {
+		"x": x,
+		"y": y,
+		"z": z,
+		"Add": addFunc
+	};
 }
-aTest();
-PrintLn(ret);
+
+PrintLn(Vector(1, 2, 3) + Vector(2, 3, 4));

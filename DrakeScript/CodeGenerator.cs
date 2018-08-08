@@ -527,8 +527,7 @@ namespace DrakeScript
 				case (ASTNode.NodeType.MethodCall):
 					instructions.AddRange(Generate(node.Branches["arrayOrTable"], true));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dup));
-					instructions.AddRange(Generate(node.Branches["index"], true));
-					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushIndex));
+					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.PushMethod, Value.Create((string)node.Branches["index"].Value)));
 					instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Swap));
 					cargs = (List<ASTNode>)(node.Branches["args"].Value);
 					foreach (var child in cargs)
@@ -713,7 +712,7 @@ namespace DrakeScript
 					);
 					if (funcName.Length > 0)
 					{
-						locNum = GetLocalIndex((string)funcName);//Locals.IndexOf(funcName);
+						locNum = GetLocalIndex(funcName);
                         if (locNum >= 0)
 						{
 							instructions.Add(

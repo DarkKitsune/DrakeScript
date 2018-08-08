@@ -73,7 +73,8 @@ namespace DrakeScript
             SEq = 60,
             NewThread = 61,
             PushIndexInt = 62,
-            PushIndexStr = 63
+            PushIndexStr = 63,
+            PushMethod = 64
         }
 
 

@@ -10,14 +10,18 @@ namespace DrakeScriptTester
 		Value SuccessReturn;
 		string Code;
         Action<Context> RunBefore;
+        string SourceName;
 
-		public Test(string name, Value successReturn, string code, Action<Context> runBefore = null)
+        public Test(string name, Value successReturn, string code, Action<Context> runBefore = null,
+            [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+            [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
 		{
 			Name = name;
 			SuccessReturn = successReturn;
 			Code = code;
             RunBefore = runBefore;
-		}
+            SourceName = "(Test at " + System.IO.Path.GetFileName(sourceFilePath) + ":" + sourceLineNumber + ")";
+        }
 
 		public bool Run()
 		{
@@ -26,7 +30,7 @@ namespace DrakeScriptTester
 			try
 			{
 				context = new Context();
-				func = context.LoadString(Code);
+				func = context.LoadString(SourceName, Code);
 			}
 			catch (Exception e)
 			{

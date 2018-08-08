@@ -196,22 +196,6 @@ namespace DrakeScript
 							vb = Stack.Pop();
 							va = Stack.Pop();
 
-							if (vb.Type == Value.ValueType.String)
-							{
-								Dictionary<string, Function> typeMethods;
-                                var vaType = va.ActualType;
-                                if (vaType != null)
-                                    if (Context.Methods.TryGetValue(vaType, out typeMethods))
-								    {
-									    Function method;
-									    if (typeMethods.TryGetValue(vb.StringDirect, out method))
-									    {
-										    Stack.Push(Value.Create(method));
-										    break;
-									    }
-								    }
-                            }
-
 							switch (va.Type)
 							{
 								case (Value.ValueType.Array):
@@ -306,21 +290,6 @@ namespace DrakeScript
                         case (Instruction.InstructionType.PushIndexStr):
                             va = Stack.Pop();
 
-                            {
-                                Dictionary<string, Function> typeMethods;
-                                var vaType = va.ActualType;
-                                if (vaType != null)
-                                    if (Context.Methods.TryGetValue(vaType, out typeMethods))
-                                    {
-                                        Function method;
-                                        if (typeMethods.TryGetValue(instruction.Arg.StringDirect, out method))
-                                        {
-                                            Stack.Push(Value.Create(method));
-                                            break;
-                                        }
-                                    }
-                            }
-
                             switch (va.Type)
                             {
                                 case (Value.ValueType.Array):
@@ -355,6 +324,21 @@ namespace DrakeScript
                                     break;
                                 default:
                                     throw new CannotIndexTypeException(va.Type, instruction.Location);
+                            }
+                            break;
+                        case (Instruction.InstructionType.PushMethod):
+                            va = Stack.Pop();
+
+                            {
+                                var method = GetMethod(va, instruction.Arg.StringDirect);
+                                if (method != null)
+                                {
+                                    Stack.Push(method);
+                                    break;
+                                }
+                                if (va.Type == Value.ValueType.Object)
+                                    throw new NoMethodForTypeException(va.ActualType, instruction.Arg.StringDirect, instruction.Location);
+                                throw new NoMethodForTypeException(va.Type, instruction.Arg.StringDirect, instruction.Location);
                             }
                             break;
                         case (Instruction.InstructionType.PopIndex):
@@ -414,46 +398,136 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Add):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number += vb.Number;
-
-							Stack.Push(va);
+                            if (va.Type == Value.ValueType.Number)
+                            {
+                                va.Number += vb.Number;
+                                Stack.Push(va);
+                            }
+                            else
+                            {
+                                var vaType = va.ActualType;
+                                var method = GetMethod(va, "Add");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va, vb));
+                                else
+                                {
+                                    if (va.Type == Value.ValueType.Object)
+                                        throw new UnexpectedLeftTypeException(vaType, instruction.Location);
+                                    throw new UnexpectedLeftTypeException(va.Type, instruction.Location);
+                                }
+                            }
 							break;
 						case (Instruction.InstructionType.Sub):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number -= vb.Number;
-
-							Stack.Push(va);
-							break;
+                            if (va.Type == Value.ValueType.Number)
+                            {
+                                va.Number -= vb.Number;
+                                Stack.Push(va);
+                            }
+                            else
+                            {
+                                var vaType = va.ActualType;
+                                var method = GetMethod(va, "Subtract");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va, vb));
+                                else
+                                {
+                                    if (va.Type == Value.ValueType.Object)
+                                        throw new UnexpectedLeftTypeException(vaType, instruction.Location);
+                                    throw new UnexpectedLeftTypeException(va.Type, instruction.Location);
+                                }
+                            }
+                            break;
 						case (Instruction.InstructionType.Div):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number /= vb.Number;
-
-							Stack.Push(va);
-							break;
+                            if (va.Type == Value.ValueType.Number)
+                            {
+                                va.Number /= vb.Number;
+                                Stack.Push(va);
+                            }
+                            else
+                            {
+                                var vaType = va.ActualType;
+                                var method = GetMethod(va, "Divide");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va, vb));
+                                else
+                                {
+                                    if (va.Type == Value.ValueType.Object)
+                                        throw new UnexpectedLeftTypeException(vaType, instruction.Location);
+                                    throw new UnexpectedLeftTypeException(va.Type, instruction.Location);
+                                }
+                            }
+                            break;
 						case (Instruction.InstructionType.Mul):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number *= vb.Number;
-
-							Stack.Push(va);
-							break;
+                            if (va.Type == Value.ValueType.Number)
+                            {
+                                va.Number *= vb.Number;
+                                Stack.Push(va);
+                            }
+                            else
+                            {
+                                var vaType = va.ActualType;
+                                var method = GetMethod(va, "Multiply");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va, vb));
+                                else
+                                {
+                                    if (va.Type == Value.ValueType.Object)
+                                        throw new UnexpectedLeftTypeException(vaType, instruction.Location);
+                                    throw new UnexpectedLeftTypeException(va.Type, instruction.Location);
+                                }
+                            }
+                            break;
 
 						case (Instruction.InstructionType.Mod):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number %= vb.Number;
-
-							Stack.Push(va);
-							break;
+                            if (va.Type == Value.ValueType.Number)
+                            {
+                                va.Number %= vb.Number;
+                                Stack.Push(va);
+                            }
+                            else
+                            {
+                                var vaType = va.ActualType;
+                                var method = GetMethod(va, "Modulo");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va, vb));
+                                else
+                                {
+                                    if (va.Type == Value.ValueType.Object)
+                                        throw new UnexpectedLeftTypeException(vaType, instruction.Location);
+                                    throw new UnexpectedLeftTypeException(va.Type, instruction.Location);
+                                }
+                            }
+                            break;
 
 						case (Instruction.InstructionType.Pow):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = Math.Pow(va.Number, vb.Number);
-
-							Stack.Push(va);
+                            if (va.Type == Value.ValueType.Number)
+                            {
+                                va.Number = Math.Pow(va.Number, vb.Number);
+                                Stack.Push(va);
+                            }
+                            else
+                            {
+                                var vaType = va.ActualType;
+                                var method = GetMethod(va, "Power");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va, vb));
+                                else
+                                {
+                                    if (va.Type == Value.ValueType.Object)
+                                        throw new UnexpectedLeftTypeException(vaType, instruction.Location);
+                                    throw new UnexpectedLeftTypeException(va.Type, instruction.Location);
+                                }
+                            }
 							break;
 
 						case (Instruction.InstructionType.Cat):
@@ -490,7 +564,14 @@ namespace DrakeScript
 										throw new UnexpectedRightTypeException(vb.Type, instruction.Location);
 									break;
 								default:
-									va = Value.Create(va.ToString() + vb.ToString());
+                                    var vaType = va.ActualType;
+                                    var method = GetMethod(va, "Concat");
+                                    if (method != null)
+                                        va = method.Invoke(va, vb);
+                                    else
+                                    {
+                                        va = Value.Create(va.ToString() + vb.ToString());
+                                    }
 									break;
 							}
 
@@ -499,23 +580,61 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.Not):
 							va = Stack.Pop();
-							va.Bool = !va.Bool;
-
-							Stack.Push(va);
+                            if (va.Type == Value.ValueType.Number)
+                            {
+                                va.Bool = !va.Bool;
+                                Stack.Push(va);
+                            }
+                            else
+                            {
+                                var vaType = va.ActualType;
+                                var method = GetMethod(va, "Not");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va));
+                                else
+                                {
+                                    if (va.Type == Value.ValueType.Object)
+                                        throw new UnexpectedLeftTypeException(vaType, instruction.Location);
+                                    throw new UnexpectedLeftTypeException(va.Type, instruction.Location);
+                                }
+                            }
 							break;
 
 						case (Instruction.InstructionType.Neg):
 							va = Stack.Pop();
-							va.Number = -va.Number;
-
-							Stack.Push(va);
-							break;
+                            if (va.Type == Value.ValueType.Number)
+                            {
+                                va.Number = -va.Number;
+                                Stack.Push(va);
+                            }
+                            else
+                            {
+                                var vaType = va.ActualType;
+                                var method = GetMethod(va, "Negative");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va));
+                                else
+                                {
+                                    if (va.Type == Value.ValueType.Object)
+                                        throw new UnexpectedLeftTypeException(vaType, instruction.Location);
+                                    throw new UnexpectedLeftTypeException(va.Type, instruction.Location);
+                                }
+                            }
+                            break;
 
 						case (Instruction.InstructionType.Eq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-
-							Stack.Push((va.Equals(vb) ? 1.0 : 0.0));
+                            {
+                                var vaType = va.ActualType;
+                                var method = GetMethod(va, "Equals");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va, vb));
+                                else
+                                {
+                                    Stack.Push((va.Equals(vb) ? 1.0 : 0.0));
+                                }
+                            }
                             break;
 
                         case (Instruction.InstructionType.SEq):
@@ -588,7 +707,16 @@ namespace DrakeScript
                                 break;
                             }
 
-                            Stack.Push(0.0);
+                            {
+                                var vaType = va.ActualType;
+                                var method = GetMethod(va, "SequenceEquals");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va, vb));
+                                else
+                                {
+                                    Stack.Push(0.0);
+                                }
+                            }
                             break;
 
                         case (Instruction.InstructionType.EqNil):
@@ -601,40 +729,102 @@ namespace DrakeScript
 							vb = Stack.Pop();
 							va = Stack.Pop();
 
-							Stack.Push((!va.Equals(vb) ? 1.0 : 0.0));
-							break;
+                            {
+                                var vaType = va.ActualType;
+                                var method = GetMethod(va, "Equals");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va, vb).Number.EqualsZeroSafe());
+                                else
+                                {
+                                    Stack.Push((va.Equals(vb) ? 0.0 : 1.0));
+                                }
+                            }
+                            break;
 
 						case (Instruction.InstructionType.Gt):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = (va.Number > vb.Number ? 1.0 : 0.0);
-
-							Stack.Push(va);
-							break;
+                            if (va.Type == Value.ValueType.Number)
+                            {
+                                Stack.Push((va > vb ? 1.0 : 0.0));
+                            }
+                            else
+                            {
+                                var vaType = va.ActualType;
+                                var method = GetMethod(va, "GreaterThan");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va, vb));
+                                else
+                                {
+                                    if (va.Type == Value.ValueType.Object)
+                                        throw new UnexpectedLeftTypeException(va.ActualType, instruction.Location);
+                                    throw new UnexpectedLeftTypeException(va.Type, instruction.Location);
+                                }
+                            }
+                            break;
 
 						case (Instruction.InstructionType.GtEq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = (va.Number >= vb.Number ? 1.0 : 0.0);
-
-							Stack.Push(va);
-							break;
+                            if (va.Type == Value.ValueType.Number)
+                            {
+                                Stack.Push((va >= vb ? 1.0 : 0.0));
+                            }
+                            else
+                            {
+                                var method = GetMethod(va, "GreaterThan");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(vb, va).Number.EqualsZeroSafe());
+                                else
+                                {
+                                    if (va.Type == Value.ValueType.Object)
+                                        throw new UnexpectedLeftTypeException(va.ActualType, instruction.Location);
+                                    throw new UnexpectedLeftTypeException(va.Type, instruction.Location);
+                                }
+                            }
+                            break;
 
 						case (Instruction.InstructionType.Lt):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = (va.Number < vb.Number ? 1.0 : 0.0);
-
-							Stack.Push(va);
-							break;
+                            if (va.Type == Value.ValueType.Number)
+                            {
+                                Stack.Push((va < vb ? 1.0 : 0.0));
+                            }
+                            else
+                            {
+                                var method = GetMethod(va, "GreaterThan");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(vb, va));
+                                else
+                                {
+                                    if (va.Type == Value.ValueType.Object)
+                                        throw new UnexpectedLeftTypeException(va.ActualType, instruction.Location);
+                                    throw new UnexpectedLeftTypeException(va.Type, instruction.Location);
+                                }
+                            }
+                            break;
 
 						case (Instruction.InstructionType.LtEq):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							va.Number = (va.Number <= vb.Number ? 1.0 : 0.0);
-
-							Stack.Push(va);
-							break;
+                            if (va.Type == Value.ValueType.Number)
+                            {
+                                Stack.Push((va <= vb ? 1.0 : 0.0));
+                            }
+                            else
+                            {
+                                var method = GetMethod(va, "GreaterThan");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va, vb).Number.EqualsZeroSafe());
+                                else
+                                {
+                                    if (va.Type == Value.ValueType.Object)
+                                        throw new UnexpectedLeftTypeException(va.ActualType, instruction.Location);
+                                    throw new UnexpectedLeftTypeException(va.Type, instruction.Location);
+                                }
+                            }
+                            break;
 
 						case (Instruction.InstructionType.IncVarGlobal):
 							IncGlobalVar(instruction.Arg.StringDirect, 1);
@@ -894,6 +1084,28 @@ namespace DrakeScript
             locals[ind] = value;
         }
 
+        Function GetMethod(Value value, string methodName)
+        {
+            var dtype = value.Type;
+            if (dtype == Value.ValueType.Table)
+            {
+                Value potentialMethod;
+                if (value.TableDirect.TryGetValue(methodName, out potentialMethod) && potentialMethod.Type == Value.ValueType.Function)
+                    return potentialMethod.FunctionDirect;
+            }
+            var type = value.ActualType;
+            Dictionary<string, Function> typeMethods;
+            if (type != null)
+                if (Context.Methods.TryGetValue(type, out typeMethods))
+                {
+                    Function method;
+                    if (typeMethods.TryGetValue(methodName, out method))
+                    {
+                        return method;
+                    }
+                }
+            return null;
+        }
 
         public void Yield()
 		{
