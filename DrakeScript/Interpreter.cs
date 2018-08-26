@@ -25,7 +25,7 @@ namespace DrakeScript
 			Context = context;
 		}
 
-		public void Interpret(Function func, Value[] parentLocals = null)
+		public void Interpret(Function func)
 		{
 			//CurrentScope = Scope.Create();
 			//ScopeStack.Push(CurrentScope);
@@ -59,7 +59,9 @@ namespace DrakeScript
 
 			PauseStatus = InterpreterPause.Finished;
 
-			int ia;
+            func.LastRunLocals = locals;
+
+            int ia;
 			Value va, vb, vc;
 			Value[] aa;
 			bool exited = false;
@@ -76,7 +78,7 @@ namespace DrakeScript
 							Stack.Push(GetGlobalVar(instruction.Arg.StringDirect));
 							break;
 						case (Instruction.InstructionType.PushVarLocal):
-							Stack.Push(GetLocalVar(locals, parentLocals, (int)instruction.Arg.Number));
+							Stack.Push(GetLocalVar((int)instruction.Arg.Number, func));
 							break;
 						case (Instruction.InstructionType.PushArg):
 							Stack.Push(args[(int)instruction.Arg.Number]);
@@ -123,7 +125,7 @@ namespace DrakeScript
 							SetGlobalVar(instruction.Arg.StringDirect, Stack.Pop());
 							break;
 						case (Instruction.InstructionType.PopVarLocal):
-                            SetLocalVar(locals, parentLocals, (int)instruction.Arg.Number, Stack.Pop());
+                            SetLocalVar((int)instruction.Arg.Number, Stack.Pop(), func);
 							break;
                         case (Instruction.InstructionType.PopArg):
                             args[(int)instruction.Arg.Number] = Stack.Pop();
@@ -142,21 +144,11 @@ namespace DrakeScript
 							{
 								case (Value.ValueType.Function):
                                     CallLocation = instruction.Location;
-                                    if (callFunc.FunctionDirect.ParentFunction == func)
-                                        callFunc.FunctionDirect.InvokePushInsteadOfReturn(this, locals);
-                                    else if (callFunc.FunctionDirect == func)
-                                        callFunc.FunctionDirect.InvokePushInsteadOfReturn(this, parentLocals);
-                                    else
-                                        callFunc.FunctionDirect.InvokePushInsteadOfReturn(this, null);
+                                    callFunc.FunctionDirect.InvokePushInsteadOfReturn(this);
                                     break;
 								case (Value.ValueType.Coroutine):
 									CallLocation = instruction.Location;
-                                    if (callFunc.CoroutineDirect.Function.ParentFunction == func)
-                                        Stack.Push(callFunc.CoroutineDirect.Resume(ArgList, ArgListCount, locals));
-                                    else if (callFunc.CoroutineDirect.Function == func)
-                                        Stack.Push(callFunc.CoroutineDirect.Resume(ArgList, ArgListCount, parentLocals));
-                                    else
-                                        Stack.Push(callFunc.CoroutineDirect.Resume(ArgList, ArgListCount, null));
+                                    Stack.Push(callFunc.CoroutineDirect.Resume(ArgList, ArgListCount));
                                     break;
 								default:
 									throw new CannotCallTypeException(callFunc.Type, instruction.Location);
@@ -832,9 +824,9 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.IncVarLocal):
 							ia = (int)instruction.Arg.Number;
-							va = GetLocalVar(locals, parentLocals, ia);
+							va = GetLocalVar(ia, func);
 							va.Number++;
-                            SetLocalVar(locals, parentLocals, ia, va);
+                            SetLocalVar(ia, va, func);
 							break;
 
 						case (Instruction.InstructionType.DecVarGlobal):
@@ -843,9 +835,9 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.DecVarLocal):
 							ia = (int)instruction.Arg.Number;
-							va = GetLocalVar(locals, parentLocals, ia);
+							va = GetLocalVar(ia, func);
 							va.Number--;
-                            SetLocalVar(locals, parentLocals, ia, va);
+                            SetLocalVar(ia, va, func);
 							break;
 
 						case (Instruction.InstructionType.IncVarByGlobal):
@@ -854,9 +846,9 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.IncVarByLocal):
 							ia = (int)instruction.Arg.Number;
-							va = GetLocalVar(locals, parentLocals, ia);
+							va = GetLocalVar(ia, func);
 							va.Number += Stack.Pop().Number;
-                            SetLocalVar(locals, parentLocals, ia, va);
+                            SetLocalVar(ia, va, func);
 							break;
 
 						case (Instruction.InstructionType.DecVarByGlobal):
@@ -865,9 +857,9 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.DecVarByLocal):
 							ia = (int)instruction.Arg.Number;
-							va = GetLocalVar(locals, parentLocals, ia);
+							va = GetLocalVar(ia, func);
 							va.Number -= Stack.Pop().Number;
-                            SetLocalVar(locals, parentLocals, ia, va);
+                            SetLocalVar(ia, va, func);
 							break;
 
                         case (Instruction.InstructionType.Inc):
@@ -1059,29 +1051,35 @@ namespace DrakeScript
 			}
 		}
 
-        public Value GetLocalVar(Value[] locals, Value[] parentLocals, int ind)
+        public Value GetLocalVar(int ind, Function func)
         {
-            if (ind >= CodeGenerator.ParentLocalsStart)
+            var level = ind / CodeGenerator.LocalsPerFunction - 1;
+            ind = ind % CodeGenerator.LocalsPerFunction;
+
+            if (level >= 0)
             {
-                if (parentLocals == null)
+                var llocals = func.Parents[level].LastRunLocals;
+                if (llocals == null)
                     return Value.Nil;
-                ind -= CodeGenerator.ParentLocalsStart;
-                return parentLocals[ind];
+                return llocals[ind];
             }
-            return locals[ind];
+            return func.LastRunLocals[ind];
         }
 
-        public void SetLocalVar(Value[] locals, Value[] parentLocals, int ind, Value value)
+        public void SetLocalVar(int ind, Value value, Function func)
         {
-            if (ind >= CodeGenerator.ParentLocalsStart)
+            var level = ind / CodeGenerator.LocalsPerFunction - 1;
+            ind = ind % CodeGenerator.LocalsPerFunction;
+
+            if (level >= 0)
             {
-                if (parentLocals == null)
+                var llocals = func.Parents[level].LastRunLocals;
+                if (llocals == null)
                     return;
-                ind -= CodeGenerator.ParentLocalsStart;
-                parentLocals[ind] = value;
+                llocals[ind] = value;
                 return;
             }
-            locals[ind] = value;
+            func.LastRunLocals[ind] = value;
         }
 
         Function GetMethod(Value value, string methodName)

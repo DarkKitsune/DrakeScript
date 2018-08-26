@@ -18,7 +18,7 @@ namespace DrakeScript
 		}
 
 
-        internal Value Resume(Value[] args, int count, Value[] parentLocals)
+        internal Value Resume(Value[] args, int count)
 		{
 			
 			Value ret = Value.Nil;
@@ -44,12 +44,6 @@ namespace DrakeScript
 			
 			return ret;
 		}
-
-        public Value Resume(Value[] args, int count)
-        {
-
-            return Resume(args, count, null);
-        }
 
         public Value Resume(params Value[] args)
 		{

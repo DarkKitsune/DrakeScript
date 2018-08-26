@@ -59,7 +59,7 @@ namespace DrakeScript
 			var generator = new CodeGenerator(this);
 			try
 			{
-				return generator.Generate(new SourceRef(source, -1, 0), tree);
+				return generator.Generate(new SourceRef(source, -1, 0), tree, new string[] { }, null, new Function[] { });
 			}
 			catch (Exception e)
 			{
@@ -94,7 +94,7 @@ namespace DrakeScript
 				var vMajor = reader.ReadInt32();
 				var vMinor = reader.ReadInt32();
 				var vBuild = reader.ReadInt32();
-				return Function.FromReader(this, reader);
+				return Function.FromReader(this, reader, new Function[] { });
 			}
 		}
 

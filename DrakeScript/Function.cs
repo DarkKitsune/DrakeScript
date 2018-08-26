@@ -9,23 +9,24 @@ namespace DrakeScript
 	{
 		public bool ScriptFunction {get; private set;}
 		public Instruction[] Code {get; internal set;}
-		public String[] Args {get; internal set;}
-		public String[] Locals {get; internal set;}
+		public string[] Args {get; internal set;}
+		public string[] Locals {get; internal set;}
 		public Func<Interpreter, SourceRef, Value[], int, Value> Method;
 		public Context Context;
 		public Version Version;
 		public SourceRef Location;
-        public Function ParentFunction;
+        public Function[] Parents;
+        internal Value[] LastRunLocals;
 
 
-        public Function(SourceRef location, Context context, String[] args, Function parentFunc)
+        public Function(SourceRef location, Context context, string[] args, Function[] parents)
 		{
 			Location = location;
 			Version = typeof(Context).Assembly.GetName().Version;
 			Context = context;
 			ScriptFunction = true;
 			Args = args;
-            ParentFunction = parentFunc;
+            Parents = parents;
 		}
 
 		public Function(Context context, Func<Interpreter, SourceRef, Value[], int, Value> method, int paramCount)
@@ -60,11 +61,11 @@ namespace DrakeScript
 				return Method(interpreter, interpreter.CallLocation, interpreter.ArgList, interpreter.ArgListCount);
 			}
 		}
-		internal void InvokePushInsteadOfReturn(Interpreter interpreter, Value[] parentLocals)
+		internal void InvokePushInsteadOfReturn(Interpreter interpreter)
 		{
 			if (ScriptFunction)
 			{
-				interpreter.Interpret(this, parentLocals);
+				interpreter.Interpret(this);
 			}
 			else
 			{
@@ -168,17 +169,18 @@ namespace DrakeScript
 			writer.Write(GetBytecode());
 		}
 
-		internal static Function FromReader(Context context, BinaryReader reader)
+		internal static Function FromReader(Context context, BinaryReader reader, Function[] parents)
 		{
 			var location = SourceRef.FromReader(reader);
 			var args = new string[reader.ReadInt32()];
 			var locals = new string[reader.ReadInt32()];
 			var code = new Instruction[reader.ReadInt32()];
-			for (var i = 0; i < code.Length; i++)
+            var func = new Function(location, context, args, null);
+            func.Parents = parents;
+            for (var i = 0; i < code.Length; i++)
 			{
-				code[i] = Instruction.FromReader(context, reader, location.Source);
+				code[i] = Instruction.FromReader(context, reader, location.Source, func);
 			}
-			var func = new Function(location, context, args, null);
             func.Code = code;
             func.Locals = locals;
             return func;

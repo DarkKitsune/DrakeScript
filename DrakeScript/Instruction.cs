@@ -113,10 +113,10 @@ namespace DrakeScript
 			}
 		}
 
-		public static Instruction FromReader(Context context, BinaryReader reader, Source source)
+		public static Instruction FromReader(Context context, BinaryReader reader, Source source, Function func)
 		{
 			var type = (InstructionType)reader.ReadInt16();
-			var arg = Value.FromReader(context, reader);
+			var arg = Value.FromReader(context, reader, func);
 			var line = reader.ReadInt32();
 			var column = reader.ReadInt32();
 			return new Instruction(new SourceRef(source, line, column), type, arg);

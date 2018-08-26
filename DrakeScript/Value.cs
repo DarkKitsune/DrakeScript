@@ -702,7 +702,7 @@ namespace DrakeScript
 			}
 		}
 
-		public static Value FromReader(Context context, BinaryReader reader)
+		public static Value FromReader(Context context, BinaryReader reader, Function func)
 		{
 			var type = (ValueType)reader.ReadInt16();
 			switch (type)
@@ -712,7 +712,9 @@ namespace DrakeScript
 					var str = System.Text.Encoding.ASCII.GetString(reader.ReadBytes(strLength));
 					return Value.Create(str);
 				case (ValueType.Function):
-					return Value.Create(Function.FromReader(context, reader));
+                    var parents = new List<Function>(func.Parents);
+                    parents.Insert(0, func);
+					return Value.Create(Function.FromReader(context, reader, parents.ToArray()));
 				case (ValueType.Number):
 					return Value.Create(reader.ReadDouble());
 				//case (ValueType.Int):
@@ -721,7 +723,7 @@ namespace DrakeScript
                     var count = reader.ReadInt32();
                     var array = new List<Value>(count);
                     for (var i = 0; i < count; i++)
-                        array.Add(Value.FromReader(context, reader));
+                        array.Add(Value.FromReader(context, reader, func));
                     return Value.Create(array);
 				case (ValueType.Object):
 					var id = reader.ReadInt32();

@@ -5,10 +5,11 @@ namespace DrakeScript
 {
 	public class CodeGenerator
 	{
-        public const int ParentLocalsStart = 0x3FFFFFFF;
+        public const int LocalsPerFunction = 0x01000000;
 
         internal CodeGenerator Parent = null;
         Function Func;
+        Function[] Parents;
 		string[] Args;
 		Dictionary<string, int> ArgLookup = new Dictionary<string, int>();
 		internal List<string> Locals = new List<string>();
@@ -21,7 +22,7 @@ namespace DrakeScript
 			Context = context;
 		}
 
-		public Function Generate(SourceRef location, ASTNode node, string[] args = null, CodeGenerator parent = null, Function parentFunc = null)
+		public Function Generate(SourceRef location, ASTNode node, string[] args = null, CodeGenerator parent = null, Function[] parents = null)
 		{
             Parent = parent;
 			if (args == null)
@@ -35,9 +36,12 @@ namespace DrakeScript
 					ArgLookup[arg] = n++;
 				}
 			}
-            var func = new Function(location, Context, Args, parentFunc);
+            if (parents == null)
+                parents = new Function[] { };
+            Parents = parents;
+            var func = new Function(location, Context, Args, parents);
             Func = func;
-            var code = Generate(node, false, false, parentFunc);
+            var code = Generate(node, false, false, parents);
             VerifyCode(code);
             code.Add(new Instruction(node.Location, Instruction.InstructionType.ReturnNil));
             func.Code = code.ToArray();
@@ -54,9 +58,12 @@ namespace DrakeScript
 			}
 		}
 
-		public List<Instruction> Generate(ASTNode node, bool requirePush, bool allowConditions = false, Function parentFunc = null)
+		public List<Instruction> Generate(ASTNode node, bool requirePush, bool allowConditions = false, Function[] parents = null)
 		{
-			var instructions = new List<Instruction>();
+            if (parents == null)
+                parents = new Function[] { };
+
+            var instructions = new List<Instruction>();
 
 			List<Instruction> range;
 			int locNum;
@@ -702,7 +709,9 @@ namespace DrakeScript
 						argsStrings[argN++] = (string)child.Value;
 					}
 					var generator = new CodeGenerator(Context);
-					var newFunc = generator.Generate(node.Location, (ASTNode)node.Value, argsStrings, this, Func);
+                    var newFuncParents = new List<Function>(Parents);
+                    newFuncParents.Insert(0, Func);
+					var newFunc = generator.Generate(node.Location, (ASTNode)node.Value, argsStrings, this, newFuncParents.ToArray());
 					instructions.Add(
 						new Instruction(
 							node.Location,
@@ -753,16 +762,19 @@ namespace DrakeScript
 
         int GetLocalIndex(string name)
         {
-            var lind = Locals.IndexOf(name);
-
-            if (lind < 0 && Parent != null)
+            var gen = this;
+            var level = 0;
+            
+            while (true)
             {
-                var ind = Parent.Locals.IndexOf(name);
+                var ind = gen.Locals.IndexOf(name);
                 if (ind != -1)
-                    return 0x3FFFFFFF + ind;
+                    return level * LocalsPerFunction + ind;
+                if (gen.Parent == null)
+                    return -1;
+                gen = gen.Parent;
+                level++;
             }
-
-            return lind;
         }
 	}
 }

@@ -1,16 +1,19 @@
-function Vector(x, y, z)
+let valA = "AAAA";
+let function a()
 {
-	let function addFunc(a, b)
+	let valB = 24.2;
+	let function b()
 	{
-		return Vector(a.x + b.x, a.y + b.y, a.z + b.z);
+		let function c()
+		{
+			PrintLn(valA, " ", valB);
+		}
+
+		c();
 	}
 
-	return {
-		"x": x,
-		"y": y,
-		"z": z,
-		"Add": addFunc
-	};
+	b();
 }
 
-PrintLn(Vector(1, 2, 3) + Vector(2, 3, 4));
+a();
+PrintLn(valB);
