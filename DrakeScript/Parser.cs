@@ -244,7 +244,7 @@ namespace DrakeScript
 						Stack.Push(new ASTNode(ASTNode.NodeType.PowerOperator, current.Location));
 						Advance(1);
 						break;
-					case (Token.TokenType.Tilde):
+					case (Token.TokenType.Concat):
 						Stack.Push(new ASTNode(ASTNode.NodeType.ConcatOperator, current.Location));
 						Advance(1);
 						break;

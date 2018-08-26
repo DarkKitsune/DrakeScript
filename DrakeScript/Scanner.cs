@@ -69,8 +69,16 @@ namespace DrakeScript
 						Advance(1);
 						break;
 					case ('.'):
-						token = new Token(Location(), Token.TokenType.Period);
-						Advance(1);
+                        if (At(1) == '.')
+                        {
+                            token = new Token(Location(), Token.TokenType.Concat);
+                            Advance(2);
+                        }
+                        else
+                        {
+                            token = new Token(Location(), Token.TokenType.Period);
+                            Advance(1);
+                        }
 						break;
 					case ('+'):
 						if (At(1) == '=')
@@ -200,10 +208,6 @@ namespace DrakeScript
 							token = new Token(Location(), Token.TokenType.And);
 							Advance(2);
 						}
-						break;
-					case ('~'):
-						token = new Token(Location(), Token.TokenType.Tilde);
-						Advance(1);
 						break;
                     case ('$'):
                         token = new Token(Location(), Token.TokenType.DollarSign);

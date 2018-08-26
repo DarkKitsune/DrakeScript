@@ -11,7 +11,7 @@ namespace DrakeScript
 		{
 			Invalid, Str, Int, Dec, Ident, ParOpen, ParClose, BraOpen, BraClose, SqBraOpen, SqBraClose, Semicolon, Comma, Period,
 			Plus, Minus, Divide, Multiply, Modulo, Power, Not, DollarSign, SEq, Eq, NEq, Gt, GtEq, Lt, LtEq, Or, And, Set, PlusEq,
-            MinusEq, Tilde, Colon, Arrow
+            MinusEq, Concat, Colon, Arrow
 		}
 
 		public bool Valid {get; private set;}

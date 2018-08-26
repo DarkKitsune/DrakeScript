@@ -4,7 +4,7 @@ let function Vec(x, y)
 		"X" => x,
 		"Y" => y,
 		"Length2" => function(this) { return this.X * this.X + this.Y * this.Y; },
-		"ToString" => function(this) { return "(" ~ this.X ~ ", " ~ this.Y ~ ")" },
+		"ToString" => function(this) { return "(" .. this.X .. ", " .. this.Y .. ")" },
 		"Add" => function(this, other) { return Vec(this.X + other.X, this.Y + other.Y); }
 	};
 	return vec;

@@ -168,27 +168,27 @@ namespace DrakeScriptTester
 			new Test(
 				"concat 1",
 				Value.Create("hello, world!"),
-				"return \"hello, \" ~ \"world!\";"
+				"return \"hello, \" .. \"world!\";"
 			),
 			new Test(
 				"concat 2",
 				Value.Create("hello, world!"),
-				"let a = \"hello, \"; let b = \"world!\"; return a ~ b;"
+				"let a = \"hello, \"; let b = \"world!\"; return a .. b;"
 			),
 			new Test(
 				"concat 3",
 				Value.Create("hello, 6!"),
-				"let a = \"hello, \"; let b = 6; return a ~ b ~ \"!\";"
+				"let a = \"hello, \"; let b = 6; return a .. b .. \"!\";"
 			),
 			new Test(
 				"concat 4",
 				Value.Create("hello, [1, 2, 3]!"),
-				"let a = \"hello, \"; let b = [1, 2, 3]; return a ~ b ~ \"!\";"
+				"let a = \"hello, \"; let b = [1, 2, 3]; return a .. b .. \"!\";"
 			),
 			new Test(
 				"concat 6",
 				Value.Create("hello, {1:4, 5:5, \"test\":6}!"),
-				"let a = \"hello, \"; let b = {1 => 4, 5 => 5, \"test\" => 6}; return a ~ b ~ \"!\";"
+				"let a = \"hello, \"; let b = {1 => 4, 5 => 5, \"test\" => 6}; return a .. b .. \"!\";"
 			),
 			new Test(
 				"let noarg function 1",
@@ -373,7 +373,7 @@ namespace DrakeScriptTester
 			new Test(
 				"table key math and concatenation",
 				Value.Create(new Table(new Dictionary<object, Value>{{50.0, "Yellow"}, {"Test Key", 5.0}})),
-				"return {25 * 2 => \"Yellow\", \"Test \" ~ \"Key\" => 5};"
+				"return {25 * 2 => \"Yellow\", \"Test \" .. \"Key\" => 5};"
 			),
 			new Test(
 				"table dot call",
@@ -393,7 +393,7 @@ namespace DrakeScriptTester
 			new Test(
 				"table concat",
 				Value.Create(new Table(new Dictionary<object, Value> {{"a", 5}, {"b", 7}, {"c", 5}, {"d", 7}})),
-				"return {\"a\" => 5, \"b\" => 7} ~ {\"c\" => 5, \"d\" => 7};"
+				"return {\"a\" => 5, \"b\" => 7} .. {\"c\" => 5, \"d\" => 7};"
 			),
 			new Test(
 				"coroutine 1",
@@ -483,7 +483,7 @@ namespace DrakeScriptTester
 			new Test(
 				"type check array 4",
 				Value.Create(true),
-				"return [1, 2] ~ [3, 4] is Array;"
+				"return [1, 2] .. [3, 4] is Array;"
 			),
 			new Test(
 				"then 1",
@@ -503,7 +503,7 @@ namespace DrakeScriptTester
 			new Test(
 				"then 4",
 				Value.Create(new List<Value>{1, 2, 3}),
-				"return true then [1] ~ [2, 3];"
+				"return true then [1] .. [2, 3];"
 			),
 			new Test(
 				"then otherwise 1",
@@ -548,7 +548,7 @@ namespace DrakeScriptTester
 			new Test(
 				"break 2",
 				Value.Create(new List<Value> {6, 6, 6, 6}),
-				"let a = 0;let b = [];loop(4){a = 0; loop (30) {if (a > 5) {break;} a += 1;} b = b ~ [a];}return b;"
+				"let a = 0;let b = [];loop(4){a = 0; loop (30) {if (a > 5) {break;} a += 1;} b = b .. [a];}return b;"
 			),
 			new Test(
 				"method 1",

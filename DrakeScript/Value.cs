@@ -722,7 +722,7 @@ namespace DrakeScript
                 case (ValueType.Nil):
                     return "nil";
                 case (ValueType.Array):
-                    var sb = new System.Text.StringBuilder("{");
+                    var sb = new System.Text.StringBuilder("[");
                     var first = true;
                     foreach (var e in ArrayDirect)
                     {
@@ -732,7 +732,7 @@ namespace DrakeScript
                             first = false;
                         sb.Append(e.ToString(context));
                     }
-                    sb.Append('}');
+                    sb.Append(']');
                     return sb.ToString();
             }
             return (DynamicValue != null ? DynamicValue.ToString() : "nil");
