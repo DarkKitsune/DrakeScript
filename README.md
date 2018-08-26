@@ -19,7 +19,7 @@ Simple function
 ```csharp
 var context = new Context();
 var testScript = context.LoadString(
-    @"local function add3(a, b, c)
+    @"let function add3(a, b, c)
     {
         return a + b + c;
     }
@@ -34,13 +34,13 @@ Sum of array elements that are numbers
 ```csharp
 var context = new Context();
 var testScript = context.LoadString(
-    @"local function arraySum(array)
+    @"let function arraySum(array)
     {
-        local sum = 0;
-        local i = 0;
+        let sum = 0;
+        let i = 0;
         loop (lengthof array)
         {
-            local e = array[i];
+            let e = array[i];
             if (e is Number)
             {
                 sum += e;
@@ -60,13 +60,13 @@ Sum of array elements that are numbers (then-otherwise version)
 ```csharp
 var context = new Context();
 var testScript = context.LoadString(
-    @"local function arraySum(array)
+    @"let function arraySum(array)
     {
-        local sum = 0;
-        local i = 0;
+        let sum = 0;
+        let i = 0;
         loop (lengthof array)
         {
-            local e = array[i];
+            let e = array[i];
             sum += e is Number then e otherwise 0;
             i += 1;
         }
@@ -116,7 +116,7 @@ Creating table
 ```csharp
 var context = new Context();
 var testScript = context.LoadString(
-    @"local tableKey = { 1: [2, 4] };
+    @"let tableKey = { 1: [2, 4] };
     PrintLn(
         {
             ""foo"": ""bar"",
