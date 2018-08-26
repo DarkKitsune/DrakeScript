@@ -40,7 +40,7 @@ namespace DrakeScript
 			{
 				for (var i = 0; i < argCount; i++)
 				{
-					Console.Write(args[i].ToString());
+					Console.Write(args[i].ToString(interpreter.Context));
 				}
 				return Value.Nil;
 			}
@@ -48,7 +48,7 @@ namespace DrakeScript
 			{
 				for (var i = 0; i < argCount; i++)
 				{
-					Console.Write(args[i].ToString());
+					Console.Write(args[i].ToString(interpreter.Context));
 				}
 				Console.WriteLine();
 				return Value.Nil;
@@ -59,7 +59,7 @@ namespace DrakeScript
 			}
 			public static Value ConvToString(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
-				return args[0].ToString();
+				return args[0].ToString(interpreter.Context);
 			}
 			public static Value GetValueType(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
@@ -155,6 +155,7 @@ namespace DrakeScript
                 context.SetMethod(typeof(List<Value>), "Remove", context.CreateFunction(ArrayRemove, 1));
                 context.SetMethod(typeof(List<Value>), "Clear", context.CreateFunction(ArrayClear, 0));
                 context.SetMethod(typeof(List<Value>), "Clone", context.CreateFunction(Clone, 0));
+                context.SetMethod(typeof(List<Value>), "Sort", context.CreateFunction(Sort, 0));
             }
 
             public static Value ArrayOfLength(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -222,6 +223,36 @@ namespace DrakeScript
             public static Value Clone(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
             {
                 return new List<Value>(args[0].ArrayDirect);
+            }
+
+            public static Value Sort(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                if (argCount == 1)
+                {
+                    args[0].ArrayDirect.Sort(
+                        (a, b) =>
+                        {
+                            if (a.Type == Value.ValueType.Number)
+                                return a.Number > b.Number ? 1 : -1;
+                            Value gt;
+                            var succ = a.TryInvokeMethod(interpreter.Context, "GreaterThan", new[] { b }, out gt);
+                            if (succ)
+                                return gt.Bool ? 1 : -1;
+                            return -1;
+                        }
+                    );
+                }
+                else if (argCount > 1)
+                {
+                    var func = args[1].VerifyType(Value.ValueType.Function, location).FunctionDirect;
+                    args[0].ArrayDirect.Sort(
+                        (a, b) =>
+                        {
+                            return func.Invoke(a, b).Bool ? 1 : -1;
+                        }
+                    );
+                }
+                return Value.Nil;
             }
         }
 

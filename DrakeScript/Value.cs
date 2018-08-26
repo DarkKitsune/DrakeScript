@@ -544,6 +544,94 @@ namespace DrakeScript
 			return this;
 		}
 
+        public Function GetMethod(Context context, string methodName)
+        {
+            var dtype = Type;
+            if (dtype == ValueType.Table)
+            {
+                Value potentialMethod;
+                if (TableDirect.TryGetValue(methodName, out potentialMethod) && potentialMethod.Type == ValueType.Function)
+                    return potentialMethod.FunctionDirect;
+            }
+            var type = ActualType;
+            Dictionary<string, Function> typeMethods;
+            if (type != null)
+                if (context.Methods.TryGetValue(type, out typeMethods))
+                {
+                    Function method;
+                    if (typeMethods.TryGetValue(methodName, out method))
+                    {
+                        return method;
+                    }
+                }
+            return null;
+        }
+
+        public Value InvokeMethod(Context context, string method, Value[] args,
+            [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+            [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+        {
+            var m = GetMethod(context, method);
+            if (m != null)
+            {
+                var newArgs = new Value[args.Length + 1];
+                newArgs[0] = this;
+                args.CopyTo(newArgs, 1);
+                return m.Invoke(newArgs);
+            }
+            if (Type == ValueType.Object)
+                throw new NoMethodForTypeException(
+                    ActualType,
+                    method,
+                    new SourceRef(
+                        new Source(sourceFilePath, ""),
+                        sourceLineNumber,
+                        0
+                    )
+                );
+            throw new NoMethodForTypeException(
+                Type,
+                method,
+                new SourceRef(
+                    new Source(sourceFilePath, ""),
+                    sourceLineNumber,
+                    0
+                )
+            );
+        }
+
+        public Value InvokeMethod(Function method, Value[] args)
+        {
+            if (args != null)
+            {
+                var newArgs = new Value[args.Length + 1];
+                newArgs[0] = this;
+                args.CopyTo(newArgs, 1);
+                return method.Invoke(newArgs);
+            }
+            return method.Invoke(this);
+        }
+
+        public bool TryInvokeMethod(Context context, string method, Value[] args, out Value returned)
+        {
+            var m = GetMethod(context, method);
+            if (m != null)
+            {
+                if (args != null)
+                {
+                    var newArgs = new Value[args.Length + 1];
+                    newArgs[0] = this;
+                    args.CopyTo(newArgs, 1);
+                    returned = m.Invoke(newArgs);
+                    return true;
+                }
+                returned = m.Invoke(this);
+                return true;
+            }
+            returned = Value.Nil;
+            return false;
+        }
+
         public bool BoolOr(bool alt)
         {
             if (Type == ValueType.Number)
@@ -623,7 +711,34 @@ namespace DrakeScript
 			return (DynamicValue != null ? DynamicValue.ToString() : "nil");
 		}
 
-		public bool Equals(Value value)
+        public string ToString(Context context)
+        {
+            Value toStringValue;
+            if (TryInvokeMethod(context, "ToString", null, out toStringValue))
+                return toStringValue.String;
+
+            switch (Type)
+            {
+                case (ValueType.Nil):
+                    return "nil";
+                case (ValueType.Array):
+                    var sb = new System.Text.StringBuilder("{");
+                    var first = true;
+                    foreach (var e in ArrayDirect)
+                    {
+                        if (!first)
+                            sb.Append(", ");
+                        else
+                            first = false;
+                        sb.Append(e.ToString(context));
+                    }
+                    sb.Append('}');
+                    return sb.ToString();
+            }
+            return (DynamicValue != null ? DynamicValue.ToString() : "nil");
+        }
+
+        public bool Equals(Value value)
 		{
 			if (value.Type != Type)
 				return false;

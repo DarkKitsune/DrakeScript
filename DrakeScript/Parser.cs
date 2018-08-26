@@ -252,7 +252,11 @@ namespace DrakeScript
 						Stack.Push(new ASTNode(ASTNode.NodeType.PairOperator, current.Location));
 						Advance(1);
 						break;
-					case (Token.TokenType.Period):
+                    case (Token.TokenType.Arrow):
+                        Stack.Push(new ASTNode(ASTNode.NodeType.TablePairOperator, current.Location));
+                        Advance(1);
+                        break;
+                    case (Token.TokenType.Period):
 						Stack.Push(new ASTNode(ASTNode.NodeType.DotIndexOperator, current.Location));
 						Advance(1);
 						break;
@@ -356,8 +360,8 @@ namespace DrakeScript
 						parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, 0, out advanceAmount), true);
 						foreach (var p in parsed)
 						{
-							if (p.Type != ASTNode.NodeType.Pair)
-								throw new ExpectedTokenException("...: ...", p.Location);
+							if (p.Type != ASTNode.NodeType.TablePair)
+								throw new ExpectedTokenException("... => ...", p.Location);
 						}
 						Stack.Push(new ASTNode(ASTNode.NodeType.Table, current.Location, parsed));
 						Advance(advanceAmount);

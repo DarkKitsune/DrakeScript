@@ -188,7 +188,7 @@ namespace DrakeScriptTester
 			new Test(
 				"concat 6",
 				Value.Create("hello, {1:4, 5:5, \"test\":6}!"),
-				"let a = \"hello, \"; let b = {1: 4, 5: 5, \"test\":6}; return a ~ b ~ \"!\";"
+				"let a = \"hello, \"; let b = {1 => 4, 5 => 5, \"test\" => 6}; return a ~ b ~ \"!\";"
 			),
 			new Test(
 				"let noarg function 1",
@@ -333,7 +333,7 @@ namespace DrakeScriptTester
 			new Test(
 				"simple table",
 				Value.Create(new Table(new Dictionary<object, Value>{{1.0, 5.0}, {5.0, 2.0}})),
-				"return {1: 5, 5: 2};"
+				"return {1 => 5, 5 => 2};"
 			),
 			new Test(
 				"empty table",
@@ -353,32 +353,32 @@ namespace DrakeScriptTester
 			new Test(
 				"table get 1",
 				Value.Create(1),
-                "let a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a[\"a\"];"
+                "let a = {\"a\" => 1, \"b\" => 2.34, \"width\" => worldWidth, \"height\" => worldHeight}; return a[\"a\"];"
             ),
 			new Test(
 				"table get 2",
 				Value.Create(2.34),
-                "let a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a[\"b\"];"
+                "let a = {\"a\" => 1, \"b\" => 2.34, \"width\" => worldWidth, \"height\" => worldHeight}; return a[\"b\"];"
             ),
 			new Test(
 				"table get dot 1",
 				Value.Create(1),
-                "let a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a.a;"
+                "let a = {\"a\" => 1, \"b\" => 2.34, \"width\" => worldWidth, \"height\" => worldHeight}; return a.a;"
             ),
 			new Test(
 				"table get dot 2",
 				Value.Create(2.34),
-                "let a = {\"a\": 1, \"b\": 2.34, \"width\": worldWidth, \"height\": worldHeight}; return a.b;"
+                "let a = {\"a\" => 1, \"b\" => 2.34, \"width\" => worldWidth, \"height\" => worldHeight}; return a.b;"
             ),
 			new Test(
 				"table key math and concatenation",
 				Value.Create(new Table(new Dictionary<object, Value>{{50.0, "Yellow"}, {"Test Key", 5.0}})),
-				"return {25 * 2: \"Yellow\", \"Test \" ~ \"Key\": 5};"
+				"return {25 * 2 => \"Yellow\", \"Test \" ~ \"Key\" => 5};"
 			),
 			new Test(
 				"table dot call",
 				Value.Create(168.0),
-				"let Vector = {}; Vector.Create = function(x, y) { return {\"x\": x, \"y\": y}; }; return Vector.Create(192, 168).y;"
+				"let Vector = {}; Vector.Create = function(x, y) { return {\"x\" => x, \"y\" => y}; }; return Vector.Create(192, 168).y;"
 			),
 			new Test(
 				"table dot bracket index",
@@ -388,12 +388,12 @@ namespace DrakeScriptTester
 			new Test(
 				"table mixed 1",
 				Value.Create(23.0),
-				"let Vector = {\"Create\": function(x, y) { return {\"x\": x, \"y\": y}; } }; return Vector.Create(23, 212).x;"
+				"let Vector = {\"Create\" => function(x, y) { return {\"x\" => x, \"y\" => y}; } }; return Vector.Create(23, 212).x;"
 			),
 			new Test(
 				"table concat",
 				Value.Create(new Table(new Dictionary<object, Value> {{"a", 5}, {"b", 7}, {"c", 5}, {"d", 7}})),
-				"return {\"a\": 5, \"b\": 7} ~ {\"c\": 5, \"d\": 7};"
+				"return {\"a\" => 5, \"b\" => 7} ~ {\"c\" => 5, \"d\" => 7};"
 			),
 			new Test(
 				"coroutine 1",
@@ -533,7 +533,7 @@ namespace DrakeScriptTester
 			new Test(
 				"lengthof 2",
 				Value.Create(3),
-				"return lengthof {\"aa\": 1, 4: 4, \"nn\": 87};"
+				"return lengthof {\"aa\" => 1, 4 => 4, \"nn\" => 87};"
 			),
 			new Test(
 				"lengthof 3",
@@ -553,7 +553,7 @@ namespace DrakeScriptTester
 			new Test(
 				"method 1",
 				Value.Create(new List<Value> {22, 23, 24}),
-				"let t = {\"v\": 21, \"getV\": function(this) { this.v = this.v + 1; return this.v; }}; return [t:getV(), t:getV(), t:getV()];"
+				"let t = {\"v\" => 21, \"getV\" => function(this) { this.v = this.v + 1; return this.v; }}; return [t:getV(), t:getV(), t:getV()];"
 			),
 			new Test(
 				"method 2",
@@ -588,22 +588,22 @@ namespace DrakeScriptTester
             new Test(
                 "sequence equals 5",
                 Value.Create(1),
-                "return {\"cat\": 1, \"mouse\": 2} === {\"mouse\": 2, \"cat\": 1};"
+                "return {\"cat\" => 1, \"mouse\" => 2} === {\"mouse\" => 2, \"cat\" => 1};"
             ),
             new Test(
                 "sequence equals 6",
                 Value.Create(0),
-                "return {\"cat\": 2, \"mouse\": 2} === {\"mouse\": 2, \"cat\": 1};"
+                "return {\"cat\" => 2, \"mouse\" => 2} === {\"mouse\" => 2, \"cat\" => 1};"
             ),
             new Test(
                 "sequence equals 7",
                 Value.Create(1),
-                "return {\"cat\": nil, \"mouse\": 2} === {\"mouse\": 2, \"cat\": nil};"
+                "return {\"cat\" => nil, \"mouse\" => 2} === {\"mouse\" => 2, \"cat\" => nil};"
             ),
             new Test(
                 "sequence equals 8",
                 Value.Create(0),
-                "return {\"cat\": nil, \"mouse\": 2, 3: 5} === {\"mouse\": 2, \"cat\": nil};"
+                "return {\"cat\" => nil, \"mouse\" => 2, 3 => 5} === {\"mouse\" => 2, \"cat\" => nil};"
             ),
             new Test(
                 "sequence equals 9",
@@ -636,7 +636,7 @@ namespace DrakeScriptTester
             new Test(
                 "table clone",
                 Value.Create(new Table(new Dictionary<object, Value> { { 6.0, 1.0 }, { 2.0, 2.0 }, { "merp", 3.0 }, { 9.0, 4.0 }, { 123.0, "orange" } })),
-                "return {6:1, 2:2, \"merp\":3, 9:4, 123:\"orange\"}:Clone();"
+                "return {6 => 1, 2 => 2, \"merp\" => 3, 9 => 4, 123 => \"orange\"}:Clone();"
             ),
         };
 

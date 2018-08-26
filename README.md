@@ -116,13 +116,13 @@ Creating table
 ```csharp
 var context = new Context();
 var testScript = context.LoadString(
-    @"let tableKey = { 1: [2, 4] };
+    @"let tableKey = { 1 => [2, 4] };
     PrintLn(
         {
-            ""foo"": ""bar"",
-            ""hello"": 4,
-            89.2: 2,
-            tableKey: 2
+            ""foo"" => ""bar"",
+            ""hello"" => 4,
+            89.2 => 2,
+            tableKey => 2
         }
     );"
 );

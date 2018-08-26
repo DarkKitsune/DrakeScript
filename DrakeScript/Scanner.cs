@@ -140,6 +140,11 @@ namespace DrakeScript
                                 Advance(2);
                             }
 						}
+                        else if (At(1) == '>')
+                        {
+                            token = new Token(Location(), Token.TokenType.Arrow);
+                            Advance(2);
+                        }
 						else
 						{
 							token = new Token(Location(), Token.TokenType.Set);

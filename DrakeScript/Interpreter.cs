@@ -529,7 +529,7 @@ namespace DrakeScript
 							switch (va.Type)
 							{
 								case (Value.ValueType.String):
-									va.StringDirect += vb.ToString();
+									va.StringDirect += vb.ToString(Context);
 									break;
 								case (Value.ValueType.Array):
 									if (vb.Type == Value.ValueType.Array)
@@ -562,7 +562,7 @@ namespace DrakeScript
                                         va = method.Invoke(va, vb);
                                     else
                                     {
-                                        va = Value.Create(va.ToString() + vb.ToString());
+                                        va = Value.Create(va.ToString(Context) + vb.ToString(Context));
                                     }
 									break;
 							}

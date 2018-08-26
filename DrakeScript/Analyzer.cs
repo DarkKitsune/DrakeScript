@@ -301,8 +301,6 @@ namespace DrakeScript
 						throw new ExpectedNodeException(ASTNode.NodeType.Ident, left.Type, left.Location);
 					break;
 				case (ASTNode.NodeType.Pair):
-					if (parent.Type == ASTNode.NodeType.Table)
-						break;
 					left = node.Branches["left"];
 					right = node.Branches["right"];
                     if (right.Type == ASTNode.NodeType.Call)
