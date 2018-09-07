@@ -48,7 +48,7 @@ namespace DrakeScriptTester
 				var success = false;
 				if (ret.Type == SuccessReturn.Type)
 				{
-					if (ret.Type == Value.ValueType.Array)
+                    if (ret.Type == Value.ValueType.Array)
 					{
 						success = true;
 						if (ret.ArrayDirect.Count != SuccessReturn.ArrayDirect.Count)
@@ -58,7 +58,7 @@ namespace DrakeScriptTester
 							{
 								if (!ret.ArrayDirect[i].Equals(SuccessReturn.ArrayDirect[i]))
 								{
-									success = false;
+                                    success = false;
 									break;
 								}
 							}
@@ -73,15 +73,16 @@ namespace DrakeScriptTester
 							var keys = ret.TableDirect.Keys;
 							foreach (var key in keys)
 							{
-								if (!ret.TableDirect[key].Equals(SuccessReturn.TableDirect[key]))
+                                Console.WriteLine(ret.TableDirect[key].Type + " == " + SuccessReturn.TableDirect[key].Type);
+                                if (!ret.TableDirect[key].Equals(SuccessReturn.TableDirect[key]))
 								{
-									success = false;
+                                    success = false;
 									break;
 								}
 							}
 						}
 					}
-					else
+                    else
 						success = ret.Equals(SuccessReturn);
 				}
 				if (!success)

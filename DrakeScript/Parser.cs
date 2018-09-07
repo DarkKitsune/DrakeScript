@@ -102,8 +102,11 @@ namespace DrakeScript
 								Advance(1);
 								break;
 							case ("if"):
-								newParser = new Parser();
-								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
+                                Advance(1);
+                                if (At().Type != Token.TokenType.ParOpen)
+                                    throw new ExpectedTokenException("(", At().Location);
+                                newParser = new Parser();
+								parsed = newParser._Parse(GetBetweenInclusive(Token.TokenType.ParClose, 0, out advanceAmount));
 								var ifPar = parsed.GetSafe(0);
 								if (ifPar.Type != ASTNode.NodeType.Par)
 								{
@@ -113,7 +116,7 @@ namespace DrakeScript
 								{
 									throw new ExpectedTokenException("{", parsed[1].Location);
 								}
-								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
+								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount, out advanceAmount));
 								node = new ASTNode(ASTNode.NodeType.If, current.Location, parsed);
 								node.Branches["condition"] = new ASTNode(ASTNode.NodeType.Condition, ifPar.Location, ifPar.Value);
 								root.Add(node);
@@ -139,42 +142,51 @@ namespace DrakeScript
 								Advance(advanceAmount);
 								break;
 							case ("while"):
-								newParser = new Parser();
-								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
-								var whilePar = parsed.GetSafe(0);
+                                Advance(1);
+                                if (At().Type != Token.TokenType.ParOpen)
+                                    throw new ExpectedTokenException("(", At().Location);
+                                newParser = new Parser();
+                                parsed = newParser._Parse(GetBetweenInclusive(Token.TokenType.ParClose, 0, out advanceAmount));
+                                var whilePar = parsed.GetSafe(0);
 								if (whilePar.Type != ASTNode.NodeType.Par)
 								{
 									throw new ExpectedNodeException(ASTNode.NodeType.Par, whilePar.Type, current.Location);
 								}
-								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
+								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount, out advanceAmount));
 								node = new ASTNode(ASTNode.NodeType.While, current.Location, parsed);
 								node.Branches["condition"] = new ASTNode(ASTNode.NodeType.Condition, whilePar.Location, whilePar.Value);
 								root.Add(node);
 								Advance(advanceAmount);
 								break;
 							case ("loop"):
-								newParser = new Parser();
-								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
-								var loopPar = parsed.GetSafe(0);
+                                Advance(1);
+                                if (At().Type != Token.TokenType.ParOpen)
+                                    throw new ExpectedTokenException("(", At().Location);
+                                newParser = new Parser();
+                                parsed = newParser._Parse(GetBetweenInclusive(Token.TokenType.ParClose, 0, out advanceAmount));
+                                var loopPar = parsed.GetSafe(0);
 								if (loopPar.Type != ASTNode.NodeType.Par)
 								{
 									throw new ExpectedNodeException(ASTNode.NodeType.Par, loopPar.Type, current.Location);
 								}
-								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
+								parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount, out advanceAmount));
 								node = new ASTNode(ASTNode.NodeType.Loop, current.Location, parsed);
 								node.Branches["condition"] = new ASTNode(ASTNode.NodeType.Condition, loopPar.Location, loopPar.Value);
 								root.Add(node);
 								Advance(advanceAmount);
 								break;
                             case ("foreach"):
+                                Advance(1);
+                                if (At().Type != Token.TokenType.ParOpen)
+                                    throw new ExpectedTokenException("(", At().Location);
                                 newParser = new Parser();
-                                parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
+                                parsed = newParser._Parse(GetBetweenInclusive(Token.TokenType.ParClose, 0, out advanceAmount));
                                 loopPar = parsed.GetSafe(0);
                                 if (loopPar.Type != ASTNode.NodeType.Par)
                                 {
                                     throw new ExpectedNodeException(ASTNode.NodeType.Par, loopPar.Type, current.Location);
                                 }
-                                parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
+                                parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount, out advanceAmount));
                                 node = new ASTNode(ASTNode.NodeType.Foreach, current.Location, parsed);
                                 node.Branches["condition"] = new ASTNode(ASTNode.NodeType.Condition, loopPar.Location, loopPar.Value);
                                 root.Add(node);
@@ -572,7 +584,7 @@ namespace DrakeScript
 			var depth = 1;
 			while (true)
 			{
-				if (!t.Valid)
+                if (!t.Valid)
 				{
 					advanceAmount = aoffset + 1;
 					throw new UnmatchedTokenException(starting.Type, starting.Location);
@@ -602,7 +614,46 @@ namespace DrakeScript
 		}
 
 
-		List<Token> GetUntil(Token.TokenType closing, int offset, out int advanceAmount)
+        List<Token> GetBetweenInclusive(Token.TokenType closing, int offset, out int advanceAmount)
+        {
+            var aoffset = offset;
+            var starting = At(aoffset);
+
+            var t = At(++aoffset);
+            var depth = 1;
+            while (true)
+            {
+                if (!t.Valid)
+                {
+                    advanceAmount = aoffset + 1;
+                    throw new UnmatchedTokenException(starting.Type, starting.Location);
+                }
+
+                if (t.Type == starting.Type)
+                {
+                    depth++;
+                }
+                else if (t.Type == closing)
+                {
+                    depth--;
+                    if (depth == 0)
+                    {
+                        var ret = new List<Token>();
+                        for (var i = offset; i <= aoffset; i++)
+                        {
+                            ret.Add(At(i));
+                        }
+                        advanceAmount = aoffset + 1;
+                        return ret;
+                    }
+                }
+
+                t = At(++aoffset);
+            }
+        }
+
+
+        List<Token> GetUntil(Token.TokenType closing, int offset, out int advanceAmount)
 		{
 			var aoffset = offset;
 

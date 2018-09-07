@@ -6,7 +6,7 @@ namespace DrakeScript
 {
 	public class Table
 	{
-		public Dictionary<object, Value> InternalDictionary {get; private set;} = new Dictionary<object, Value>();
+		public Dictionary<Value, Value> InternalDictionary {get; private set;} = new Dictionary<Value, Value>();
 
 		public int Count
 		{
@@ -17,11 +17,11 @@ namespace DrakeScript
 		}
 
 
-		public Value this[object key]
+		public Value this[Value key]
 		{
 			get
 			{
-                if (key == null)
+                if (key.Type == Value.ValueType.Nil)
                     return Value.Nil;
 				Value outValue;
 				if (InternalDictionary.TryGetValue(key, out outValue))
@@ -30,23 +30,23 @@ namespace DrakeScript
 			}
 			set
 			{
-                if (key == null)
+                if (key.Type == Value.ValueType.Nil)
                     return;
                 InternalDictionary[key] = value;
 			}
 		}
 
-		public bool TryGetValue(object key, out Value val)
+		public bool TryGetValue(Value key, out Value val)
 		{
 			return InternalDictionary.TryGetValue(key, out val);
 		}
 
 
-		public object[] Keys
+		public Dictionary<Value, Value>.KeyCollection Keys
 		{
 			get
 			{
-				return InternalDictionary.Keys.ToArray();
+                return InternalDictionary.Keys;
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace DrakeScript
 		}
 
 
-		public Table(Dictionary<object, Value> baseDict)
+		public Table(Dictionary<Value, Value> baseDict)
 		{
 			foreach (var kvp in baseDict)
 			{

@@ -103,12 +103,12 @@ namespace DrakeScriptTester
         {
             Table InternalTable = new Table();
 
-            public Value GetValue(object key, SourceRef location)
+            public Value GetValue(Value key, SourceRef location)
             {
                 return InternalTable[key];
             }
 
-            public void SetValue(object key, Value value, SourceRef location)
+            public void SetValue(Value key, Value value, SourceRef location)
             {
                 InternalTable[key] = value;
             }
@@ -187,7 +187,7 @@ namespace DrakeScriptTester
 			),
 			new Test(
 				"concat 6",
-				Value.Create("hello, {1:4, 5:5, \"test\":6}!"),
+				Value.Create("hello, {1:4, 5:5, test:6}!"),
 				"let a = \"hello, \"; let b = {1 => 4, 5 => 5, \"test\" => 6}; return a .. b .. \"!\";"
 			),
 			new Test(
@@ -332,7 +332,7 @@ namespace DrakeScriptTester
 			),
 			new Test(
 				"simple table",
-				Value.Create(new Table(new Dictionary<object, Value>{{1.0, 5.0}, {5.0, 2.0}})),
+				Value.Create(new Table(new Dictionary<Value, Value>{{1.0, 5.0}, {5.0, 2.0}})),
 				"return {1 => 5, 5 => 2};"
 			),
 			new Test(
@@ -342,12 +342,12 @@ namespace DrakeScriptTester
 			),
 			new Test(
 				"table set",
-				Value.Create(new Table(new Dictionary<object, Value>{{"woof", "meow"}})),
+				Value.Create(new Table(new Dictionary<Value, Value>{{"woof", "meow"}})),
 				"let a = {}; let catSound = \"meow\"; a[\"woof\"] = catSound; return a;"
 			),
 			new Test(
 				"table set dot",
-				Value.Create(new Table(new Dictionary<object, Value>{{"woof", "meow"}})),
+				Value.Create(new Table(new Dictionary<Value, Value>{{"woof", "meow"}})),
 				"let a = {}; let catSound = \"meow\"; a.woof = catSound; return a;"
 			),
 			new Test(
@@ -372,7 +372,7 @@ namespace DrakeScriptTester
             ),
 			new Test(
 				"table key math and concatenation",
-				Value.Create(new Table(new Dictionary<object, Value>{{50.0, "Yellow"}, {"Test Key", 5.0}})),
+				Value.Create(new Table(new Dictionary<Value, Value>{{50.0, "Yellow"}, {"Test Key", 5.0}})),
 				"return {25 * 2 => \"Yellow\", \"Test \" .. \"Key\" => 5};"
 			),
 			new Test(
@@ -392,7 +392,7 @@ namespace DrakeScriptTester
 			),
 			new Test(
 				"table concat",
-				Value.Create(new Table(new Dictionary<object, Value> {{"a", 5}, {"b", 7}, {"c", 5}, {"d", 7}})),
+				Value.Create(new Table(new Dictionary<Value, Value> {{"a", 5}, {"b", 7}, {"c", 5}, {"d", 7}})),
 				"return {\"a\" => 5, \"b\" => 7} .. {\"c\" => 5, \"d\" => 7};"
 			),
 			new Test(
@@ -629,14 +629,24 @@ namespace DrakeScriptTester
                 "let ret = []; let a = 4; let function aTest() { ret[lengthof ret] = a; a += 1; if (a < 10) { aTest(); } } aTest(); return ret;"
             ),
             new Test(
-                "array clone",
+                "array clone 1",
                 Value.Create(new List<Value> { 1, 2, 3, 4, 10, "orange" }),
                 "return [1, 2, 3, 4, 10, \"orange\"]:Clone();"
             ),
             new Test(
-                "table clone",
-                Value.Create(new Table(new Dictionary<object, Value> { { 6.0, 1.0 }, { 2.0, 2.0 }, { "merp", 3.0 }, { 9.0, 4.0 }, { 123.0, "orange" } })),
+                "table clone 2",
+                Value.Create(new Table(new Dictionary<Value, Value> { { 6.0, 1.0 }, { 2.0, 2.0 }, { "merp", 3.0 }, { 9.0, 4.0 }, { 123.0, "orange" } })),
                 "return {6 => 1, 2 => 2, \"merp\" => 3, 9 => 4, 123 => \"orange\"}:Clone();"
+            ),
+            new Test(
+                "table CopyTo",
+                Value.Create(new Table(new Dictionary<Value, Value> { { "foo", "bar" }, { 6.0, 1.0 }, { 2.0, 2.0 }, { "merp", 3.0 }, { 9.0, 4.0 }, { 123.0, "orange" } })),
+                "let a = { \"foo\" => \"bar\" }; {6 => 1, 2 => 2, \"merp\" => 3, 9 => 4, 123 => \"orange\"}:CopyTo(a); return a;"
+            ),
+            new Test(
+                "table foreach",
+                Value.Create((new List<Value> {6, 2, "merp", 9, 123})),
+                "let a = []; foreach ( k, v, { 6 => 1, 2 => 2, \"merp\" => 3, 9 => 4, 123 => \"orange\" } ) { a[lengthof a] = k; } return a;"
             ),
         };
 

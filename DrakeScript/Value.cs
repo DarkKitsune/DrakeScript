@@ -738,9 +738,10 @@ namespace DrakeScript
             return (DynamicValue != null ? DynamicValue.ToString() : "nil");
         }
 
+        /*
         public bool Equals(Value value)
 		{
-			if (value.Type != Type)
+            if (value.Type != Type)
 				return false;
 			switch (Type)
 			{
@@ -770,7 +771,7 @@ namespace DrakeScript
 		public override int GetHashCode()
 		{
 			return DynamicValue.GetHashCode();
-		}
+		}*/
 
 
 		public byte[] GetBytes(Context context)

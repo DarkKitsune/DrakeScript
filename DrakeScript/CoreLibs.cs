@@ -262,6 +262,7 @@ namespace DrakeScript
 			{
 				context.SetMethod(typeof(Table), "Count", context.CreateFunction(Count, 0));
                 context.SetMethod(typeof(Table), "Clone", context.CreateFunction(Clone, 0));
+                context.SetMethod(typeof(Table), "CopyTo", context.CreateFunction(CopyTo, 1));
             }
 
 			public static Value Count(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -272,6 +273,16 @@ namespace DrakeScript
             public static Value Clone(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
             {
                 return new Table(args[0].TableDirect.InternalDictionary);
+            }
+
+            public static Value CopyTo(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                var dest = args[1].VerifyType(Value.ValueType.Table, location).TableDirect.InternalDictionary;
+                foreach (var kvp in args[0].TableDirect.InternalDictionary)
+                {
+                    dest[kvp.Key] = kvp.Value;
+                }
+                return Value.Nil;
             }
         }
 

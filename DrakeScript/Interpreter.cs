@@ -33,7 +33,7 @@ namespace DrakeScript
 			var code = func.Code;
 			var callLocation = CallLocation;
 
-            Dictionary<object, int> iterators = null;
+            Dictionary<object, Tuple<int, Value[]>> iterators = null;
             Value[] args;
 			Value[] locals;
 			int pos;
@@ -251,7 +251,7 @@ namespace DrakeScript
 									break;
 								case (Value.ValueType.Table):
 									Value outValue;
-									if (va.TableDirect.TryGetValue(vb.DynamicValue, out outValue))
+									if (va.TableDirect.TryGetValue(vb, out outValue))
 										Stack.Push(outValue);
 									else
 										Stack.Push(Value.Nil);
@@ -272,7 +272,7 @@ namespace DrakeScript
                                     else
                                     {
                                         if (va.Is<IIndexable>())
-                                            Stack.Push(((IIndexable)va.Object).GetValue(vb.DynamicValue, instruction.Location));
+                                            Stack.Push(((IIndexable)va.Object).GetValue(vb, instruction.Location));
                                         else
                                             throw new CannotIndexTypeException(va.ActualType, instruction.Location);
                                     }
@@ -399,7 +399,7 @@ namespace DrakeScript
 										tempArray[ia] = vc;
 									break;
 								case (Value.ValueType.Table):
-									va.TableDirect[vb.DynamicValue] = vc;
+									va.TableDirect[vb] = vc;
 									break;
 								case (Value.ValueType.Object):
 									if (va.Is<Type>())
@@ -421,7 +421,7 @@ namespace DrakeScript
                                     else
                                     {
                                         if (va.Is<IIndexable>())
-                                            ((IIndexable)va.Object).SetValue(vb.DynamicValue, vc, instruction.Location);
+                                            ((IIndexable)va.Object).SetValue(vb, vc, instruction.Location);
                                         else
                                             throw new CannotIndexTypeException(va.ActualType, instruction.Location);
                                     }
@@ -1052,17 +1052,17 @@ namespace DrakeScript
                         case (Instruction.InstructionType.StartIter):
                             va = Stack.Peek(0);
                             if (iterators == null)
-                                iterators = new Dictionary<object, int>();
+                                iterators = new Dictionary<object, Tuple<int, Value[]>>();
                             switch (va.Type)
                             {
                                 case (Value.ValueType.Array):
-                                    iterators.Add(va.ArrayDirect, 0);
+                                    iterators.Add(va.ArrayDirect, new Tuple<int, Value[]>(0, null));
                                     break;
                                 case (Value.ValueType.Table):
-                                    iterators.Add(va.TableDirect, 0);
+                                    iterators.Add(va.TableDirect, new Tuple<int, Value[]>(0, va.TableDirect.Keys.ToArray()));
                                     break;
                                 case (Value.ValueType.String):
-                                    iterators.Add(va.StringDirect, 0);
+                                    iterators.Add(va.StringDirect, new Tuple<int, Value[]>(0, null));
                                     break;
                                 default:
                                     throw new CannotIndexTypeException(va.Type, instruction.Location);
@@ -1074,31 +1074,34 @@ namespace DrakeScript
                             switch (va.Type)
                             {
                                 case (Value.ValueType.Array):
-                                    ia = iterators[va.ArrayDirect];
+                                    var tup = iterators[va.ArrayDirect];
+                                    ia = tup.Item1;
                                     if (ia < va.ArrayDirect.Count)
                                     {
-                                        iterators[va.ArrayDirect] = ia + 1;
+                                        iterators[va.ArrayDirect] = new Tuple<int, Value[]>(ia + 1, null);
                                         Stack.Push(va.ArrayDirect[ia]);
                                         Stack.Push(ia);
                                     }
                                     Stack.Push(va.ArrayDirect.Count - ia);
                                     break;
                                 case (Value.ValueType.Table):
-                                    ia = iterators[va.TableDirect];
+                                    tup = iterators[va.TableDirect];
+                                    ia = tup.Item1;
                                     if (ia < va.TableDirect.Count)
                                     {
-                                        iterators[va.TableDirect] = ia + 1;
-                                        var key = va.TableDirect.Keys[ia];
+                                        iterators[va.TableDirect] = new Tuple<int, Value[]>(ia + 1, iterators[va.TableDirect].Item2);
+                                        var key = tup.Item2[ia];
                                         Stack.Push(va.TableDirect[key]);
-                                        Stack.Push(Value.Create(key));
+                                        Stack.Push(key);
                                     }
                                     Stack.Push(va.TableDirect.Count - ia);
                                     break;
                                 case (Value.ValueType.String):
-                                    ia = iterators[va.StringDirect];
+                                    tup = iterators[va.StringDirect];
+                                    ia = tup.Item1;
                                     if (ia < va.StringDirect.Length)
                                     {
-                                        iterators[va.StringDirect] = ia + 1;
+                                        iterators[va.StringDirect] = new Tuple<int, Value[]>(ia + 1, null);
                                         Stack.Push(new string(va.StringDirect[ia], 1));
                                         Stack.Push(ia);
                                     }

@@ -8,7 +8,7 @@ namespace DrakeScript
 {
     public interface IIndexable
     {
-        Value GetValue(object key, SourceRef location);
-        void SetValue(object key, Value value, SourceRef location);
+        Value GetValue(Value key, SourceRef location);
+        void SetValue(Value key, Value value, SourceRef location);
     }
 }
