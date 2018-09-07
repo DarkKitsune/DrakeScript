@@ -21,6 +21,8 @@ namespace DrakeScript
 		{
 			get
 			{
+                if (key == null)
+                    return Value.Nil;
 				Value outValue;
 				if (InternalDictionary.TryGetValue(key, out outValue))
 					return outValue;
@@ -28,7 +30,9 @@ namespace DrakeScript
 			}
 			set
 			{
-				InternalDictionary[key] = value;
+                if (key == null)
+                    return;
+                InternalDictionary[key] = value;
 			}
 		}
 

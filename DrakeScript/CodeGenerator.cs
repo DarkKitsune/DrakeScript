@@ -687,7 +687,49 @@ namespace DrakeScript
 						instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
 					}
 					break;
-				case (ASTNode.NodeType.Function):
+                case (ASTNode.NodeType.Foreach):
+                    if (requirePush)
+                        throw new UnexpectedTokenException(node.Type.ToString(), node.Location);
+                    loopCond = (List<ASTNode>)node.Branches["condition"].Value;
+                    if (loopCond.Count != 3 | loopCond[0].Type != ASTNode.NodeType.Ident | loopCond[1].Type != ASTNode.NodeType.Ident)
+                        throw new InvalidConditionException("foreach", node.Location);
+                    {
+                        loopBreakConvertStart = instructions.Count;
+                        //instructions.Add(new Instruction(node.Location, Instruction.InstructionType.EnterScope));
+                        instructions.AddRange(Generate(loopCond[2], true));
+                        instructions.Add(new Instruction(loopCond[2].Location, Instruction.InstructionType.StartIter));
+                        var loopStart = instructions.Count;
+                        instructions.Add(new Instruction(loopCond[2].Location, Instruction.InstructionType.NextPair));
+                        var loopJumpInstPos = instructions.Count;
+                        //instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Dec));
+
+                        if (!Locals.Contains((string)loopCond[0].Value))
+                            Locals.Add((string)loopCond[0].Value);
+                        if (!Locals.Contains((string)loopCond[1].Value))
+                            Locals.Add((string)loopCond[1].Value);
+
+                        instructions.Add(new Instruction(loopCond[0].Location, Instruction.InstructionType.PopVarLocal, GetLocalIndex((string)loopCond[0].Value)));
+                        instructions.Add(new Instruction(loopCond[1].Location, Instruction.InstructionType.PopVarLocal, GetLocalIndex((string)loopCond[1].Value)));
+
+                        foreach (var child in (List<ASTNode>)node.Value)
+                        {
+                            range = Generate(child, false, true);
+                            instructions.AddRange(range);
+                        }
+                        instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Jump, loopStart - instructions.Count - 2));
+                        instructions.Insert(loopJumpInstPos, new Instruction(node.Location, Instruction.InstructionType.JumpEZ, instructions.Count - loopJumpInstPos));
+                        //instructions.Add(new Instruction(node.Location, Instruction.InstructionType.LeaveScope));
+                        for (var loopBreakInd = loopBreakConvertStart; loopBreakInd < instructions.Count; loopBreakInd++)
+                        {
+                            if (instructions[loopBreakInd].Type == Instruction.InstructionType._Break)
+                            {
+                                instructions[loopBreakInd] = new Instruction(instructions[loopBreakInd].Location, Instruction.InstructionType.Jump, instructions.Count - loopBreakInd - 1);
+                            }
+                        }
+                        instructions.Add(new Instruction(node.Location, Instruction.InstructionType.Pop));
+                    }
+                    break;
+                case (ASTNode.NodeType.Function):
 					var funcName = (string)node.Branches["functionName"].Value;
 					if (funcName.Length == 0)
 					{

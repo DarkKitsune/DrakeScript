@@ -1,15 +1,13 @@
-let function Vec(x, y)
+let testTable = {
+    "Foo"   => "bar",
+    1       => 2,
+    5.3     => 19,
+    "h"     => [1, 2, 3]
+};
+
+foreach (key, val, testTable)
 {
-	let vec = {
-		"X" => x,
-		"Y" => y,
-		"Length2" => function(this) { return this.X * this.X + this.Y * this.Y; },
-		"ToString" => function(this) { return "(" .. this.X .. ", " .. this.Y .. ")" },
-		"Add" => function(this, other) { return Vec(this.X + other.X, this.Y + other.Y); }
-	};
-	return vec;
+    PrintLn(key, ": ", val);
 }
 
-let arr = [Vec(1, 2), Vec(6, 2), Vec(3, 99), Vec(100, -4), Vec(-44, 0) + Vec(-100, 0)];
-arr:Sort(function(a, b) { return a:Length2() > b:Length2(); });
-PrintLn(arr);
+PrintLn("A");

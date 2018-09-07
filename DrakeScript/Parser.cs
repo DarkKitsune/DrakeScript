@@ -166,7 +166,21 @@ namespace DrakeScript
 								root.Add(node);
 								Advance(advanceAmount);
 								break;
-							case ("function"):
+                            case ("foreach"):
+                                newParser = new Parser();
+                                parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
+                                loopPar = parsed.GetSafe(0);
+                                if (loopPar.Type != ASTNode.NodeType.Par)
+                                {
+                                    throw new ExpectedNodeException(ASTNode.NodeType.Par, loopPar.Type, current.Location);
+                                }
+                                parsed = newParser._Parse(GetBetween(Token.TokenType.BraClose, advanceAmount - 1, out advanceAmount));
+                                node = new ASTNode(ASTNode.NodeType.Foreach, current.Location, parsed);
+                                node.Branches["condition"] = new ASTNode(ASTNode.NodeType.Condition, loopPar.Location, loopPar.Value);
+                                root.Add(node);
+                                Advance(advanceAmount);
+                                break;
+                            case ("function"):
 								newParser = new Parser();
 								parsed = newParser._Parse(GetUntil(Token.TokenType.BraOpen, 0, out advanceAmount));
 								var functionPar = parsed.GetSafe(0);

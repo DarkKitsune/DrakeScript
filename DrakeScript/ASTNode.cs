@@ -95,6 +95,7 @@ namespace DrakeScript
 			Else,
 			While,
 			Loop,
+            Foreach,
 			Function,
 		}
 
@@ -182,7 +183,8 @@ namespace DrakeScript
 			{NodeType.Else, new NodeInfo(false)},
 			{NodeType.While, new NodeInfo(false)},
 			{NodeType.Loop, new NodeInfo(false)},
-			{NodeType.Function, new NodeInfo(true)},
+            {NodeType.Foreach, new NodeInfo(false)},
+            {NodeType.Function, new NodeInfo(true)},
 		};
 
 		public NodeType Type;

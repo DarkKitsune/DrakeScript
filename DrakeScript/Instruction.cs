@@ -74,7 +74,9 @@ namespace DrakeScript
             NewThread = 61,
             PushIndexInt = 62,
             PushIndexStr = 63,
-            PushMethod = 64
+            PushMethod = 64,
+            StartIter = 65,
+            NextPair = 66,
         }
 
 

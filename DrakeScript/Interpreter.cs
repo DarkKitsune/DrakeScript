@@ -33,7 +33,8 @@ namespace DrakeScript
 			var code = func.Code;
 			var callLocation = CallLocation;
 
-			Value[] args;
+            Dictionary<object, int> iterators = null;
+            Value[] args;
 			Value[] locals;
 			int pos;
 			if (PauseStatus.Paused)
@@ -151,7 +152,23 @@ namespace DrakeScript
                                     Stack.Push(callFunc.CoroutineDirect.Resume(ArgList, ArgListCount));
                                     break;
 								default:
-									throw new CannotCallTypeException(callFunc.Type, instruction.Location);
+                                    ArgListCount += 1;
+                                    var method = GetMethod(callFunc, "Call");
+                                    if (method != null)
+                                    {
+                                        CallLocation = instruction.Location;
+                                        if (ArgList.Length < ia + 1)
+                                            Array.Resize(ref ArgList, ia + 1);
+                                        for (var i = ia; i > 0; i--)
+                                        {
+                                            ArgList[i] = ArgList[i - 1];
+                                        }
+                                        ArgList[0] = callFunc;
+                                        method.InvokePushInsteadOfReturn(this);
+                                    }
+                                    else
+                                        throw new CannotCallTypeException(callFunc.Type, instruction.Location);
+                                    break;
 							}
 							break;
                         case (Instruction.InstructionType.NewThread):
@@ -181,7 +198,33 @@ namespace DrakeScript
                                     Stack.Push(Value.Create(nthread));
                                     break;
                                 default:
-                                    throw new CannotThreadTypeException(callFunc.Type, instruction.Location);
+                                    ArgListCount += 1;
+                                    var method = GetMethod(callFunc, "Call");
+                                    if (method != null)
+                                    {
+                                        if (ArgList.Length < ia + 1)
+                                            Array.Resize(ref ArgList, ia + 1);
+                                        for (var i = ia; i > 0; i--)
+                                        {
+                                            ArgList[i] = ArgList[i - 1];
+                                        }
+                                        ArgList[0] = callFunc;
+                                        threadInt = new Interpreter(Context);
+                                        threadInt.ArgList = (Value[])ArgList.Clone();
+                                        threadInt.ArgListCount = ArgListCount;
+                                        threadInt.CallLocation = instruction.Location;
+                                        nthread = new System.Threading.Thread(
+                                            () =>
+                                            {
+                                                method.Invoke(threadInt);
+                                            }
+                                        );
+                                        nthread.Start();
+                                        Stack.Push(Value.Create(nthread));
+                                    }
+                                    else
+                                        throw new CannotThreadTypeException(callFunc.Type, instruction.Location);
+                                    break;
                             }
                             break;
                         case (Instruction.InstructionType.PushIndex):
@@ -936,7 +979,23 @@ namespace DrakeScript
 						case (Instruction.InstructionType.Is):
 							vb = Stack.Pop();
 							va = Stack.Pop();
-							Stack.Push(va.ActualType == vb.ObjectAs<Type>());
+                            {
+                                var method = GetMethod(va, "Is");
+                                if (method != null)
+                                    Stack.Push(method.Invoke(va, vb));
+                                else
+                                {
+                                    if (vb.Is<Type>())
+                                        Stack.Push(va.ActualType == vb.ObjectAs<Type>());
+                                    else
+                                    {
+                                        if (vb.Type == Value.ValueType.Object)
+                                            throw new UnexpectedRightTypeException(vb.ActualType, instruction.Location);
+                                        throw new UnexpectedRightTypeException(vb.Type, instruction.Location);
+                                    }
+                                }
+                            }
+                            
 							break;
 
 						case (Instruction.InstructionType.Contains):
@@ -990,7 +1049,67 @@ namespace DrakeScript
 							}
 							break;
 
-						default:
+                        case (Instruction.InstructionType.StartIter):
+                            va = Stack.Peek(0);
+                            if (iterators == null)
+                                iterators = new Dictionary<object, int>();
+                            switch (va.Type)
+                            {
+                                case (Value.ValueType.Array):
+                                    iterators.Add(va.ArrayDirect, 0);
+                                    break;
+                                case (Value.ValueType.Table):
+                                    iterators.Add(va.TableDirect, 0);
+                                    break;
+                                case (Value.ValueType.String):
+                                    iterators.Add(va.StringDirect, 0);
+                                    break;
+                                default:
+                                    throw new CannotIndexTypeException(va.Type, instruction.Location);
+                            }
+                            break;
+
+                        case (Instruction.InstructionType.NextPair):
+                            va = Stack.Peek(0);
+                            switch (va.Type)
+                            {
+                                case (Value.ValueType.Array):
+                                    ia = iterators[va.ArrayDirect];
+                                    if (ia < va.ArrayDirect.Count)
+                                    {
+                                        iterators[va.ArrayDirect] = ia + 1;
+                                        Stack.Push(va.ArrayDirect[ia]);
+                                        Stack.Push(ia);
+                                    }
+                                    Stack.Push(va.ArrayDirect.Count - ia);
+                                    break;
+                                case (Value.ValueType.Table):
+                                    ia = iterators[va.TableDirect];
+                                    if (ia < va.TableDirect.Count)
+                                    {
+                                        iterators[va.TableDirect] = ia + 1;
+                                        var key = va.TableDirect.Keys[ia];
+                                        Stack.Push(va.TableDirect[key]);
+                                        Stack.Push(Value.Create(key));
+                                    }
+                                    Stack.Push(va.TableDirect.Count - ia);
+                                    break;
+                                case (Value.ValueType.String):
+                                    ia = iterators[va.StringDirect];
+                                    if (ia < va.StringDirect.Length)
+                                    {
+                                        iterators[va.StringDirect] = ia + 1;
+                                        Stack.Push(new string(va.StringDirect[ia], 1));
+                                        Stack.Push(ia);
+                                    }
+                                    Stack.Push(va.StringDirect.Length - ia);
+                                    break;
+                                default:
+                                    throw new CannotIndexTypeException(va.Type, instruction.Location);
+                            }
+                            break;
+
+                        default:
 							throw new NoCaseForInstructionException(instruction.Type, instruction.Location);
 					}
 

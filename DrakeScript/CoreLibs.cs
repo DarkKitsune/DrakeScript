@@ -301,6 +301,7 @@ namespace DrakeScript
                 context.SetGlobal("Abs", context.CreateFunction(Abs, 1));
                 context.SetGlobal("Max", context.CreateFunction(Max, 2));
                 context.SetGlobal("Min", context.CreateFunction(Min, 2));
+                context.SetGlobal("Sign", context.CreateFunction(Sign, 1));
             }
 
 			public static Value Cos(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -406,6 +407,11 @@ namespace DrakeScript
             public static Value Min(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
             {
                 return Math.Min(args[0].Number, args[1].Number);
+            }
+
+            public static Value Sign(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return Math.Sign(args[0].Number);
             }
         }
 	}
