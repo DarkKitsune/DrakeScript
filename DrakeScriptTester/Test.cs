@@ -73,7 +73,6 @@ namespace DrakeScriptTester
 							var keys = ret.TableDirect.Keys;
 							foreach (var key in keys)
 							{
-                                Console.WriteLine(ret.TableDirect[key].Type + " == " + SuccessReturn.TableDirect[key].Type);
                                 if (!ret.TableDirect[key].Equals(SuccessReturn.TableDirect[key]))
 								{
                                     success = false;

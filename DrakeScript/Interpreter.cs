@@ -1056,13 +1056,13 @@ namespace DrakeScript
                             switch (va.Type)
                             {
                                 case (Value.ValueType.Array):
-                                    iterators.Add(va.ArrayDirect, new Tuple<int, Value[]>(0, null));
+                                    iterators[va.ArrayDirect] = new Tuple<int, Value[]>(0, null);
                                     break;
                                 case (Value.ValueType.Table):
-                                    iterators.Add(va.TableDirect, new Tuple<int, Value[]>(0, va.TableDirect.Keys.ToArray()));
+                                    iterators[va.TableDirect] = new Tuple<int, Value[]>(0, va.TableDirect.Keys.ToArray());
                                     break;
                                 case (Value.ValueType.String):
-                                    iterators.Add(va.StringDirect, new Tuple<int, Value[]>(0, null));
+                                    iterators[va.StringDirect] = new Tuple<int, Value[]>(0, null);
                                     break;
                                 default:
                                     throw new CannotIndexTypeException(va.Type, instruction.Location);
