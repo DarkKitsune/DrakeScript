@@ -79,7 +79,7 @@ namespace DrakeScript
 							Stack.Push(GetGlobalVar(instruction.Arg.StringDirect));
 							break;
 						case (Instruction.InstructionType.PushVarLocal):
-							Stack.Push(GetLocalVar((int)instruction.Arg.Number, func));
+							Stack.Push(GetLocalVar((int)instruction.Arg.Number, func, locals));
 							break;
 						case (Instruction.InstructionType.PushArg):
 							Stack.Push(args[(int)instruction.Arg.Number]);
@@ -126,7 +126,7 @@ namespace DrakeScript
 							SetGlobalVar(instruction.Arg.StringDirect, Stack.Pop());
 							break;
 						case (Instruction.InstructionType.PopVarLocal):
-                            SetLocalVar((int)instruction.Arg.Number, Stack.Pop(), func);
+                            SetLocalVar((int)instruction.Arg.Number, Stack.Pop(), func, locals);
 							break;
                         case (Instruction.InstructionType.PopArg):
                             args[(int)instruction.Arg.Number] = Stack.Pop();
@@ -867,9 +867,9 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.IncVarLocal):
 							ia = (int)instruction.Arg.Number;
-							va = GetLocalVar(ia, func);
+							va = GetLocalVar(ia, func, locals);
 							va.Number++;
-                            SetLocalVar(ia, va, func);
+                            SetLocalVar(ia, va, func, locals);
 							break;
 
 						case (Instruction.InstructionType.DecVarGlobal):
@@ -878,9 +878,9 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.DecVarLocal):
 							ia = (int)instruction.Arg.Number;
-							va = GetLocalVar(ia, func);
+							va = GetLocalVar(ia, func, locals);
 							va.Number--;
-                            SetLocalVar(ia, va, func);
+                            SetLocalVar(ia, va, func, locals);
 							break;
 
 						case (Instruction.InstructionType.IncVarByGlobal):
@@ -889,9 +889,9 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.IncVarByLocal):
 							ia = (int)instruction.Arg.Number;
-							va = GetLocalVar(ia, func);
+							va = GetLocalVar(ia, func, locals);
 							va.Number += Stack.Pop().Number;
-                            SetLocalVar(ia, va, func);
+                            SetLocalVar(ia, va, func, locals);
 							break;
 
 						case (Instruction.InstructionType.DecVarByGlobal):
@@ -900,9 +900,9 @@ namespace DrakeScript
 
 						case (Instruction.InstructionType.DecVarByLocal):
 							ia = (int)instruction.Arg.Number;
-							va = GetLocalVar(ia, func);
+							va = GetLocalVar(ia, func, locals);
 							va.Number -= Stack.Pop().Number;
-                            SetLocalVar(ia, va, func);
+                            SetLocalVar(ia, va, func, locals);
 							break;
 
                         case (Instruction.InstructionType.Inc):
@@ -1173,7 +1173,7 @@ namespace DrakeScript
 			}
 		}
 
-        public Value GetLocalVar(int ind, Function func)
+        public Value GetLocalVar(int ind, Function func, Value[] locals)
         {
             var level = ind / CodeGenerator.LocalsPerFunction - 1;
             ind = ind % CodeGenerator.LocalsPerFunction;
@@ -1185,10 +1185,10 @@ namespace DrakeScript
                     return Value.Nil;
                 return llocals[ind];
             }
-            return func.LastRunLocals[ind];
+            return locals[ind];
         }
 
-        public void SetLocalVar(int ind, Value value, Function func)
+        public void SetLocalVar(int ind, Value value, Function func, Value[] locals)
         {
             var level = ind / CodeGenerator.LocalsPerFunction - 1;
             ind = ind % CodeGenerator.LocalsPerFunction;
@@ -1201,7 +1201,7 @@ namespace DrakeScript
                 llocals[ind] = value;
                 return;
             }
-            func.LastRunLocals[ind] = value;
+            locals[ind] = value;
         }
 
         Function GetMethod(Value value, string methodName)

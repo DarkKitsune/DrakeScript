@@ -6,13 +6,15 @@ namespace DrakeScript
 	{
 		public string Name {get; private set;}
 		public string Code {get; private set;}
+        public string[] Lines { get; private set; }
 		public SourceRef[] SourceRefs {get; private set;}
 
 		public Source(string name, string code)
 		{
 			Name = name;
 			Code = code.Replace("\r", "");
-			SourceRefs = new SourceRef[Code.Length];
+            Lines = code.Split('\n');
+            SourceRefs = new SourceRef[Code.Length];
 
 			int line = 0;
 			int column = 0;
