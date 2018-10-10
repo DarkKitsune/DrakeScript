@@ -18,7 +18,8 @@ namespace DrakeScript
 		public Context()
 		{
 			CoreLibs.LibCore.Register(this);
-			CoreLibs.LibCoroutine.Register(this);
+            CoreLibs.LibException.Register(this);
+            CoreLibs.LibCoroutine.Register(this);
 			CoreLibs.LibArray.Register(this);
 			CoreLibs.LibTable.Register(this);
 			CoreLibs.LibMath.Register(this);

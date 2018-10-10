@@ -1,13 +1,1 @@
-let testTable = {
-    "Foo"   => "bar",
-    1       => 2,
-    5.3     => 19,
-    "h"     => [1, 2, 3]
-};
-
-foreach (key, val, testTable)
-{
-    PrintLn(key, ": ", val);
-}
-
-PrintLn("A");
+PrintLn("1, 2 2, 1":ReplaceAll("1", "Hello"):ReplaceAll("2", "World"));

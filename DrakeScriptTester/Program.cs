@@ -645,9 +645,19 @@ namespace DrakeScriptTester
             ),
             new Test(
                 "table foreach",
-                Value.Create((new List<Value> {6, 2, "merp", 9, 123})),
+                Value.Create(new List<Value> {6, 2, "merp", 9, 123}),
                 "let a = []; foreach ( k, v, { 6 => 1, 2 => 2, \"merp\" => 3, 9 => 4, 123 => \"orange\" } ) { a[lengthof a] = k; } return a;"
             ),
+            new Test(
+                "string ReplaceAll 1",
+                Value.Create("Hello, World. World, Hello!"),
+                "return \"1, 2. 2, 1!\":ReplaceAll(\"1\", \"Hello\"):ReplaceAll(\"2\", \"World\");"
+            ),
+            new Test(
+                "string ReplaceAll 2",
+                Value.Create("Hello, World. World, Hello!"),
+                "let function repFunc() { return \"Hello\"; }; return \"1, 2. 2, 1!\":ReplaceAll(\"1\", repFunc):ReplaceAll(\"2\", \"World\");"
+            )
         };
 
 		public static void RunTests()

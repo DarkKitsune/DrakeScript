@@ -67,18 +67,31 @@ namespace DrakeScript
 			}
 		}
 
-		public static class LibCoroutine
+		public static class LibException
 		{
 			public static void Register(Context context)
 			{
-				context.SetGlobal("CreateCoroutine", context.CreateFunction(Create, 1));
+				context.SetGlobal("ThrowException", context.CreateFunction(ThrowException, 1));
 			}
 
-			public static Value Create(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+			public static Value ThrowException(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
 			{
-				return interpreter.Context.CreateCoroutine(args[0].VerifyType(Value.ValueType.Function, location));
+                throw new InterpreterException(args[0].VerifyType(Value.ValueType.String, location).String, location);
 			}
 		}
+
+        public static class LibCoroutine
+        {
+            public static void Register(Context context)
+            {
+                context.SetGlobal("CreateCoroutine", context.CreateFunction(Create, 1));
+            }
+
+            public static Value Create(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                return interpreter.Context.CreateCoroutine(args[0].VerifyType(Value.ValueType.Function, location));
+            }
+        }
 
         public static class LibThread
         {
@@ -147,15 +160,16 @@ namespace DrakeScript
 			public static void Register(Context context)
 			{
                 context.SetGlobal("ArrayOfLength", context.CreateFunction(ArrayOfLength, 1));
-                context.SetMethod(typeof(List<Value>), "Length", context.CreateFunction(ArrayLength, 0));
-                context.SetMethod(typeof(string), "Length", context.CreateFunction(StringLength, 0));
-                context.SetMethod(typeof(List<Value>), "Slice", context.CreateFunction(ArraySlice, 2));
-                context.SetMethod(typeof(string), "Slice", context.CreateFunction(StringSlice, 2));
-                context.SetMethod(typeof(List<Value>), "RemoveAt", context.CreateFunction(ArrayRemoveAt, 1));
-                context.SetMethod(typeof(List<Value>), "Remove", context.CreateFunction(ArrayRemove, 1));
-                context.SetMethod(typeof(List<Value>), "Clear", context.CreateFunction(ArrayClear, 0));
-                context.SetMethod(typeof(List<Value>), "Clone", context.CreateFunction(Clone, 0));
-                context.SetMethod(typeof(List<Value>), "Sort", context.CreateFunction(Sort, 0));
+                context.SetMethod(typeof(List<Value>), "Length", context.CreateFunction(ArrayLength, 1));
+                context.SetMethod(typeof(string), "Length", context.CreateFunction(StringLength, 1));
+                context.SetMethod(typeof(List<Value>), "Slice", context.CreateFunction(ArraySlice, 3));
+                context.SetMethod(typeof(string), "Slice", context.CreateFunction(StringSlice, 3));
+                context.SetMethod(typeof(List<Value>), "RemoveAt", context.CreateFunction(ArrayRemoveAt, 2));
+                context.SetMethod(typeof(List<Value>), "Remove", context.CreateFunction(ArrayRemove, 2));
+                context.SetMethod(typeof(List<Value>), "Clear", context.CreateFunction(ArrayClear, 1));
+                context.SetMethod(typeof(List<Value>), "Clone", context.CreateFunction(Clone, 1));
+                context.SetMethod(typeof(List<Value>), "Sort", context.CreateFunction(Sort, 1));
+                context.SetMethod(typeof(string), "ReplaceAll", context.CreateFunction(ReplaceAll, 3));
             }
 
             public static Value ArrayOfLength(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
@@ -253,6 +267,26 @@ namespace DrakeScript
                     );
                 }
                 return Value.Nil;
+            }
+
+            public static Value ReplaceAll(Interpreter interpreter, SourceRef location, Value[] args, int argCount)
+            {
+                var replaceString = args[1].VerifyType(Value.ValueType.String, location).StringDirect;
+                if (args[2].Type == Value.ValueType.Function)
+                {
+                    var str = args[0].StringDirect;
+                    var func = args[2].FunctionDirect;
+                    var pos = str.IndexOf(replaceString);
+                    while (pos >= 0)
+                    {
+                        var rep = func.Invoke(replaceString).ToString();
+                        str = new string(str.Take(pos).Concat(rep).Concat(str.Skip(pos + replaceString.Length)).ToArray());
+                        pos = str.IndexOf(replaceString, pos + rep.Length);
+                    }
+                    return str;
+                }
+                var replaceWith = args[2].VerifyType(Value.ValueType.String, location).StringDirect;
+                return args[0].StringDirect.Replace(replaceString, replaceWith);
             }
         }
 
